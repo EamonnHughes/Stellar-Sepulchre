@@ -1,4 +1,4 @@
-package org.eamonn.asdfgh
+package org.eamonn.trog
 
 import com.badlogic.gdx.backends.lwjgl3.{
   Lwjgl3Application,

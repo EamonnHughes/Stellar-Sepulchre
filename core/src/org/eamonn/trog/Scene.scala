@@ -1,4 +1,4 @@
-package org.eamonn.asdfgh
+package org.eamonn.trog
 
 import com.badlogic.gdx.InputAdapter
 import com.badlogic.gdx.graphics.g2d.PolygonSpriteBatch

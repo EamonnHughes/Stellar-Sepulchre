@@ -1,4 +1,4 @@
-package org.eamonn.asdfgh
+package org.eamonn.trog
 package util
 
 import com.badlogic.gdx.Gdx

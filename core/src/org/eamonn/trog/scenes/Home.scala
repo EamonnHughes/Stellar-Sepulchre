@@ -1,9 +1,9 @@
-package org.eamonn.asdfgh
+package org.eamonn.trog
 package scenes
 
 import com.badlogic.gdx.InputAdapter
 import com.badlogic.gdx.graphics.g2d.PolygonSpriteBatch
-import org.eamonn.asdfgh.Scene
+import org.eamonn.trog.Scene
 
 class Home extends Scene {
 

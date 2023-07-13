@@ -1,4 +1,4 @@
-package org.eamonn.asdfgh
+package org.eamonn.trog
 
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Color
@@ -8,8 +8,8 @@ import com.badlogic.gdx.graphics.g2d.{
   GlyphLayout,
   PolygonSpriteBatch
 }
-import org.eamonn.asdfgh.Geometry._
-import org.eamonn.asdfgh.util.GarbageCan
+import org.eamonn.trog.Geometry._
+import org.eamonn.trog.util.GarbageCan
 
 object Text {
   def loadFonts()(implicit garbage: GarbageCan): Unit = {

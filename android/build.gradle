@@ -35,7 +35,7 @@ android {
         exclude 'META-INF/robovm/ios/robovm.xml'
     }
     defaultConfig {
-        applicationId "org.eamonn.asdfgh"
+        applicationId "org.eamonn.trog"
         minSdkVersion 26
         targetSdkVersion 30
         versionCode 1
@@ -105,7 +105,7 @@ task run(type: Exec) {
     }
 
     def adb = path + "/platform-tools/adb"
-    commandLine "$adb", 'shell', 'am', 'start', '-n', 'org.eamonn.asdfgh/org.eamonn.asdfgh.AndroidLauncher'
+    commandLine "$adb", 'shell', 'am', 'start', '-n', 'org.eamonn.trog/org.eamonn.trog.AndroidLauncher'
 }
 
 eclipse.project.name = appName + "-android"

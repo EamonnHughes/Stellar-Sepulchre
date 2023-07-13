@@ -1,4 +1,4 @@
-package org.eamonn.asdfgh.util
+package org.eamonn.trog.util
 
 import com.badlogic.gdx.utils.Disposable
 

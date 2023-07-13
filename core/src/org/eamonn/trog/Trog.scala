@@ -1,4 +1,4 @@
-package org.eamonn.asdfgh
+package org.eamonn.trog
 
 import com.badlogic.gdx.Application.ApplicationType
 import com.badlogic.gdx.audio.Sound
@@ -6,8 +6,8 @@ import com.badlogic.gdx.graphics.g2d.PolygonSpriteBatch
 import com.badlogic.gdx.math.Matrix4
 import com.badlogic.gdx.utils.ScreenUtils
 import com.badlogic.gdx.{ApplicationAdapter, Gdx, Input}
-import org.eamonn.asdfgh.scenes.Home
-import org.eamonn.asdfgh.util.{GarbageCan, TextureWrapper}
+import org.eamonn.trog.scenes.Home
+import org.eamonn.trog.util.{GarbageCan, TextureWrapper}
 
 class Trog extends ApplicationAdapter {
   import Trog.garbage
