@@ -3,14 +3,13 @@ package org.eamonn
 import com.badlogic.gdx.Gdx.input
 import com.badlogic.gdx.Input.Peripheral
 import com.badlogic.gdx.graphics.Color
-import org.eamonn.asdfgh.util.Vec2
 
 import java.util.concurrent.TimeUnit
 import scala.concurrent.duration.FiniteDuration
 import scala.util.Random
 
 // Things kinda stolen from scaloi
-package object asdfgh {
+package object trog {
   def d(die: Int): Int = Random.nextInt(die) + 1
   def d(nOd: Int, die: Int): Int = {
     var amt = 0
