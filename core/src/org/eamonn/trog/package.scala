@@ -17,7 +17,7 @@ package object trog {
     amt
   }
 
-  def screenUnit: Float = (Geometry.ScreenWidth min Geometry.ScreenHeight) / 40
+  def screenUnit: Float = (Geometry.ScreenWidth min Geometry.ScreenHeight) / 20
 
   def compassAvailable: Boolean =
     input.isPeripheralAvailable(Peripheral.Compass)

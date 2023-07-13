@@ -58,7 +58,6 @@ class Trog extends ApplicationAdapter {
 object Trog {
   implicit val garbage: GarbageCan = new GarbageCan
 
-  def screenUnit = (Geometry.ScreenWidth min Geometry.ScreenHeight) / 40
   var sound: Sound = _
   var Square: TextureWrapper = _
   var Circle: TextureWrapper = _
