@@ -12,10 +12,10 @@ import scala.util.Random
 object MapGeneration {
 
   val tileZero = tileType(
-    down = "000",
-    left = "000",
-    right = "000",
-    up = "000",
+    down = "111",
+    left = "111",
+    right = "111",
+    up = "111",
     texture = TextureWrapper.load("dungeontiles/0.png")
   )
   val tileOne = tileType(
@@ -26,10 +26,10 @@ object MapGeneration {
     texture = TextureWrapper.load("dungeontiles/1.png")
   )
   val tileTwo = tileType(
-    down = "111",
-    left = "111",
-    right = "111",
-    up = "111",
+    down = "000",
+    left = "000",
+    right = "000",
+    up = "000",
     texture = TextureWrapper.load("dungeontiles/2.png")
   )
   val tileThree = tileType(
@@ -40,10 +40,10 @@ object MapGeneration {
     texture = TextureWrapper.load("dungeontiles/3.png")
   )
   val tileFour = tileType(
-    down = "001",
+    down = "111",
     left = "111",
-    right = "100",
-    up = "111",
+    right = "001",
+    up = "100",
     texture = TextureWrapper.load("dungeontiles/4.png")
   )
   val tileFive = tileType(
@@ -55,6 +55,11 @@ object MapGeneration {
   )
 
   val tiles: List[tileType] = List(
+    tileZero,
+    tileZero,
+    tileZero,
+    tileZero,
+    tileZero,
     tileZero,
     tileOne,
     tileTwo,
@@ -70,7 +75,7 @@ object MapGeneration {
     tileFour.rotateTile(3),
     tileFive.rotateTile(1),
     tileFive.rotateTile(2),
-    tileFive.rotateTile(3),
+    tileFive.rotateTile(3)
   )
 
   def generateNewGrid(genMap: GeneratedMap): Array[gridItem] = {
@@ -109,6 +114,8 @@ object MapGeneration {
           tiles(optionDown).up == tiles(optionAvailable).down.reverse
         )
       )
+    } else if (availOptions.isEmpty) {
+      availOptions = List(0)
     } else {
       availOptions = List(availOptions(Random.nextInt(availOptions.length)))
     }
@@ -120,6 +127,8 @@ object MapGeneration {
           tiles(optionLeft).right == tiles(optionAvailable).left.reverse
         )
       )
+    } else if (availOptions.isEmpty) {
+      availOptions = List(0)
     } else {
       availOptions = List(availOptions(Random.nextInt(availOptions.length)))
     }
@@ -132,6 +141,8 @@ object MapGeneration {
         )
       )
 
+    } else if (availOptions.isEmpty) {
+      availOptions = List(0)
     } else {
       availOptions = List(availOptions(Random.nextInt(availOptions.length)))
     }
@@ -143,6 +154,8 @@ object MapGeneration {
           tiles(optionUp).down == tiles(optionAvailable).up.reverse
         )
       )
+    } else if (availOptions.isEmpty) {
+      availOptions = List(0)
     } else {
       availOptions = List(availOptions(Random.nextInt(availOptions.length)))
     }
@@ -218,7 +231,7 @@ case class GeneratedMap(dimensions: Int) {
   }
   var grid: Array[gridItem] = _
   def generate(): Unit = {
-    grid = Array.fill(dimensions*dimensions)(
+    grid = Array.fill(dimensions * dimensions)(
       gridItem(collapsed = false, MapGeneration.getAllTileNumbers)
     )
     while (grid.exists(item => !item.collapsed)) {
