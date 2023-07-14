@@ -17,7 +17,11 @@ package object trog {
     amt
   }
 
-  def screenUnit: Float = (Geometry.ScreenWidth min Geometry.ScreenHeight) / 20
+  case class Vec2(var x: Int, var y: Int){
+
+  }
+
+  def screenUnit: Float = (Geometry.ScreenWidth min Geometry.ScreenHeight) / 40
 
   def compassAvailable: Boolean =
     input.isPeripheralAvailable(Peripheral.Compass)
