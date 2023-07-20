@@ -37,10 +37,9 @@ class Trog extends ApplicationAdapter {
     val delta = Gdx.graphics.getDeltaTime
     scene.update(delta) foreach setScene
     ScreenUtils.clear(0f, 0f, 0f, 1)
-    batch.setTransformMatrix(idMatrix)
     batch.begin()
+    batch.getTransformMatrix.setToTranslation(Trog.translationX*screenUnit, Trog.translationY*screenUnit, 0)
     scene.render(batch)
-
     batch.end()
   }
 
@@ -61,6 +60,8 @@ object Trog {
   var sound: Sound = _
   var Square: TextureWrapper = _
   var Circle: TextureWrapper = _
+  var translationX = 0
+  var translationY = 0
 
   def mobile: Boolean = isMobile(Gdx.app.getType)
 
