@@ -25,18 +25,10 @@ class HomeControl(home: Home) extends InputAdapter {
   }
 
   override def keyUp(keycode: Int): Boolean = {
-    if(keycode == Keys.W) {
-      home.cameraLocation.y -= 1
+    if(keycode == Keys.ENTER) {
+      home.player.ready = true
     }
-    if (keycode == Keys.S) {
-      home.cameraLocation.y += 1
-    }
-    if (keycode == Keys.A) {
-      home.cameraLocation.x += 1
-    }
-    if (keycode == Keys.D) {
-      home.cameraLocation.x -= 1
-    }
+
     true
   }
 }

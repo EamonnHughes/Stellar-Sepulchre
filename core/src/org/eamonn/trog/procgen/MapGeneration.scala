@@ -22,9 +22,10 @@ object MapGeneration {
   }
 }
 
-case class GeneratedMap(dimensions: Int) {
+case class GeneratedMap(dimensions: Int, roomMin: Int, roomMax: Int, roomDensity: Float) {
 
   var rooms: List[Room] = List.empty
+  var mainRooms: List[Room] = List.empty
   var connections: List[Connection] = List.empty
 
   def draw(batch: PolygonSpriteBatch): Unit = {
@@ -37,9 +38,7 @@ case class GeneratedMap(dimensions: Int) {
         r.size.x * screenUnit,
         r.size.y * screenUnit
       )
-      if (connections.exists(c => { c.rooms._1 == r || c.rooms._2 == r })) {
-        batch.setColor(Color.GREEN)
-      } else { batch.setColor(Color.WHITE) }
+      batch.setColor(Color.WHITE)
       batch.draw(
         Trog.Square,
         r.location.x * screenUnit + 1f,
@@ -84,10 +83,7 @@ case class GeneratedMap(dimensions: Int) {
             r.getAllTiles.foreach(t => level.walkables = t :: level.walkables)
           })
           if (
-            r2.getAllTiles.exists(t2 => {
-              r.getAllTiles
-                .exists(t => Pathfinding.findPath(t, t2, level).nonEmpty)
-            })
+              Pathfinding.findPath(r.location, r2.location, level).nonEmpty
           ) connections = Connection((r, r2)) :: connections
         })
     })
@@ -95,11 +91,11 @@ case class GeneratedMap(dimensions: Int) {
   def generate(): Boolean = {
     var done = true
 
-    sAdjC()
     //creates rooms
     if (rooms.isEmpty) {
       done = false
-      for (i <- 0 until (dimensions / 2).toInt) {
+      for (i <- 0 until (dimensions * roomDensity).toInt) {
+        var scale = roomMin + Random.nextInt((roomMax - roomMin)/2)
         var size: Vec2 = Vec2(-100, -100)
         var location: Vec2 = Vec2(-100, -100)
         var tick = 0
@@ -108,7 +104,7 @@ case class GeneratedMap(dimensions: Int) {
             t => rooms.exists(r => r.getAllTiles.contains(t))
           )) && tick <= 1000
         ) {
-          size = Vec2(1 + Random.nextInt(4), 1 + Random.nextInt(4))
+          size = Vec2(scale + Random.nextInt((roomMax - roomMin)/2), scale + Random.nextInt((roomMax - roomMin)/2))
           location = Vec2(
             Random.nextInt(dimensions - size.x),
             Random.nextInt(dimensions - size.y)
@@ -116,6 +112,7 @@ case class GeneratedMap(dimensions: Int) {
           tick += 1
         }
         rooms = Room(location, size) :: rooms
+        mainRooms = Room(location, size) :: mainRooms
       }
     }
 
@@ -125,38 +122,23 @@ case class GeneratedMap(dimensions: Int) {
     if (!isTotallyConnected) {
       done = false
       connectTick += 1
-      var r = rooms.minBy(r =>
+      var r = mainRooms.minBy(r =>
         connections.count(c => c.rooms._1 == r || c.rooms._2 == r)
       )
-      var cAbleRooms = rooms.filterNot(r2 => {
-        r2 == r || connectedTo(r, r2) || connectedTo(r2, r)
-      })
-      var r2 = cAbleRooms.minBy(r2 => {
-        var shortestPath: Option[Path] = None
-        r.getAllTiles.foreach(rT =>
-          r2.getAllTiles.foreach(r2T => {
-            var path =
-              Pathfinding.findPath(rT, r2T, fullyWalkableLevel(dimensions))
-            path.foreach(p => {
-              if (shortestPath.nonEmpty) {
-                if ((p.list.length < shortestPath.head.list.length))
-                  shortestPath = Some(p)
-              } else {
-                shortestPath = Some(p)
-              }
-            })
-          })
+      var r2 = mainRooms
+        .filterNot(r2 => {
+          r2 == r || connectedTo(r, r2) || connectedTo(r2, r)
+        }).minBy(r2 => {
+        Math.sqrt(
+          ((r2.location.x - r.location.x) * (r2.location.x - r.location.x)) + ((r2.location.y - r.location.y) * (r2.location.y - r.location.y))
         )
-        if (shortestPath.nonEmpty) shortestPath.head.list.length
-        else Int.MaxValue
       })
       var shortestPath: Option[Path] = None
-      r.getAllTiles.foreach(rT =>
-        r2.getAllTiles.foreach(r2T => {
+      r.getAllOnBorder.foreach(rT =>
+        r2.getAllOnBorder.foreach(r2T => {
           var path =
             Pathfinding.findPath(rT, r2T, fullyWalkableLevel(dimensions))
           path.foreach(p => {
-            println(path)
             if (shortestPath.nonEmpty) {
               if ((p.list.length < shortestPath.head.list.length))
                 shortestPath = Some(p)
@@ -167,23 +149,18 @@ case class GeneratedMap(dimensions: Int) {
         })
       )
       shortestPath.foreach(sp => {
-        println(shortestPath)
         sp.list.foreach(spL =>
           if (!rooms.exists(r => r.getAllTiles.contains(spL.copy()))) {
             rooms = Room(spL.copy(), Vec2(1, 1)) :: rooms
-            sAdjC()
           }
         )
       })
     }
-    //sets adjacent rooms as connected
-
-    sAdjC()
     done
   }
 
-  def isTotallyConnected: Boolean = rooms.forall(r =>
-    rooms.forall(r2 => {
+  def isTotallyConnected: Boolean = mainRooms.forall(r =>
+    mainRooms.forall(r2 => {
       connectedTo(r, r2)
     })
   )
@@ -221,6 +198,13 @@ case class Room(location: Vec2, size: Vec2) {
         tiles = Vec2(x, y) :: tiles
       }
     }
+    tiles
+  }
+  def getAllOnBorder: List[Vec2] = {
+    var tiles = List.empty[Vec2]
+    getAllTiles.foreach(t => {
+      if(t.getAdjacents.exists(a => !getAllTiles.contains(a))) tiles = t :: tiles
+    })
     tiles
   }
 
