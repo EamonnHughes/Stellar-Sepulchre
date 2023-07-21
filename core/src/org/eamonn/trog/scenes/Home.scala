@@ -20,6 +20,6 @@ class Home extends Scene {
 
   override def render(batch: PolygonSpriteBatch): Unit = {
     Text.mediumFont.setColor(Color.WHITE)
-    Text.mediumFont.draw(batch, "Descend: [ENTER]", Geometry.ScreenWidth/2, Geometry.ScreenHeight)
+    Text.mediumFont.draw(batch, "Descend: [ENTER]", 0, Geometry.ScreenHeight/2)
   }
 }

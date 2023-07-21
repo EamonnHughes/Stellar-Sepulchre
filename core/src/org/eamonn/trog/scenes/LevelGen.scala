@@ -19,19 +19,27 @@ class LevelGen(player: Player) extends Scene {
     new LevelGenControl(this)
   }
   override def update(delta: Float): Option[Scene] = {
-    if (!doneGenerating) { doneGenerating = genMap.generate() } else {
-      if(level.walkables.isEmpty) {
+    if (!doneGenerating) { doneGenerating = genMap.generate() }
+    else {
+      if (level.walkables.isEmpty) {
         level = genMap.doExport()
-        player.location = level.walkables(Random.nextInt(level.walkables.length)).copy()
+        player.location =
+          level.walkables(Random.nextInt(level.walkables.length)).copy()
       }
     }
-    if(doneGenerating && level.walkables.nonEmpty) Some(new Game(level, player)) else None
+    if (doneGenerating && level.walkables.nonEmpty)
+      Some(new Game(level, player))
+    else None
   }
 
   override def render(batch: PolygonSpriteBatch): Unit = {
     Text.mediumFont.setColor(Color.WHITE)
-    Text.mediumFont.draw(batch, "Generating Floor", Geometry.ScreenWidth/2, Geometry.ScreenHeight)
+    Text.mediumFont.draw(
+      batch,
+      "Generating Floor",
+      0,
+      Geometry.ScreenHeight / 2
+    )
   }
 }
-class LevelGenControl(gen: LevelGen) extends InputAdapter {
-}
+class LevelGenControl(gen: LevelGen) extends InputAdapter {}
