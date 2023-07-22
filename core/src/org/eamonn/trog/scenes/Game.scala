@@ -7,12 +7,14 @@ import com.badlogic.gdx.graphics.g2d.PolygonSpriteBatch
 import org.eamonn.trog.Scene
 import org.eamonn.trog.procgen.{GeneratedMap, Level}
 
-class Game(level: Level, plr: Player) extends Scene {
+class Game(lvl: Level, plr: Player) extends Scene {
+  var level: Level = lvl
   var player: Player = plr
   var cameraLocation: Vec2 = Vec2(0, 0)
   var updatingCameraX = false
   var updatingCameraY = false
   override def init(): InputAdapter = {
+    player.game = this
     new GameControl(this)
   }
 
@@ -43,7 +45,8 @@ class Game(level: Level, plr: Player) extends Scene {
     if (
       player.location.y < -cameraLocation.y + 5 || player.location.y > -cameraLocation.y + (Geometry.ScreenHeight / screenUnit) - 5
     ) updatingCameraY = true
-      if (updatingCameraX || updatingCameraY) updateCamera()
+    if (updatingCameraX || updatingCameraY) updateCamera()
+    player.update(delta)
     None
   }
 
@@ -56,16 +59,22 @@ class Game(level: Level, plr: Player) extends Scene {
 }
 class GameControl(game: Game) extends InputAdapter {
   override def keyUp(keycode: Int): Boolean = {
-    if (keycode == Keys.UP) game.cameraLocation.y -= 1
-    if (keycode == Keys.DOWN) game.cameraLocation.y += 1
-    if (keycode == Keys.LEFT) game.cameraLocation.x += 1
-    if (keycode == Keys.RIGHT) game.cameraLocation.x -= 1
-
-    if (keycode == Keys.S) game.player.location.y -= 1
-    if (keycode == Keys.W) game.player.location.y += 1
-    if (keycode == Keys.D) game.player.location.x += 1
-    if (keycode == Keys.A) game.player.location.x -= 1
-
+    if (keycode == Keys.S) {
+      game.player.destination.y = game.player.location.y - 1
+      game.player.destination.x = game.player.location.x
+    }
+    if (keycode == Keys.W) {
+      game.player.destination.y = game.player.location.y + 1
+      game.player.destination.x = game.player.location.x
+    }
+    if (keycode == Keys.D) {
+      game.player.destination.x = game.player.location.x + 1
+      game.player.destination.y = game.player.location.y
+    }
+    if (keycode == Keys.A) {
+      game.player.destination.x = game.player.location.x - 1
+      game.player.destination.y = game.player.location.y
+    }
     true
   }
 }

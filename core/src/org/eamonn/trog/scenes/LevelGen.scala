@@ -25,6 +25,8 @@ class LevelGen(player: Player) extends Scene {
         level = genMap.doExport()
         player.location =
           level.walkables(Random.nextInt(level.walkables.length)).copy()
+        player.destination =
+          level.walkables(Random.nextInt(level.walkables.length)).copy()
       }
     }
     if (doneGenerating && level.walkables.nonEmpty)
