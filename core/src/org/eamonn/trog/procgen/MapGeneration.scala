@@ -24,7 +24,12 @@ object MapGeneration {
   }
 }
 
-case class GeneratedMap(dimensions: Int, roomMin: Int, roomMax: Int, roomDensity: Float) {
+case class GeneratedMap(
+    dimensions: Int,
+    roomMin: Int,
+    roomMax: Int,
+    roomDensity: Float
+) {
 
   var rooms: List[Room] = List.empty
   var mainRooms: List[Room] = List.empty
@@ -84,9 +89,8 @@ case class GeneratedMap(dimensions: Int, roomMin: Int, roomMax: Int, roomDensity
           rooms.foreach(r => {
             r.getAllTiles.foreach(t => level.walkables = t :: level.walkables)
           })
-          if (
-              Pathfinding.findHalfPath(r.location, r2.location, level).nonEmpty
-          ) connections = Connection((r, r2)) :: connections
+          if (Pathfinding.findHalfPath(r.location, r2.location, level).nonEmpty)
+            connections = Connection((r, r2)) :: connections
         })
     })
   }
@@ -97,7 +101,7 @@ case class GeneratedMap(dimensions: Int, roomMin: Int, roomMax: Int, roomDensity
     if (rooms.isEmpty) {
       done = false
       for (i <- 0 until (dimensions * roomDensity).toInt) {
-        var scale = roomMin + Random.nextInt((roomMax - roomMin)/2)
+        var scale = roomMin + Random.nextInt((roomMax - roomMin) / 2)
         var size: Vec2 = Vec2(-100, -100)
         var location: Vec2 = Vec2(-100, -100)
         var tick = 0
@@ -106,7 +110,10 @@ case class GeneratedMap(dimensions: Int, roomMin: Int, roomMax: Int, roomDensity
             t => rooms.exists(r => r.getAllTiles.contains(t))
           )) && tick <= 1000
         ) {
-          size = Vec2(scale + Random.nextInt((roomMax - roomMin)/2), scale + Random.nextInt((roomMax - roomMin)/2))
+          size = Vec2(
+            scale + Random.nextInt((roomMax - roomMin) / 2),
+            scale + Random.nextInt((roomMax - roomMin) / 2)
+          )
           location = Vec2(
             Random.nextInt(dimensions - size.x),
             Random.nextInt(dimensions - size.y)
@@ -130,11 +137,12 @@ case class GeneratedMap(dimensions: Int, roomMin: Int, roomMax: Int, roomDensity
       var r2 = mainRooms
         .filterNot(r2 => {
           r2 == r || connectedTo(r, r2) || connectedTo(r2, r)
-        }).minBy(r2 => {
-        Math.sqrt(
-          ((r2.location.x - r.location.x) * (r2.location.x - r.location.x)) + ((r2.location.y - r.location.y) * (r2.location.y - r.location.y))
-        )
-      })
+        })
+        .minBy(r2 => {
+          Math.sqrt(
+            ((r2.location.x - r.location.x) * (r2.location.x - r.location.x)) + ((r2.location.y - r.location.y) * (r2.location.y - r.location.y))
+          )
+        })
       var shortestPath: Option[Path] = None
       r.getAllOnBorder.foreach(rT =>
         r2.getAllOnBorder.foreach(r2T => {
@@ -186,6 +194,16 @@ case class GeneratedMap(dimensions: Int, roomMin: Int, roomMax: Int, roomDensity
     rooms.foreach(r => {
       r.getAllTiles.foreach(t => level.walkables = t :: level.walkables)
     })
+    level.upLadder =
+      level.walkables(Random.nextInt(level.walkables.length)).copy()
+    level.downLadder = level.walkables
+      .filterNot(w => w == level.upLadder)(
+        Random.nextInt(
+          level.walkables.filterNot(w => w == level.upLadder).length
+        )
+      )
+      .copy()
+
     level.dimensions = dimensions
     level
   }
@@ -205,7 +223,8 @@ case class Room(location: Vec2, size: Vec2) {
   def getAllOnBorder: List[Vec2] = {
     var tiles = List.empty[Vec2]
     getAllTiles.foreach(t => {
-      if(t.getHalfAdjacents.exists(a => !getAllTiles.contains(a))) tiles = t :: tiles
+      if (t.getHalfAdjacents.exists(a => !getAllTiles.contains(a)))
+        tiles = t :: tiles
     })
     tiles
   }
@@ -228,6 +247,10 @@ case class Connection(rooms: (Room, Room)) {
 
 class Level {
   var floor: TextureWrapper = TextureWrapper.load("floortile.png")
+  var ladderUp: TextureWrapper = TextureWrapper.load("ladderup.png")
+  var ladderDown: TextureWrapper = TextureWrapper.load("ladderdown.png")
+  var downLadder: Vec2 = _
+  var upLadder: Vec2 = _
   var wall: TextureWrapper = TextureWrapper.load("walltile.png")
   var dimensions = 0
   var walkables: List[Vec2] = List.empty
@@ -235,7 +258,7 @@ class Level {
     walkables.foreach(w => {
       batch.setColor(Color.WHITE)
       w.getAdjacents.foreach(a => {
-        if(!walkables.contains(a)) {
+        if (!walkables.contains(a)) {
           batch.draw(
             wall,
             a.x * screenUnit,
@@ -253,5 +276,8 @@ class Level {
         screenUnit
       )
     })
+    batch.draw(ladderUp, upLadder.x * screenUnit, upLadder.y * screenUnit, screenUnit, screenUnit)
+    batch.draw(ladderDown, downLadder.x * screenUnit, downLadder.y * screenUnit, screenUnit, screenUnit)
+
   }
 }

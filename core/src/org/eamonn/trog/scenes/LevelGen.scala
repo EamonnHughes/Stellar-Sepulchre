@@ -9,7 +9,7 @@ import org.eamonn.trog.procgen.{GeneratedMap, Level}
 
 import scala.util.Random
 
-class LevelGen(player: Player) extends Scene {
+class LevelGen(player: Player, game: Option[Game]) extends Scene {
   var cameraLocation: Vec2 = Vec2(0, 0)
   var genMap = GeneratedMap(45, 6, 10, .25f)
   var doneGenerating = false
@@ -23,15 +23,22 @@ class LevelGen(player: Player) extends Scene {
     else {
       if (level.walkables.isEmpty) {
         level = genMap.doExport()
-        player.location =
-          level.walkables(Random.nextInt(level.walkables.length)).copy()
-        player.destination =
-          level.walkables(Random.nextInt(level.walkables.length)).copy()
+        player.location = level.upLadder.copy()
+        player.destination = level.upLadder.copy()
       }
     }
-    if (doneGenerating && level.walkables.nonEmpty)
-      Some(new Game(level, player))
-    else None
+    var gameNew = new Game(level, player)
+    if (game.nonEmpty) {
+      game.foreach(g => {
+        gameNew = g
+      })
+    }
+    gameNew.descending = false
+    gameNew.level = level
+
+    if (doneGenerating && level.walkables.nonEmpty) {
+      Some(gameNew)
+    } else None
   }
 
   override def render(batch: PolygonSpriteBatch): Unit = {

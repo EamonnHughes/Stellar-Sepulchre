@@ -8,6 +8,9 @@ import org.eamonn.trog.scenes.Game
 import org.eamonn.trog.util.TextureWrapper
 
 case class Player() {
+  def tryToGoDown(): Unit = {
+    if (location == game.level.downLadder) game.descending = true
+  }
   var playerIcon: TextureWrapper = TextureWrapper.load("charv1.png")
   var game: Game = _
   var ready = false
@@ -33,7 +36,7 @@ case class Player() {
         tick = 0f
       }
     }
-    if(yourTurn){
+    if (yourTurn) {
       if (game.keysDown.contains(Keys.S)) {
         destination.y = location.y - 1
         destination.x = location.x
@@ -46,10 +49,16 @@ case class Player() {
       } else if (game.keysDown.contains(Keys.A)) {
         destination.y = location.y
         destination.x = location.x - 1
-      } else if(game.keysDown.contains(Keys.SPACE)){
+      } else if (game.keysDown.contains(Keys.SPACE)) {
         yourTurn = false
-      } else if(game.clicked) {
+      } else if (game.clicked) {
         destination = game.mouseLocOnGrid.copy()
+      } else if (
+        game.keysDown.contains(Keys.PERIOD) && (game.keysDown.contains(
+          Keys.SHIFT_RIGHT
+        ) || game.keysDown.contains(Keys.SHIFT_LEFT))
+      ) {
+        tryToGoDown()
       }
     }
     if (destination != location && yourTurn) {

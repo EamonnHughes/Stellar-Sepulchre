@@ -10,6 +10,7 @@ import org.eamonn.trog.procgen.{GeneratedMap, Level}
 class Game(lvl: Level, plr: Player) extends Scene {
   var keysDown: List[Int] = List.empty
   var level: Level = lvl
+  var descending = false
   var player: Player = plr
   var cameraLocation: Vec2 = Vec2(0, 0)
   var updatingCameraX = false
@@ -50,7 +51,9 @@ class Game(lvl: Level, plr: Player) extends Scene {
     ) updatingCameraY = true
     if (updatingCameraX || updatingCameraY) updateCamera()
     player.update(delta)
-    None
+    if (descending) Some(new LevelGen(player, Some(this)))
+    else
+      None
   }
 
   override def render(batch: PolygonSpriteBatch): Unit = {

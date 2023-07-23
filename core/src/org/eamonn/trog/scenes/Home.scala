@@ -15,7 +15,7 @@ class Home extends Scene {
   }
   override def update(delta: Float): Option[Scene] = {
 
-    if(player.ready) Some(new LevelGen(player)) else None
+    if(player.ready) Some(new LevelGen(player, None)) else None
   }
 
   override def render(batch: PolygonSpriteBatch): Unit = {
