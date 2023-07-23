@@ -3,6 +3,7 @@ package scenes
 
 import com.badlogic.gdx.Input.Keys
 import com.badlogic.gdx.InputAdapter
+import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.g2d.PolygonSpriteBatch
 import org.eamonn.trog.Scene
 import org.eamonn.trog.procgen.{GeneratedMap, Level}
@@ -61,6 +62,14 @@ class Game(lvl: Level, plr: Player) extends Scene {
     Trog.translationY = cameraLocation.y
     level.draw(batch)
     player.draw(batch)
+    drawUI(batch)
+  }
+
+  def drawUI(batch: PolygonSpriteBatch): Unit = {
+    batch.setColor(Color.RED)
+    batch.draw(Trog.Square, -Trog.translationX*screenUnit, -Trog.translationY*screenUnit + Geometry.ScreenHeight - (screenUnit * 3/2), screenUnit*4*(player.currentHealth/player.maxHealth), screenUnit/2 )
+    batch.setColor(Color.WHITE)
+    Text.smallFont.draw(batch, s"${player.currentHealth}/${player.maxHealth}", -Trog.translationX*screenUnit, -Trog.translationY*screenUnit + Geometry.ScreenHeight - screenUnit)
   }
 }
 class GameControl(game: Game) extends InputAdapter {

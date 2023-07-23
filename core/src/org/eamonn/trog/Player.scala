@@ -11,6 +11,8 @@ case class Player() {
   def tryToGoDown(): Unit = {
     if (location == game.level.downLadder) game.descending = true
   }
+  var maxHealth = 100
+  var currentHealth = maxHealth
   var playerIcon: TextureWrapper = TextureWrapper.load("charv1.png")
   var game: Game = _
   var ready = false
