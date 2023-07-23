@@ -18,7 +18,7 @@ package object trog {
   }
 
   case class Vec2(var x: Int, var y: Int){
-      def getAdjacents: List[Vec2] = {
+      def getHalfAdjacents: List[Vec2] = {
         List(
           Vec2(x, y - 1),
           Vec2(x, y + 1),
@@ -30,9 +30,22 @@ package object trog {
     //      Vec2(x + 1, y + 1)
         )
       }
+
+    def getAdjacents: List[Vec2] = {
+      List(
+        Vec2(x, y - 1),
+        Vec2(x, y + 1),
+        Vec2(x - 1, y),
+        Vec2(x + 1, y),
+        Vec2(x - 1, y - 1),
+        Vec2(x - 1, y + 1),
+        Vec2(x + 1, y - 1),
+        Vec2(x + 1, y + 1)
+      )
+    }
   }
 
-  def screenUnit: Float = (Geometry.ScreenWidth min Geometry.ScreenHeight) / 30
+  def screenUnit: Float = (Geometry.ScreenWidth min Geometry.ScreenHeight) / 20
 
   def compassAvailable: Boolean =
     input.isPeripheralAvailable(Peripheral.Compass)

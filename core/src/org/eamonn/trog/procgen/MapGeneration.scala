@@ -3,7 +3,9 @@ package org.eamonn.trog.procgen
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.g2d.PolygonSpriteBatch
 import jdk.javadoc.internal.doclets.formats.html.markup.Navigation
+import org.eamonn.trog.Trog.garbage
 import org.eamonn.trog.procgen.MapGeneration.fullyWalkableLevel
+import org.eamonn.trog.util.TextureWrapper
 import org.eamonn.trog.{Path, Pathfinding, Trog, Vec2, connectPath, screenUnit}
 
 import scala.collection.mutable
@@ -83,7 +85,7 @@ case class GeneratedMap(dimensions: Int, roomMin: Int, roomMax: Int, roomDensity
             r.getAllTiles.foreach(t => level.walkables = t :: level.walkables)
           })
           if (
-              Pathfinding.findPath(r.location, r2.location, level).nonEmpty
+              Pathfinding.findHalfPath(r.location, r2.location, level).nonEmpty
           ) connections = Connection((r, r2)) :: connections
         })
     })
@@ -137,7 +139,7 @@ case class GeneratedMap(dimensions: Int, roomMin: Int, roomMax: Int, roomDensity
       r.getAllOnBorder.foreach(rT =>
         r2.getAllOnBorder.foreach(r2T => {
           var path =
-            Pathfinding.findPath(rT, r2T, fullyWalkableLevel(dimensions))
+            Pathfinding.findHalfPath(rT, r2T, fullyWalkableLevel(dimensions))
           path.foreach(p => {
             if (shortestPath.nonEmpty) {
               if ((p.list.length < shortestPath.head.list.length))
@@ -203,7 +205,7 @@ case class Room(location: Vec2, size: Vec2) {
   def getAllOnBorder: List[Vec2] = {
     var tiles = List.empty[Vec2]
     getAllTiles.foreach(t => {
-      if(t.getAdjacents.exists(a => !getAllTiles.contains(a))) tiles = t :: tiles
+      if(t.getHalfAdjacents.exists(a => !getAllTiles.contains(a))) tiles = t :: tiles
     })
     tiles
   }
@@ -225,13 +227,26 @@ case class Connection(rooms: (Room, Room)) {
 }
 
 class Level {
+  var floor: TextureWrapper = TextureWrapper.load("floortile.png")
+  var wall: TextureWrapper = TextureWrapper.load("walltile.png")
   var dimensions = 0
   var walkables: List[Vec2] = List.empty
   def draw(batch: PolygonSpriteBatch): Unit = {
     walkables.foreach(w => {
       batch.setColor(Color.WHITE)
+      w.getAdjacents.foreach(a => {
+        if(!walkables.contains(a)) {
+          batch.draw(
+            wall,
+            a.x * screenUnit,
+            a.y * screenUnit,
+            screenUnit,
+            screenUnit
+          )
+        }
+      })
       batch.draw(
-        Trog.Square,
+        floor,
         w.x * screenUnit,
         w.y * screenUnit,
         screenUnit,

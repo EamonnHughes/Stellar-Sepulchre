@@ -8,11 +8,14 @@ import org.eamonn.trog.Scene
 import org.eamonn.trog.procgen.{GeneratedMap, Level}
 
 class Game(lvl: Level, plr: Player) extends Scene {
+  var keysDown: List[Int] = List.empty
   var level: Level = lvl
   var player: Player = plr
   var cameraLocation: Vec2 = Vec2(0, 0)
   var updatingCameraX = false
   var updatingCameraY = false
+  var clicked = false
+  var mouseLocOnGrid: Vec2 = Vec2(0, 0)
   override def init(): InputAdapter = {
     player.game = this
     new GameControl(this)
@@ -58,23 +61,40 @@ class Game(lvl: Level, plr: Player) extends Scene {
   }
 }
 class GameControl(game: Game) extends InputAdapter {
+  override def keyDown(keycode: Int): Boolean = {
+    game.keysDown = keycode :: game.keysDown
+    true
+  }
   override def keyUp(keycode: Int): Boolean = {
-    if (keycode == Keys.S) {
-      game.player.destination.y = game.player.location.y - 1
-      game.player.destination.x = game.player.location.x
-    }
-    if (keycode == Keys.W) {
-      game.player.destination.y = game.player.location.y + 1
-      game.player.destination.x = game.player.location.x
-    }
-    if (keycode == Keys.D) {
-      game.player.destination.x = game.player.location.x + 1
-      game.player.destination.y = game.player.location.y
-    }
-    if (keycode == Keys.A) {
-      game.player.destination.x = game.player.location.x - 1
-      game.player.destination.y = game.player.location.y
-    }
+    game.keysDown = game.keysDown.filterNot(f => f == keycode)
+    true
+  }
+
+  override def mouseMoved(screenX: Int, screenY: Int): Boolean = {
+    game.mouseLocOnGrid.x =
+      (screenX / screenUnit).floor.toInt - game.cameraLocation.x
+    game.mouseLocOnGrid.y =
+      ((Geometry.ScreenHeight - screenY) / screenUnit).floor.toInt - game.cameraLocation.y
+    true
+  }
+
+  override def touchDown(
+      screenX: Int,
+      screenY: Int,
+      pointer: Int,
+      button: Int
+  ): Boolean = {
+    game.clicked = true
+    true
+  }
+
+  override def touchUp(
+      screenX: Int,
+      screenY: Int,
+      pointer: Int,
+      button: Int
+  ): Boolean = {
+    game.clicked = false
     true
   }
 }

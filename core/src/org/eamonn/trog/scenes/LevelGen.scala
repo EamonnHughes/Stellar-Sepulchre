@@ -38,7 +38,7 @@ class LevelGen(player: Player) extends Scene {
     Text.mediumFont.setColor(Color.WHITE)
     Text.mediumFont.draw(
       batch,
-      "Generating Floor",
+      "Generating Floor...",
       0,
       Geometry.ScreenHeight / 2
     )
