@@ -11,6 +11,8 @@ case class Player() {
   def tryToGoDown(): Unit = {
     if (location == game.level.downLadder) game.descending = true
   }
+  var exp = 0
+  var nextExp = 100
   var maxHealth = 100
   var currentHealth = maxHealth
   var playerIcon: TextureWrapper = TextureWrapper.load("charv1.png")
@@ -31,6 +33,10 @@ case class Player() {
     )
   }
   def update(delta: Float) = {
+    if(exp >= nextExp){
+      exp -= nextExp
+      nextExp *= 2
+    }
     if (!yourTurn) {
       tick += delta
       if (tick > .25f) {
@@ -66,7 +72,13 @@ case class Player() {
     if (destination != location && yourTurn) {
       var path = Pathfinding.findPath(location, destination, game.level)
       path.foreach(p => {
-        location = p.list.reverse(1).copy()
+        var dest = p.list.reverse(1).copy()
+        var enemy = game.enemies.filter(e => e.location == dest)
+        if (enemy.isEmpty) { location = dest }
+        else {
+          enemy.head.health -= 1
+          destination = location
+        }
         yourTurn = false
       })
     }

@@ -47,7 +47,7 @@ class Game(lvl: Level, plr: Player) extends Scene {
     }
   }
   override def update(delta: Float): Option[Scene] = {
-    if(enemies.isEmpty){
+    if (enemies.isEmpty) {
       for (i <- 0 until 10) {
         var loc = level.walkables.filterNot(w =>
           player.location == w && enemies.exists(e => e.location == w)
@@ -62,6 +62,8 @@ class Game(lvl: Level, plr: Player) extends Scene {
         )
         var enemy = IceImp()
         enemy.location = loc
+        enemy.game = this
+        enemy.health = enemy.maxHealth
         enemies = enemy :: enemies
       }
     }
@@ -73,6 +75,7 @@ class Game(lvl: Level, plr: Player) extends Scene {
     ) updatingCameraY = true
     if (updatingCameraX || updatingCameraY) updateCamera()
     player.update(delta)
+    enemies.foreach(e => e.update(delta))
     if (descending) Some(new LevelGen(player, Some(this)))
     else
       None
@@ -88,6 +91,30 @@ class Game(lvl: Level, plr: Player) extends Scene {
   }
 
   def drawUI(batch: PolygonSpriteBatch): Unit = {
+    batch.setColor(Color.YELLOW)
+    batch.draw(
+      Trog.Square,
+      -Trog.translationX * screenUnit,
+      -Trog.translationY * screenUnit + Geometry.ScreenHeight - (screenUnit),
+      screenUnit * 4,
+      screenUnit / 8
+    )
+    batch.setColor(Color.ORANGE)
+    batch.draw(
+      Trog.Square,
+      -Trog.translationX * screenUnit,
+      -Trog.translationY * screenUnit + Geometry.ScreenHeight - (screenUnit),
+      screenUnit * 4 * (player.exp/player.nextExp),
+      screenUnit / 8
+    )
+    batch.setColor(Color.FIREBRICK)
+    batch.draw(
+      Trog.Square,
+      -Trog.translationX * screenUnit,
+      -Trog.translationY * screenUnit + Geometry.ScreenHeight - (screenUnit * 3 / 2),
+      screenUnit * 4,
+      screenUnit / 2
+    )
     batch.setColor(Color.RED)
     batch.draw(
       Trog.Square,

@@ -57,7 +57,6 @@ case class Path(list: List[Vec2]) {
   def extendPath(visCells: mutable.Set[Vec2], level: Level): List[Path] = {
     for {
       loc <- list.head.getAdjacents
-      if (loc.x >= 0 && loc.x < level.dimensions && loc.y >= 0 && loc.y < level.dimensions)
       if (visCells.add(loc))
       if (level.walkables.exists(l => l.x == loc.x && l.y == loc.y))
     } yield add(loc)
