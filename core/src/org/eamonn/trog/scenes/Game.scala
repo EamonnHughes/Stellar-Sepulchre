@@ -8,6 +8,8 @@ import com.badlogic.gdx.graphics.g2d.PolygonSpriteBatch
 import org.eamonn.trog.Scene
 import org.eamonn.trog.procgen.{GeneratedMap, Level}
 
+import scala.util.Random
+
 class Game(lvl: Level, plr: Player) extends Scene {
   var keysDown: List[Int] = List.empty
   var level: Level = lvl
@@ -18,6 +20,7 @@ class Game(lvl: Level, plr: Player) extends Scene {
   var updatingCameraY = false
   var clicked = false
   var mouseLocOnGrid: Vec2 = Vec2(0, 0)
+  var enemies: List[Enemy] = List.empty
   override def init(): InputAdapter = {
     player.game = this
     new GameControl(this)
@@ -44,6 +47,24 @@ class Game(lvl: Level, plr: Player) extends Scene {
     }
   }
   override def update(delta: Float): Option[Scene] = {
+    if(enemies.isEmpty){
+      for (i <- 0 until 10) {
+        var loc = level.walkables.filterNot(w =>
+          player.location == w && enemies.exists(e => e.location == w)
+        )(
+          Random.nextInt(
+            level.walkables
+              .filterNot(w =>
+                player.location == w && enemies.exists(e => e.location == w)
+              )
+              .length
+          )
+        )
+        var enemy = IceImp()
+        enemy.location = loc
+        enemies = enemy :: enemies
+      }
+    }
     if (
       player.location.x < -cameraLocation.x + 5 || player.location.x > -cameraLocation.x + (Geometry.ScreenWidth / screenUnit) - 5
     ) updatingCameraX = true
@@ -62,14 +83,26 @@ class Game(lvl: Level, plr: Player) extends Scene {
     Trog.translationY = cameraLocation.y
     level.draw(batch)
     player.draw(batch)
+    enemies.foreach(e => e.draw(batch))
     drawUI(batch)
   }
 
   def drawUI(batch: PolygonSpriteBatch): Unit = {
     batch.setColor(Color.RED)
-    batch.draw(Trog.Square, -Trog.translationX*screenUnit, -Trog.translationY*screenUnit + Geometry.ScreenHeight - (screenUnit * 3/2), screenUnit*4*(player.currentHealth/player.maxHealth), screenUnit/2 )
+    batch.draw(
+      Trog.Square,
+      -Trog.translationX * screenUnit,
+      -Trog.translationY * screenUnit + Geometry.ScreenHeight - (screenUnit * 3 / 2),
+      screenUnit * 4 * (player.currentHealth / player.maxHealth),
+      screenUnit / 2
+    )
     batch.setColor(Color.WHITE)
-    Text.smallFont.draw(batch, s"${player.currentHealth}/${player.maxHealth}", -Trog.translationX*screenUnit, -Trog.translationY*screenUnit + Geometry.ScreenHeight - screenUnit)
+    Text.smallFont.draw(
+      batch,
+      s"${player.currentHealth}/${player.maxHealth}",
+      -Trog.translationX * screenUnit,
+      -Trog.translationY * screenUnit + Geometry.ScreenHeight - screenUnit
+    )
   }
 }
 class GameControl(game: Game) extends InputAdapter {
