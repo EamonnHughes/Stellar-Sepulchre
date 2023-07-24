@@ -104,7 +104,7 @@ class Game(lvl: Level, plr: Player) extends Scene {
       Trog.Square,
       -Trog.translationX * screenUnit,
       -Trog.translationY * screenUnit + Geometry.ScreenHeight - (screenUnit),
-      screenUnit * 4 * (player.exp/player.nextExp),
+      screenUnit * 4 * player.exp/player.nextExp,
       screenUnit / 8
     )
     batch.setColor(Color.FIREBRICK)
@@ -120,7 +120,7 @@ class Game(lvl: Level, plr: Player) extends Scene {
       Trog.Square,
       -Trog.translationX * screenUnit,
       -Trog.translationY * screenUnit + Geometry.ScreenHeight - (screenUnit * 3 / 2),
-      screenUnit * 4 * (player.currentHealth / player.maxHealth),
+      screenUnit * 4 * player.currentHealth / player.maxHealth,
       screenUnit / 2
     )
     batch.setColor(Color.WHITE)

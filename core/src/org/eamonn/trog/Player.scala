@@ -33,7 +33,7 @@ case class Player() {
     )
   }
   def update(delta: Float) = {
-    if(exp >= nextExp){
+    if (exp >= nextExp) {
       exp -= nextExp
       nextExp *= 2
     }
@@ -74,10 +74,10 @@ case class Player() {
       path.foreach(p => {
         var dest = p.list.reverse(1).copy()
         var enemy = game.enemies.filter(e => e.location == dest)
-        if (enemy.isEmpty) { location = dest }
+        if (enemy.isEmpty) { location = dest.copy() }
         else {
           enemy.head.health -= 1
-          destination = location
+          destination = location.copy()
         }
         yourTurn = false
       })

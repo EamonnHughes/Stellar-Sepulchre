@@ -9,13 +9,13 @@ import org.eamonn.trog.util.TextureWrapper
 trait Enemy {
   var game: Game
   var location: Vec2 = Vec2(0, 0)
-  var health: Int = _
-  var maxHealth: Int
+  var health: Int = Int.MaxValue
+  val maxHealth: Int
   var texture: TextureWrapper
   def update(delta: Float): Unit
   def draw(batch: PolygonSpriteBatch): Unit = {
     batch.setColor(Color.RED)
-    batch.draw(Square, location.x * screenUnit, location.y * screenUnit, screenUnit * (health/maxHealth), screenUnit*.1f)
+    batch.draw(Square, location.x * screenUnit, location.y * screenUnit, screenUnit * health/maxHealth, screenUnit*.1f)
     batch.setColor(Color.WHITE)
     batch.draw(texture, location.x * screenUnit, location.y * screenUnit, screenUnit, screenUnit)
   }
@@ -23,7 +23,7 @@ trait Enemy {
 
 case class IceImp() extends Enemy {
   var game: Game = _
-  var maxHealth = 5
+  val maxHealth = 5
   var texture = TextureWrapper.load("iceimp.png")
 
   override def update(delta: Float): Unit = {
