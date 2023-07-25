@@ -12,9 +12,12 @@ case class Player() {
     if (location == game.level.downLadder) game.descending = true
   }
   var exp = 0
-  var nextExp = 100
-  var maxHealth = 100
+  var nextExp = 50
+  var maxHealth = 10
   var currentHealth = maxHealth
+  var level = 1
+  var damageMod = 0
+  var attackMod = 0
   var playerIcon: TextureWrapper = TextureWrapper.load("charv1.png")
   var game: Game = _
   var ready = false
@@ -22,6 +25,11 @@ case class Player() {
   var destination: Vec2 = Vec2(0, 0)
   var yourTurn = true
   var tick = 0f
+  def attack(target: Enemy): Unit = {
+    if(d(10) + attackMod> target.ac){
+      target.health -= (1+damageMod)
+    }
+  }
   def draw(batch: PolygonSpriteBatch) = {
     batch.setColor(Color.WHITE)
     batch.draw(
@@ -36,6 +44,11 @@ case class Player() {
     if (exp >= nextExp) {
       exp -= nextExp
       nextExp *= 2
+      maxHealth += 10
+      currentHealth = maxHealth
+      damageMod += 1
+      attackMod += 1
+      level += 1
     }
     if (!yourTurn) {
       tick += delta
@@ -76,7 +89,7 @@ case class Player() {
         var enemy = game.enemies.filter(e => e.location == dest)
         if (enemy.isEmpty) { location = dest.copy() }
         else {
-          enemy.head.health -= 1
+          attack(enemy.head)
           destination = location.copy()
         }
         yourTurn = false

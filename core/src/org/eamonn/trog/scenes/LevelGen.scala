@@ -35,6 +35,7 @@ class LevelGen(player: Player, game: Option[Game]) extends Scene {
     }
     gameNew.descending = false
     gameNew.enemies = List.empty
+    gameNew.allSpawned = false
     gameNew.level = level
 
     if (doneGenerating && level.walkables.nonEmpty) {

@@ -18,6 +18,7 @@ class Game(lvl: Level, plr: Player) extends Scene {
   var cameraLocation: Vec2 = Vec2(0, 0)
   var updatingCameraX = false
   var updatingCameraY = false
+  var allSpawned = false
   var clicked = false
   var mouseLocOnGrid: Vec2 = Vec2(0, 0)
   var enemies: List[Enemy] = List.empty
@@ -47,7 +48,7 @@ class Game(lvl: Level, plr: Player) extends Scene {
     }
   }
   override def update(delta: Float): Option[Scene] = {
-    if (enemies.isEmpty) {
+    if (!allSpawned) {
       for (i <- 0 until 10) {
         var loc = level.walkables.filterNot(w =>
           player.location == w && enemies.exists(e => e.location == w)
@@ -66,6 +67,7 @@ class Game(lvl: Level, plr: Player) extends Scene {
         enemy.health = enemy.maxHealth
         enemies = enemy :: enemies
       }
+      allSpawned = true
     }
     if (
       player.location.x < -cameraLocation.x + 5 || player.location.x > -cameraLocation.x + (Geometry.ScreenWidth / screenUnit) - 5
@@ -91,6 +93,13 @@ class Game(lvl: Level, plr: Player) extends Scene {
   }
 
   def drawUI(batch: PolygonSpriteBatch): Unit = {
+    batch.setColor(Color.WHITE)
+    Text.smallFont.draw(
+      batch,
+      s"Lvl ${player.level}",
+      -Trog.translationX * screenUnit,
+      -Trog.translationY * screenUnit + Geometry.ScreenHeight
+    )
     batch.setColor(Color.YELLOW)
     batch.draw(
       Trog.Square,
@@ -104,7 +113,7 @@ class Game(lvl: Level, plr: Player) extends Scene {
       Trog.Square,
       -Trog.translationX * screenUnit,
       -Trog.translationY * screenUnit + Geometry.ScreenHeight - (screenUnit),
-      screenUnit * 4 * player.exp/player.nextExp,
+      screenUnit * 4 * player.exp / player.nextExp,
       screenUnit / 8
     )
     batch.setColor(Color.FIREBRICK)
