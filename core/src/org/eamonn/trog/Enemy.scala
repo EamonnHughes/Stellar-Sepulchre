@@ -9,18 +9,16 @@ import org.eamonn.trog.util.TextureWrapper
 import scala.util.Random
 
 trait Enemy extends Actor {
+  override var stats: Stats
   var game: Game
   var location: Vec2 = Vec2(0, 0)
   var dest: Vec2 = Vec2(0, 0)
-  var health: Int = Int.MaxValue
-  var maxHealth: Int
-  var ac: Int
   var texture: TextureWrapper
   def update(delta: Float): Unit
   def attack(target: Actor): Unit
   def draw(batch: PolygonSpriteBatch): Unit = {
     batch.setColor(Color.RED)
-    batch.draw(Square, location.x * screenUnit, location.y * screenUnit, screenUnit * health/maxHealth, screenUnit*.1f)
+    batch.draw(Square, location.x * screenUnit, location.y * screenUnit, screenUnit * stats.health/stats.maxHealth, screenUnit*.1f)
     batch.setColor(Color.WHITE)
     batch.draw(texture, location.x * screenUnit, location.y * screenUnit, screenUnit, screenUnit)
   }
@@ -28,17 +26,19 @@ trait Enemy extends Actor {
 
 case class IceImp() extends Enemy {
   var game: Game = _
-  var maxHealth = 5
-  var ac = 5
-  var texture = TextureWrapper.load("iceimp.png")
-  var sightRad = 10
+  var texture: TextureWrapper = TextureWrapper.load("iceimp.png")
+  var stats: Stats = Stats()
+  stats.maxHealth = 5
+  stats.health = 5
+  stats.ac = 5
+  stats.sightRad = 10
 
   override def update(delta: Float): Unit = {
 
 
       if (game.enemyTurn) {
         dest = game.player.location.copy()
-        var path = Pathfinding.findPath(location, dest, game.level).filter(p =>p.list.length < sightRad)
+        var path = Pathfinding.findPath(location, dest, game.level).filter(p =>p.list.length < stats.sightRad)
         path.foreach(p => {
           var next = p.list.reverse(1).copy()
           if(!game.enemies.exists(e => e.location == next)) {
@@ -47,13 +47,13 @@ case class IceImp() extends Enemy {
         })
       }
 
-    if(health <= 0){
+    if(stats.health <= 0){
       game.enemies = game.enemies.filterNot(e => e eq this)
-      game.player.exp += 10
+      game.player.stats.exp += 10
     }
   }
 
   override def attack(target: Actor): Unit = {
-   if(d(10) > target.ac) target.health -= d(2)
+   if(d(10) > target.stats.ac) target.stats.health -= d(2)
   }
 }

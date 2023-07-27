@@ -26,6 +26,7 @@ class Game(lvl: Level, plr: Player) extends Scene {
   var enemies: List[Enemy] = List.empty
   override def init(): InputAdapter = {
     player.game = this
+    player.archetype.onSelect(this)
     new GameControl(this)
   }
 
@@ -66,7 +67,6 @@ class Game(lvl: Level, plr: Player) extends Scene {
         var enemy = IceImp()
         enemy.location = loc
         enemy.game = this
-        enemy.health = enemy.maxHealth
         enemies = enemy :: enemies
       }
       allSpawned = true
@@ -108,7 +108,7 @@ class Game(lvl: Level, plr: Player) extends Scene {
             .sqrt(
               ((x - player.location.x) * (x - player.location.x)) + ((y - player.location.y) * (y - player.location.y))
             )
-            .toInt < player.sightRad
+            .toInt < player.stats.sightRad
         ) {
           var path =
             Pathfinding.findPathUpto(player.location, Vec2(x, y), level)
@@ -118,11 +118,11 @@ class Game(lvl: Level, plr: Player) extends Scene {
             })
           }
         }
-        if (dist > player.sightRad) {
+        if (dist > player.stats.sightRad) {
           batch.setColor(0, 0, 0, 1)
         } else {
           var lightLevel: Float =
-            ((((player.sightRad - dist).toFloat / player.sightRad) + .25f) min 1) max 0
+            ((((player.stats.sightRad - dist).toFloat / player.stats.sightRad) + .25f) min 1) max 0
           batch.setColor(
             0,
             0,
@@ -145,7 +145,7 @@ class Game(lvl: Level, plr: Player) extends Scene {
     batch.setColor(Color.WHITE)
     Text.mediumFont.draw(
       batch,
-      s"Lvl ${player.level}| Floor ${floor}",
+      s"Lvl ${player.stats.level} ${player.archetype.name} on floor ${floor}",
       -cameraLocation.x * screenUnit,
       -cameraLocation.y * screenUnit + Geometry.ScreenHeight
     )
@@ -162,7 +162,7 @@ class Game(lvl: Level, plr: Player) extends Scene {
       Trog.Square,
       -cameraLocation.x * screenUnit,
       -cameraLocation.y * screenUnit + Geometry.ScreenHeight - (screenUnit),
-      screenUnit * 4 * player.exp / player.nextExp,
+      screenUnit * 4 * player.stats.exp / player.stats.nextExp,
       screenUnit / 8
     )
     batch.setColor(Color.FIREBRICK)
@@ -178,13 +178,13 @@ class Game(lvl: Level, plr: Player) extends Scene {
       Trog.Square,
       -cameraLocation.x * screenUnit,
       -cameraLocation.y * screenUnit + Geometry.ScreenHeight - (screenUnit * 3 / 2),
-      screenUnit * 4 * player.health / player.maxHealth,
+      screenUnit * 4 * player.stats.health / player.stats.maxHealth,
       screenUnit / 2
     )
     batch.setColor(Color.WHITE)
     Text.mediumFont.draw(
       batch,
-      s"${player.health}/${player.maxHealth}",
+      s"${player.stats.health}/${player.stats.maxHealth}",
       -cameraLocation.x * screenUnit,
       -cameraLocation.y * screenUnit + Geometry.ScreenHeight - screenUnit
     )

@@ -4,26 +4,30 @@ import com.badlogic.gdx.Input.Keys
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.g2d.PolygonSpriteBatch
 import org.eamonn.trog.Trog.garbage
+import org.eamonn.trog.character.{Archetype, Archetypes}
 import org.eamonn.trog.scenes.Game
 import org.eamonn.trog.util.TextureWrapper
 
 case class Player() extends Actor {
-  var ac = 5
+  var archetype: Archetype = Archetypes.createNewAchetype()
+  def levelUp(): Unit = {
+    stats.exp -=stats.nextExp
+    stats.nextExp *= 2
+    stats.maxHealth += 10
+    stats.damageMod += 1
+    stats.attackMod += 1
+    stats.ac += 1
+    archetype.onLevelUp(game)
+    stats.health = stats.maxHealth
+    stats.level += 1
+  }
   def tryToGoDown(): Unit = {
     if (location == game.level.downLadder) game.descending = true
   }
-  var exp = 0
   var resting = false
   var dead = false
-  var nextExp = 50
-  var maxHealth = 10
-  var health: Int = maxHealth
-  var sightRad = 6
-  var healing = 0
-  var level = 1
+  var stats = Stats()
   var inCombat = false
-  var damageMod = 0
-  var attackMod = 0
   var playerIcon: TextureWrapper = TextureWrapper.load("charv1.png")
   var game: Game = _
   var ready = false
@@ -33,8 +37,8 @@ case class Player() extends Actor {
   var tick = 0f
   var speed = .25f
   def attack(target: Enemy): Unit = {
-    if (d(10) + attackMod > target.ac) {
-      target.health -= (d(3) + damageMod)
+    if (d(10) + stats.attackMod > target.stats.ac) {
+      target.stats.health -= (d(3) + stats.damageMod)
     }
   }
   def draw(batch: PolygonSpriteBatch) = {
@@ -48,21 +52,13 @@ case class Player() extends Actor {
     )
   }
   def update(delta: Float) = {
-    if(health <= 0) dead = true
+    if(stats.health <= 0) dead = true
     if (resting) speed = .05f else speed = .25f
-    if (healing > 4 && health < maxHealth) {
-      health += 1
-      healing = 0
+    if (stats.healing > 4 && stats.health < stats.maxHealth) {
+      stats.health += 1
+      stats.healing = 0
     }
-    if (exp >= nextExp) {
-      exp -= nextExp
-      nextExp *= 2
-      maxHealth += 10
-      health = maxHealth
-      damageMod += 1
-      attackMod += 1
-      ac += 1
-      level += 1
+    if (stats.exp >= stats.nextExp) {
     }
     if (
       game.enemies.exists(e => {
@@ -71,7 +67,7 @@ case class Player() extends Actor {
         path.foreach(p => {
           dist = p.list.length
         })
-        dist < sightRad
+        dist < stats.sightRad
       })
     ) inCombat = true
     else inCombat = false
@@ -97,7 +93,7 @@ case class Player() extends Actor {
         destination.x = location.x - 1
       } else if (game.keysDown.contains(Keys.SPACE)) {
         yourTurn = false
-        if (!inCombat && health < maxHealth) healing += 1
+        if (!inCombat && stats.health < stats.maxHealth) stats.healing += 1
       } else if (game.clicked) {
         destination = game.mouseLocOnGrid.copy()
       } else if (game.keysDown.contains(Keys.R)) {
@@ -110,7 +106,7 @@ case class Player() extends Actor {
         tryToGoDown()
       }
     }
-    if (resting && (health == maxHealth || inCombat)) {
+    if (resting && (stats.health == stats.maxHealth || inCombat)) {
       resting = false
     }
     if ((destination != location || resting) && yourTurn) {
@@ -127,11 +123,12 @@ case class Player() extends Actor {
         })
       } else {
         destination = location.copy()
-        if (!inCombat && health < maxHealth) healing += 1
+        if (!inCombat && stats.health < stats.maxHealth) stats.healing += 1
       }
-      if (!inCombat && health < maxHealth) healing += 1
+      if (!inCombat && stats.health < stats.maxHealth) stats.healing += 1
       yourTurn = false
       game.enemyTurn = true
     }
   }
 }
+
