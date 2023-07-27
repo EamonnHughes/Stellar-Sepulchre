@@ -20,12 +20,7 @@ class HomeControl(home: Home) extends InputAdapter {
   }
 
   override def keyDown(keycode: Int): Boolean = {
-
-    true
-  }
-
-  override def keyUp(keycode: Int): Boolean = {
-    if(keycode == Keys.ENTER) {
+    if (keycode == Keys.ENTER) {
       home.player.ready = true
     }
 

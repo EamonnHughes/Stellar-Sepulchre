@@ -16,6 +16,7 @@ class Game(lvl: Level, plr: Player) extends Scene {
   var descending = false
   var player: Player = plr
   var enemyTurn = false
+  var floor = 1
   var cameraLocation: Vec2 = Vec2(0, 0)
   var updatingCameraX = false
   var updatingCameraY = false
@@ -80,9 +81,10 @@ class Game(lvl: Level, plr: Player) extends Scene {
     player.update(delta)
     enemies.foreach(e => e.update(delta))
     enemyTurn = false
+    if (descending) floor += 1
     if (descending) Some(new LevelGen(player, Some(this)))
-    else
-      None
+    else if (player.dead) Some(new GameOver)
+    else None
   }
 
   override def render(batch: PolygonSpriteBatch): Unit = {
@@ -141,9 +143,9 @@ class Game(lvl: Level, plr: Player) extends Scene {
 
   def renderUI(batch: PolygonSpriteBatch): Unit = {
     batch.setColor(Color.WHITE)
-    Text.smallFont.draw(
+    Text.mediumFont.draw(
       batch,
-      s"Lvl ${player.level}",
+      s"Lvl ${player.level}| Floor ${floor}",
       -cameraLocation.x * screenUnit,
       -cameraLocation.y * screenUnit + Geometry.ScreenHeight
     )
@@ -180,7 +182,7 @@ class Game(lvl: Level, plr: Player) extends Scene {
       screenUnit / 2
     )
     batch.setColor(Color.WHITE)
-    Text.smallFont.draw(
+    Text.mediumFont.draw(
       batch,
       s"${player.health}/${player.maxHealth}",
       -cameraLocation.x * screenUnit,

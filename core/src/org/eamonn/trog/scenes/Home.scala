@@ -25,6 +25,6 @@ class Home extends Scene {
 
   override def renderUI(batch: PolygonSpriteBatch): Unit = {
     Text.mediumFont.setColor(Color.WHITE)
-    Text.mediumFont.draw(batch, "Descend: [ENTER]", -Trog.translationX*screenUnit,-Trog.translationY*screenUnit + Geometry.ScreenHeight/2)
+    Text.mediumFont.draw(batch, " LASCIATE OGNI SPERANZA, VOI CH'ENTRATE\n Descend: [ENTER]", -Trog.translationX*screenUnit,-Trog.translationY*screenUnit + Geometry.ScreenHeight/2)
   }
 }

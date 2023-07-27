@@ -54,7 +54,7 @@ class LevelGen(player: Player, game: Option[Game]) extends Scene {
     Text.mediumFont.setColor(Color.WHITE)
     Text.mediumFont.draw(
       batch,
-      "Generating Floor...",
+      " Facing terrors beyond mortal comprehension(generating floor)",
       -Trog.translationX*screenUnit,
       -Trog.translationY*screenUnit + Geometry.ScreenHeight / 2
     )

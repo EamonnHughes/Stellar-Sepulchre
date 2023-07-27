@@ -14,6 +14,7 @@ case class Player() extends Actor {
   }
   var exp = 0
   var resting = false
+  var dead = false
   var nextExp = 50
   var maxHealth = 10
   var health: Int = maxHealth
@@ -47,6 +48,7 @@ case class Player() extends Actor {
     )
   }
   def update(delta: Float) = {
+    if(health <= 0) dead = true
     if (resting) speed = .05f else speed = .25f
     if (healing > 4 && health < maxHealth) {
       health += 1
