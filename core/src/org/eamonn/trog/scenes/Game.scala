@@ -15,6 +15,7 @@ class Game(lvl: Level, plr: Player) extends Scene {
   var level: Level = lvl
   var descending = false
   var player: Player = plr
+  var enemyTurn = false
   var cameraLocation: Vec2 = Vec2(0, 0)
   var updatingCameraX = false
   var updatingCameraY = false
@@ -78,6 +79,7 @@ class Game(lvl: Level, plr: Player) extends Scene {
     if (updatingCameraX || updatingCameraY) updateCamera()
     player.update(delta)
     enemies.foreach(e => e.update(delta))
+    enemyTurn = false
     if (descending) Some(new LevelGen(player, Some(this)))
     else
       None
@@ -89,55 +91,100 @@ class Game(lvl: Level, plr: Player) extends Scene {
     level.draw(batch)
     player.draw(batch)
     enemies.foreach(e => e.draw(batch))
-    drawUI(batch)
+    for (
+      x <-
+        -cameraLocation.x - 5 to (-cameraLocation.x + Geometry.ScreenWidth / screenUnit).toInt + 5
+    ) {
+      for (
+        y <-
+          -cameraLocation.y - 5 to (-cameraLocation.y + Geometry.ScreenHeight / screenUnit).toInt + 5
+      ) {
+        var dist = Int.MaxValue
+
+        if (
+          Math
+            .sqrt(
+              ((x - player.location.x) * (x - player.location.x)) + ((y - player.location.y) * (y - player.location.y))
+            )
+            .toInt < player.sightRad
+        ) {
+          var path =
+            Pathfinding.findPathUpto(player.location, Vec2(x, y), level)
+          if (path.nonEmpty) {
+            path.foreach(p => {
+              dist = p.list.length
+            })
+          }
+        }
+        if (dist > player.sightRad) {
+          batch.setColor(0, 0, 0, 1)
+        } else {
+          var lightLevel: Float =
+            ((((player.sightRad - dist).toFloat / player.sightRad) + .25f) min 1) max 0
+          batch.setColor(
+            0,
+            0,
+            0,
+            1 - lightLevel
+          )
+        }
+        batch.draw(
+          Trog.Square,
+          x * screenUnit,
+          y * screenUnit,
+          screenUnit,
+          screenUnit
+        )
+      }
+    }
   }
 
-  def drawUI(batch: PolygonSpriteBatch): Unit = {
+  def renderUI(batch: PolygonSpriteBatch): Unit = {
     batch.setColor(Color.WHITE)
     Text.smallFont.draw(
       batch,
       s"Lvl ${player.level}",
-      -Trog.translationX * screenUnit,
-      -Trog.translationY * screenUnit + Geometry.ScreenHeight
+      -cameraLocation.x * screenUnit,
+      -cameraLocation.y * screenUnit + Geometry.ScreenHeight
     )
     batch.setColor(Color.YELLOW)
     batch.draw(
       Trog.Square,
-      -Trog.translationX * screenUnit,
-      -Trog.translationY * screenUnit + Geometry.ScreenHeight - (screenUnit),
+      -cameraLocation.x * screenUnit,
+      -cameraLocation.y * screenUnit + Geometry.ScreenHeight - (screenUnit),
       screenUnit * 4,
       screenUnit / 8
     )
     batch.setColor(Color.ORANGE)
     batch.draw(
       Trog.Square,
-      -Trog.translationX * screenUnit,
-      -Trog.translationY * screenUnit + Geometry.ScreenHeight - (screenUnit),
+      -cameraLocation.x * screenUnit,
+      -cameraLocation.y * screenUnit + Geometry.ScreenHeight - (screenUnit),
       screenUnit * 4 * player.exp / player.nextExp,
       screenUnit / 8
     )
     batch.setColor(Color.FIREBRICK)
     batch.draw(
       Trog.Square,
-      -Trog.translationX * screenUnit,
-      -Trog.translationY * screenUnit + Geometry.ScreenHeight - (screenUnit * 3 / 2),
+      -cameraLocation.x * screenUnit,
+      -cameraLocation.y * screenUnit + Geometry.ScreenHeight - (screenUnit * 3 / 2),
       screenUnit * 4,
       screenUnit / 2
     )
     batch.setColor(Color.RED)
     batch.draw(
       Trog.Square,
-      -Trog.translationX * screenUnit,
-      -Trog.translationY * screenUnit + Geometry.ScreenHeight - (screenUnit * 3 / 2),
-      screenUnit * 4 * player.currentHealth / player.maxHealth,
+      -cameraLocation.x * screenUnit,
+      -cameraLocation.y * screenUnit + Geometry.ScreenHeight - (screenUnit * 3 / 2),
+      screenUnit * 4 * player.health / player.maxHealth,
       screenUnit / 2
     )
     batch.setColor(Color.WHITE)
     Text.smallFont.draw(
       batch,
-      s"${player.currentHealth}/${player.maxHealth}",
-      -Trog.translationX * screenUnit,
-      -Trog.translationY * screenUnit + Geometry.ScreenHeight - screenUnit
+      s"${player.health}/${player.maxHealth}",
+      -cameraLocation.x * screenUnit,
+      -cameraLocation.y * screenUnit + Geometry.ScreenHeight - screenUnit
     )
   }
 }

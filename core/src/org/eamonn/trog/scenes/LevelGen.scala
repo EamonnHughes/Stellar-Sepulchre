@@ -37,19 +37,26 @@ class LevelGen(player: Player, game: Option[Game]) extends Scene {
     gameNew.enemies = List.empty
     gameNew.allSpawned = false
     gameNew.level = level
+    gameNew.keysDown = List.empty
+    gameNew.clicked = false
 
     if (doneGenerating && level.walkables.nonEmpty) {
       Some(gameNew)
     } else None
   }
 
+
   override def render(batch: PolygonSpriteBatch): Unit = {
+
+  }
+
+  override def renderUI(batch: PolygonSpriteBatch): Unit = {
     Text.mediumFont.setColor(Color.WHITE)
     Text.mediumFont.draw(
       batch,
       "Generating Floor...",
-      0,
-      Geometry.ScreenHeight / 2
+      -Trog.translationX*screenUnit,
+      -Trog.translationY*screenUnit + Geometry.ScreenHeight / 2
     )
   }
 }

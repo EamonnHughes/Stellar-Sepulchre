@@ -40,6 +40,7 @@ class Trog extends ApplicationAdapter {
     batch.begin()
     batch.getTransformMatrix.setToTranslation(Trog.translationX*screenUnit, Trog.translationY*screenUnit, 0)
     scene.render(batch)
+    scene.renderUI(batch)
     batch.end()
   }
 
