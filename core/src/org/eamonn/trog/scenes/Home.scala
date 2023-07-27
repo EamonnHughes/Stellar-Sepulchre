@@ -8,14 +8,14 @@ import org.eamonn.trog.Scene
 import org.eamonn.trog.procgen.{GeneratedMap, Level}
 
 class Home extends Scene {
-  var player: Player = Player()
+  var next = false
 
   override def init(): InputAdapter = {
     new HomeControl(this)
   }
   override def update(delta: Float): Option[Scene] = {
 
-    if(player.ready) Some(new LevelGen(player, None)) else None
+    if(next) Some(new CharCreation()) else None
   }
 
 

@@ -8,16 +8,18 @@ import org.eamonn.trog.character.{Archetype, Archetypes}
 import org.eamonn.trog.scenes.Game
 import org.eamonn.trog.util.TextureWrapper
 
+import scala.util.Random
+
 case class Player() extends Actor {
-  var archetype: Archetype = Archetypes.createNewAchetype()
+  var archetype: Archetype = _
   def levelUp(): Unit = {
-    stats.exp -=stats.nextExp
     stats.nextExp *= 2
-    stats.maxHealth += 10
+    stats.maxHealth += d(2, 5)
     stats.damageMod += 1
     stats.attackMod += 1
     stats.ac += 1
     archetype.onLevelUp(game)
+    stats.exp -=stats.nextExp
     stats.health = stats.maxHealth
     stats.level += 1
   }
@@ -30,7 +32,6 @@ case class Player() extends Actor {
   var inCombat = false
   var playerIcon: TextureWrapper = TextureWrapper.load("charv1.png")
   var game: Game = _
-  var ready = false
   var location: Vec2 = Vec2(0, 0)
   var destination: Vec2 = Vec2(0, 0)
   var yourTurn = true
@@ -38,7 +39,9 @@ case class Player() extends Actor {
   var speed = .25f
   def attack(target: Enemy): Unit = {
     if (d(10) + stats.attackMod > target.stats.ac) {
-      target.stats.health -= (d(3) + stats.damageMod)
+      var damage = (d(3) + stats.damageMod)
+      if(Random.nextInt(100) <= stats.critChance) damage *= 2
+      target.stats.health -= damage
     }
   }
   def draw(batch: PolygonSpriteBatch) = {
@@ -59,6 +62,7 @@ case class Player() extends Actor {
       stats.healing = 0
     }
     if (stats.exp >= stats.nextExp) {
+      levelUp()
     }
     if (
       game.enemies.exists(e => {
