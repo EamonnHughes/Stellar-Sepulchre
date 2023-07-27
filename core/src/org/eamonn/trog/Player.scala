@@ -47,7 +47,6 @@ case class Player() extends Actor {
     )
   }
   def update(delta: Float) = {
-    println(inCombat)
     if (resting) speed = .05f else speed = .25f
     if (healing > 4 && health < maxHealth) {
       health += 1
