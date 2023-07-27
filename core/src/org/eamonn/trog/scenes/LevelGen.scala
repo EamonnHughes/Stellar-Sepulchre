@@ -39,6 +39,7 @@ class LevelGen(player: Player, game: Option[Game]) extends Scene {
     gameNew.level = level
     gameNew.keysDown = List.empty
     gameNew.clicked = false
+    gameNew.showingCharacterSheet = false
 
     if (doneGenerating && level.walkables.nonEmpty) {
       Some(gameNew)

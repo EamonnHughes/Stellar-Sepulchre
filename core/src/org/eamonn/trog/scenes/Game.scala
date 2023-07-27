@@ -12,6 +12,7 @@ import scala.util.Random
 
 class Game(lvl: Level, plr: Player) extends Scene {
   var keysDown: List[Int] = List.empty
+  var showingCharacterSheet = false
   var level: Level = lvl
   var descending = false
   var player: Player = plr
@@ -189,6 +190,33 @@ class Game(lvl: Level, plr: Player) extends Scene {
       -cameraLocation.x * screenUnit,
       -cameraLocation.y * screenUnit + Geometry.ScreenHeight - screenUnit
     )
+    if (showingCharacterSheet) {
+      batch.setColor(Color.DARK_GRAY)
+      batch.draw(
+        Trog.Square,
+        -cameraLocation.x * screenUnit + (2 * screenUnit),
+        -cameraLocation.y * screenUnit + (2 * screenUnit),
+        (Geometry.ScreenWidth - (4 * screenUnit)),
+        (Geometry.ScreenHeight - (4 * screenUnit))
+      )
+      Text.mediumFont.setColor(Color.WHITE)
+      Text.mediumFont.draw(
+        batch,
+        s" \n " +
+          s"Archetype: ${player.archetype.name}\n " +
+          s"Level: ${player.stats.level}\n " +
+          s"Experience: ${player.stats.exp}/${player.stats.nextExp}\n " +
+          s"Floor: $floor\n " +
+          s"Health: ${player.stats.health}/${player.stats.maxHealth}\n " +
+          s"Armor Class: ${player.stats.ac}\n " +
+          s"Sight Radius: ${player.stats.sightRad}\n " +
+          s"Attack Bonus: ${player.stats.attackMod}\n " +
+          s"Damage Bonus: ${player.stats.damageMod}\n " +
+          s"Crit Chance: %${player.stats.critChance}",
+        -cameraLocation.x * screenUnit + (2 * screenUnit),
+        (-cameraLocation.y * screenUnit) + Geometry.ScreenHeight - (2 * screenUnit)
+      )
+    }
   }
 }
 class GameControl(game: Game) extends InputAdapter {
@@ -198,6 +226,8 @@ class GameControl(game: Game) extends InputAdapter {
   }
   override def keyUp(keycode: Int): Boolean = {
     game.keysDown = game.keysDown.filterNot(f => f == keycode)
+    if (keycode == Keys.C)
+      game.showingCharacterSheet = !game.showingCharacterSheet
     true
   }
 
