@@ -5,11 +5,14 @@ import com.badlogic.gdx.InputAdapter
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.g2d.PolygonSpriteBatch
 import org.eamonn.trog.Scene
+import org.eamonn.trog.Trog.garbage
 import org.eamonn.trog.procgen.{GeneratedMap, Level, World}
+import org.eamonn.trog.util.TextureWrapper
 
 import scala.util.Random
 
 class LevelGen(player: Player, game: Option[Game], world: World) extends Scene {
+  var background: TextureWrapper = TextureWrapper.load("generate.png")
   var cameraLocation: Vec2 = Vec2(0, 0)
   var genMap = GeneratedMap(45, 6, 10, .25f)
   var doneGenerating = false
@@ -46,9 +49,15 @@ class LevelGen(player: Player, game: Option[Game], world: World) extends Scene {
     } else None
   }
 
-
   override def render(batch: PolygonSpriteBatch): Unit = {
-
+    batch.setColor(Color.WHITE)
+    batch.draw(
+      background,
+      -Trog.translationX * screenUnit,
+      -Trog.translationY * screenUnit,
+      Geometry.ScreenWidth,
+      Geometry.ScreenHeight
+    )
   }
 
   override def renderUI(batch: PolygonSpriteBatch): Unit = {
@@ -56,8 +65,8 @@ class LevelGen(player: Player, game: Option[Game], world: World) extends Scene {
     Text.mediumFont.draw(
       batch,
       " Facing terrors beyond mortal comprehension(generating floor)",
-      -Trog.translationX*screenUnit,
-      -Trog.translationY*screenUnit + Geometry.ScreenHeight / 2
+      -Trog.translationX * screenUnit,
+      -Trog.translationY * screenUnit + Geometry.ScreenHeight / 2
     )
   }
 }
