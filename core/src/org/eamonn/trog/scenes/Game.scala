@@ -27,6 +27,7 @@ class Game(lvl: Level, plr: Player) extends Scene {
   override def init(): InputAdapter = {
     player.game = this
     player.archetype.onSelect(this)
+    player.stats.health = player.stats.maxHealth
     new GameControl(this)
   }
 

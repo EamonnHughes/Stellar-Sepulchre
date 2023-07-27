@@ -14,7 +14,7 @@ import org.eamonn.trog.util.GarbageCan
 object Text {
   def loadFonts()(implicit garbage: GarbageCan): Unit = {
     val generator = new FreeTypeFontGenerator(
-      Gdx.files.internal("SpaceMono-Regular.ttf")
+      Gdx.files.internal("Retro Gaming.ttf")
     )
     val parameter = new FreeTypeFontGenerator.FreeTypeFontParameter
     parameter.characters = FreeTypeFontGenerator.DEFAULT_CHARS + CharExtras

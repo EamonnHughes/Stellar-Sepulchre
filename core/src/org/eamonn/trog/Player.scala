@@ -13,13 +13,13 @@ import scala.util.Random
 case class Player() extends Actor {
   var archetype: Archetype = _
   def levelUp(): Unit = {
+    stats.exp -=stats.nextExp
     stats.nextExp *= 2
     stats.maxHealth += d(2, 5)
     stats.damageMod += 1
     stats.attackMod += 1
     stats.ac += 1
     archetype.onLevelUp(game)
-    stats.exp -=stats.nextExp
     stats.health = stats.maxHealth
     stats.level += 1
   }
