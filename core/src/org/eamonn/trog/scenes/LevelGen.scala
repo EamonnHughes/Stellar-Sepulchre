@@ -5,11 +5,11 @@ import com.badlogic.gdx.InputAdapter
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.g2d.PolygonSpriteBatch
 import org.eamonn.trog.Scene
-import org.eamonn.trog.procgen.{GeneratedMap, Level}
+import org.eamonn.trog.procgen.{GeneratedMap, Level, World}
 
 import scala.util.Random
 
-class LevelGen(player: Player, game: Option[Game]) extends Scene {
+class LevelGen(player: Player, game: Option[Game], world: World) extends Scene {
   var cameraLocation: Vec2 = Vec2(0, 0)
   var genMap = GeneratedMap(45, 6, 10, .25f)
   var doneGenerating = false
@@ -27,7 +27,7 @@ class LevelGen(player: Player, game: Option[Game]) extends Scene {
         player.destination = level.upLadder.copy()
       }
     }
-    var gameNew = new Game(level, player)
+    var gameNew = new Game(level, player, world)
     if (game.nonEmpty) {
       game.foreach(g => {
         gameNew = g

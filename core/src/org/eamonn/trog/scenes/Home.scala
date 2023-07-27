@@ -5,9 +5,9 @@ import com.badlogic.gdx.InputAdapter
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.g2d.PolygonSpriteBatch
 import org.eamonn.trog.Scene
-import org.eamonn.trog.procgen.{GeneratedMap, Level}
+import org.eamonn.trog.procgen.{GeneratedMap, Level, World}
 
-class Home extends Scene {
+class Home(world: World) extends Scene {
   var next = false
 
   override def init(): InputAdapter = {
@@ -15,7 +15,7 @@ class Home extends Scene {
   }
   override def update(delta: Float): Option[Scene] = {
 
-    if(next) Some(new CharCreation()) else None
+    if(next) Some(new CharCreation(world)) else None
   }
 
 

@@ -6,11 +6,11 @@ import com.badlogic.gdx.InputAdapter
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.g2d.PolygonSpriteBatch
 import org.eamonn.trog.Scene
-import org.eamonn.trog.procgen.{GeneratedMap, Level}
+import org.eamonn.trog.procgen.{GeneratedMap, Level, World}
 
 import scala.util.Random
 
-class Game(lvl: Level, plr: Player) extends Scene {
+class Game(lvl: Level, plr: Player, world: World) extends Scene {
   var keysDown: List[Int] = List.empty
   var showingCharacterSheet = false
   var level: Level = lvl
@@ -84,8 +84,8 @@ class Game(lvl: Level, plr: Player) extends Scene {
     enemies.foreach(e => e.update(delta))
     enemyTurn = false
     if (descending) floor += 1
-    if (descending) Some(new LevelGen(player, Some(this)))
-    else if (player.dead) Some(new GameOver)
+    if (descending) Some(new LevelGen(player, Some(this), world))
+    else if (player.dead) Some(new GameOver(world))
     else None
   }
 
@@ -212,6 +212,7 @@ class Game(lvl: Level, plr: Player) extends Scene {
           s"Sight Radius: ${player.stats.sightRad}\n " +
           s"Attack Bonus: ${player.stats.attackMod}\n " +
           s"Damage Bonus: ${player.stats.damageMod}\n " +
+          s"Crit Modifier: %${player.stats.critMod*100}\n " +
           s"Crit Chance: %${player.stats.critChance}",
         -cameraLocation.x * screenUnit + (2 * screenUnit),
         (-cameraLocation.y * screenUnit) + Geometry.ScreenHeight - (2 * screenUnit)

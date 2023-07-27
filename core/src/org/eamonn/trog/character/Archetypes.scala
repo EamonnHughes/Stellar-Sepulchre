@@ -6,18 +6,29 @@ import scala.util.Random
 
 object Archetypes {
   var prefixes: List[prefix] = List(
-    TankPre(),
-    AccuracyPre()
+    HealthPre(),
+    AccuracyPre(),
+    ArmorPre(),
+    CritPre()
   )
   var suffixes: List[suffix] = List(
     ExpSuf(),
-    DamageSuf()
+    DamageSuf(),
+    CritModSuf(),
+    HealSuf()
   )
-  def createNewAchetype(): Archetype = {
-    Archetype(
-      prefixes(Random.nextInt(prefixes.length)),
-      suffixes(Random.nextInt(suffixes.length))
-    )
+  def getArchList: List[Archetype] = {
+    var archeList = List.empty[Archetype]
+    var preL = prefixes
+    var sufL = suffixes
+    while(sufL.nonEmpty){
+      var pre = preL(Random.nextInt(preL.length))
+      var suf = sufL(Random.nextInt(sufL.length))
+      preL = preL.filterNot(p => p eq pre)
+      sufL = sufL.filterNot(s => s eq suf)
+      archeList = Archetype(pre, suf) :: archeList
+    }
+    archeList
   }
 
 }
@@ -34,11 +45,10 @@ trait suffix {
   def onLevelUp(game: Game): Unit
 }
 
-case class TankPre() extends prefix {
+case class HealthPre() extends prefix {
   val names: List[String] = List(
-    "Ward",
     "Vital",
-    "Shield"
+    "Vim"
   )
 
   override def onSelect(game: Game): Unit = {
@@ -49,10 +59,23 @@ case class TankPre() extends prefix {
     game.player.stats.maxHealth += 5
   }
 }
+case class ArmorPre() extends prefix {
+  val names: List[String] = List(
+    "Ward",
+    "Shield"
+  )
+
+  override def onSelect(game: Game): Unit = {
+    game.player.stats.ac += 1
+  }
+
+  override def onLevelUp(game: Game): Unit = {
+    game.player.stats.ac += 1
+  }
+}
 
 case class AccuracyPre() extends prefix {
   val names: List[String] = List(
-    "Chance",
     "Seer",
     "Scry"
   )
@@ -63,10 +86,22 @@ case class AccuracyPre() extends prefix {
 
   override def onLevelUp(game: Game): Unit = {
     game.player.stats.attackMod += .5f
-    game.player.stats.critChance += 2
   }
 }
+case class CritPre() extends prefix {
+  val names: List[String] = List(
+    "Chance",
+    "Luck"
+  )
 
+  override def onSelect(game: Game): Unit = {
+    game.player.stats.critChance += 2
+  }
+
+  override def onLevelUp(game: Game): Unit = {
+    game.player.stats.critChance += 1
+  }
+}
 case class ExpSuf() extends suffix {
   val names: List[String] = List(
     "scout"
@@ -75,7 +110,7 @@ case class ExpSuf() extends suffix {
   override def onSelect(game: Game): Unit = {}
 
   override def onLevelUp(game: Game): Unit = {
-    game.player.stats.nextExp = (game.player.stats.nextExp*.9f).toInt
+    game.player.stats.nextExp = (game.player.stats.nextExp * .9f).toInt
   }
 }
 
@@ -91,6 +126,34 @@ case class DamageSuf() extends suffix {
 
   override def onLevelUp(game: Game): Unit = {
     game.player.stats.damageMod += 1
+  }
+}
+case class CritModSuf() extends suffix {
+  val names: List[String] = List(
+    "ranger",
+    "seeker"
+  )
+
+  override def onSelect(game: Game): Unit = {
+    game.player.stats.critMod += .2f
+  }
+
+  override def onLevelUp(game: Game): Unit = {
+    game.player.stats.critMod += .2f
+  }
+}
+case class HealSuf() extends suffix {
+  val names: List[String] = List(
+    "venerator",
+    "paladin"
+  )
+
+  override def onSelect(game: Game): Unit = {
+    game.player.stats.health += 3
+  }
+
+  override def onLevelUp(game: Game): Unit = {
+    game.player.stats.health += 3
   }
 }
 

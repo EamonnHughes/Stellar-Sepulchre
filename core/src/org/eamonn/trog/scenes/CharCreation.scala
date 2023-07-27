@@ -1,25 +1,27 @@
 package org.eamonn.trog
 package scenes
 
+import com.badlogic.gdx.Input.Keys
 import com.badlogic.gdx.InputAdapter
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.g2d.PolygonSpriteBatch
 import org.eamonn.trog.Scene
 import org.eamonn.trog.character.{Archetype, Archetypes}
-import org.eamonn.trog.procgen.{GeneratedMap, Level}
+import org.eamonn.trog.procgen.{GeneratedMap, Level, World}
 
-class CharCreation extends Scene {
+import java.awt.RenderingHints.Key
+
+class CharCreation(world: World) extends Scene {
+  var arches: List[Archetype] = world.archetypeList
   var player: Player = Player()
-  var optionOne: Archetype = Archetypes.createNewAchetype()
-  var optionTwo: Archetype = Archetypes.createNewAchetype()
-  var optionThree: Archetype = Archetypes.createNewAchetype()
   var ready = false
+  var selectedArch = 0
   override def init(): InputAdapter = {
     new CharCreationControl(this)
   }
   override def update(delta: Float): Option[Scene] = {
-
-    if (ready) Some(new LevelGen(player, None)) else None
+    if (ready) player.archetype = arches(selectedArch)
+    if (ready) Some(new LevelGen(player, None, world)) else None
   }
 
   override def render(batch: PolygonSpriteBatch): Unit = {}
@@ -28,15 +30,23 @@ class CharCreation extends Scene {
     Text.mediumFont.setColor(Color.WHITE)
     Text.mediumFont.draw(
       batch,
-      s" Select an Archetype\n [1] ${optionOne.name}\n [2] ${optionTwo.name}\n [3] ${optionThree.name}",
+      s" Select an Archetype:",
       -Trog.translationX * screenUnit,
       -Trog.translationY * screenUnit + Geometry.ScreenHeight / 2
     )
+    arches.zipWithIndex.foreach({ case (a, i) =>
+      if (selectedArch == i) Text.mediumFont.setColor(Color.WHITE)
+      else Text.mediumFont.setColor(Color.LIGHT_GRAY)
+      Text.mediumFont.draw(
+        batch,
+        s"[${i + 1}] ${a.name}",
+        -Trog.translationX * screenUnit,
+        (-Trog.translationY * screenUnit) + (Geometry.ScreenHeight / 2) - (screenUnit*(i+1))
+      )
+    })
+
   }
 }
-
-import com.badlogic.gdx.Input.Keys
-import com.badlogic.gdx.InputAdapter
 
 class CharCreationControl(creation: CharCreation) extends InputAdapter {
   override def touchDown(
@@ -54,17 +64,20 @@ class CharCreationControl(creation: CharCreation) extends InputAdapter {
   }
 
   override def keyDown(keycode: Int): Boolean = {
-    if (keycode == Keys.NUM_1) {
-      creation.player.archetype = creation.optionOne
-      creation.ready = true
-    } else if (keycode == Keys.NUM_2) {
-      creation.player.archetype = creation.optionTwo
-      creation.ready = true
-    } else if (keycode == Keys.NUM_3) {
-      creation.player.archetype = creation.optionThree
+    if (keycode == Keys.ENTER) {
       creation.ready = true
     }
+    true
+  }
 
+  override def keyUp(keycode: Int): Boolean = {
+    if (keycode == Keys.DOWN) {
+      creation.selectedArch =
+        (creation.selectedArch + 1) % creation.arches.length
+    } else if (keycode == Keys.UP) {
+      creation.selectedArch =
+        (creation.selectedArch + creation.arches.length - 1) % creation.arches.length
+    }
     true
   }
 }

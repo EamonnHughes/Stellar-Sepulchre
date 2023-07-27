@@ -11,4 +11,5 @@ case class Stats() {
   var damageMod = 0
   var attackMod = 0f
   var critChance = 5
+  var critMod = 2f
 }

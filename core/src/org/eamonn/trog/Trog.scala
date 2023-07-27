@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.g2d.PolygonSpriteBatch
 import com.badlogic.gdx.math.Matrix4
 import com.badlogic.gdx.utils.ScreenUtils
 import com.badlogic.gdx.{ApplicationAdapter, Gdx, Input}
+import org.eamonn.trog.procgen.World
 import org.eamonn.trog.scenes.Home
 import org.eamonn.trog.util.{GarbageCan, TextureWrapper}
 
@@ -29,7 +30,7 @@ class Trog extends ApplicationAdapter {
 
     Text.loadFonts()
 
-    setScene(new Home)
+    setScene(new Home(World()))
   }
 
   override def render(): Unit = {

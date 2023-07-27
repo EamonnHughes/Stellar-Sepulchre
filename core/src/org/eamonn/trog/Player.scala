@@ -16,9 +16,6 @@ case class Player() extends Actor {
     stats.exp -=stats.nextExp
     stats.nextExp *= 2
     stats.maxHealth += d(2, 5)
-    stats.damageMod += 1
-    stats.attackMod += 1
-    stats.ac += 1
     archetype.onLevelUp(game)
     stats.health = stats.maxHealth
     stats.level += 1
@@ -40,7 +37,7 @@ case class Player() extends Actor {
   def attack(target: Enemy): Unit = {
     if (d(10) + stats.attackMod > target.stats.ac) {
       var damage = (d(3) + stats.damageMod)
-      if(Random.nextInt(100) <= stats.critChance) damage *= 2
+      if(Random.nextInt(100) <= stats.critChance) damage = (stats.critMod*damage).toInt
       target.stats.health -= damage
     }
   }
