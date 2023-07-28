@@ -151,7 +151,7 @@ class Game(lvl: Level, plr: Player, world: World) extends Scene {
     batch.setColor(Color.WHITE)
     Text.mediumFont.draw(
       batch,
-      s"Lvl ${player.stats.level} ${player.archetype.name} on floor ${floor}",
+      s"Level ${player.stats.level} ${player.archetype.name} on floor ${floor}",
       -cameraLocation.x * screenUnit,
       -cameraLocation.y * screenUnit + Geometry.ScreenHeight
     )
