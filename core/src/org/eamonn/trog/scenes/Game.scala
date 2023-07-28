@@ -18,7 +18,6 @@ class Game(lvl: Level, plr: Player, world: World) extends Scene {
   var player: Player = plr
   var enemyTurn = false
   var floor = 1
-  var cameraLocation: Vec2 = Vec2(0, 0)
   var updatingCameraX = false
   var updatingCameraY = false
   var allSpawned = false
@@ -38,20 +37,20 @@ class Game(lvl: Level, plr: Player, world: World) extends Scene {
   def updateCamera(): Unit = {
     if (updatingCameraX) {
       if (
-        cameraLocation.x < (Geometry.ScreenWidth / 2 / screenUnit).toInt - player.location.x
-      ) cameraLocation.x += 1
+        Trog.translationX < (Geometry.ScreenWidth / 2 / screenUnit).toInt - player.location.x
+      ) Trog.translationX += 1
       else if (
-        cameraLocation.x > (Geometry.ScreenWidth / 2 / screenUnit).toInt - player.location.x
-      ) cameraLocation.x -= 1
+        Trog.translationX > (Geometry.ScreenWidth / 2 / screenUnit).toInt - player.location.x
+      ) Trog.translationX -= 1
       else updatingCameraX = false
     }
     if (updatingCameraY) {
       if (
-        cameraLocation.y < (Geometry.ScreenHeight / 2 / screenUnit).toInt - player.location.y
-      ) cameraLocation.y += 1
+        Trog.translationY < (Geometry.ScreenHeight / 2 / screenUnit).toInt - player.location.y
+      ) Trog.translationY += 1
       else if (
-        cameraLocation.y > (Geometry.ScreenHeight / 2 / screenUnit).toInt - player.location.y
-      ) cameraLocation.y -= 1
+        Trog.translationY > (Geometry.ScreenHeight / 2 / screenUnit).toInt - player.location.y
+      ) Trog.translationY -= 1
       else updatingCameraY = false
     }
   }
@@ -69,17 +68,17 @@ class Game(lvl: Level, plr: Player, world: World) extends Scene {
               .length
           )
         )
-        var enemy = IceImp(this)
+        var enemy = Humanoid(this)
         enemy.location = loc
         enemies = enemy :: enemies
       }
       allSpawned = true
     }
     if (
-      player.location.x < -cameraLocation.x + 5 || player.location.x > -cameraLocation.x + (Geometry.ScreenWidth / screenUnit) - 5
+      player.location.x < -Trog.translationX + 5 || player.location.x > -Trog.translationX + (Geometry.ScreenWidth / screenUnit) - 5
     ) updatingCameraX = true
     if (
-      player.location.y < -cameraLocation.y + 5 || player.location.y > -cameraLocation.y + (Geometry.ScreenHeight / screenUnit) - 5
+      player.location.y < -Trog.translationY + 5 || player.location.y > -Trog.translationY + (Geometry.ScreenHeight / screenUnit) - 5
     ) updatingCameraY = true
     if (updatingCameraX || updatingCameraY) updateCamera()
     player.update(delta)
@@ -92,18 +91,16 @@ class Game(lvl: Level, plr: Player, world: World) extends Scene {
   }
 
   override def render(batch: PolygonSpriteBatch): Unit = {
-    Trog.translationX = cameraLocation.x
-    Trog.translationY = cameraLocation.y
     level.draw(batch)
     player.draw(batch)
     enemies.foreach(e => e.draw(batch))
     for (
       x <-
-        -cameraLocation.x - 5 to (-cameraLocation.x + Geometry.ScreenWidth / screenUnit).toInt + 5
+        -Trog.translationX - 5 to (-Trog.translationX + Geometry.ScreenWidth / screenUnit).toInt + 5
     ) {
       for (
         y <-
-          -cameraLocation.y - 5 to (-cameraLocation.y + Geometry.ScreenHeight / screenUnit).toInt + 5
+          -Trog.translationY - 5 to (-Trog.translationY + Geometry.ScreenHeight / screenUnit).toInt + 5
       ) {
         var dist = Int.MaxValue
 
@@ -152,38 +149,38 @@ class Game(lvl: Level, plr: Player, world: World) extends Scene {
     Text.mediumFont.draw(
       batch,
       s"Level ${player.stats.level} ${player.archetype.name} on floor ${floor}",
-      -cameraLocation.x * screenUnit,
-      -cameraLocation.y * screenUnit + Geometry.ScreenHeight
+      -Trog.translationX * screenUnit,
+      -Trog.translationY * screenUnit + Geometry.ScreenHeight
     )
     batch.setColor(Color.YELLOW)
     batch.draw(
       Trog.Square,
-      -cameraLocation.x * screenUnit,
-      -cameraLocation.y * screenUnit + Geometry.ScreenHeight - (screenUnit),
+      -Trog.translationX * screenUnit,
+      -Trog.translationY * screenUnit + Geometry.ScreenHeight - (screenUnit),
       screenUnit * 4,
       screenUnit / 8
     )
     batch.setColor(Color.ORANGE)
     batch.draw(
       Trog.Square,
-      -cameraLocation.x * screenUnit,
-      -cameraLocation.y * screenUnit + Geometry.ScreenHeight - (screenUnit),
+      -Trog.translationX * screenUnit,
+      -Trog.translationY * screenUnit + Geometry.ScreenHeight - (screenUnit),
       screenUnit * 4 * player.stats.exp / player.stats.nextExp,
       screenUnit / 8
     )
     batch.setColor(Color.FIREBRICK)
     batch.draw(
       Trog.Square,
-      -cameraLocation.x * screenUnit,
-      -cameraLocation.y * screenUnit + Geometry.ScreenHeight - (screenUnit * 3 / 2),
+      -Trog.translationX * screenUnit,
+      -Trog.translationY * screenUnit + Geometry.ScreenHeight - (screenUnit * 3 / 2),
       screenUnit * 4,
       screenUnit / 2
     )
     batch.setColor(Color.RED)
     batch.draw(
       Trog.Square,
-      -cameraLocation.x * screenUnit,
-      -cameraLocation.y * screenUnit + Geometry.ScreenHeight - (screenUnit * 3 / 2),
+      -Trog.translationX * screenUnit,
+      -Trog.translationY * screenUnit + Geometry.ScreenHeight - (screenUnit * 3 / 2),
       screenUnit * 4 * player.stats.health / player.stats.maxHealth,
       screenUnit / 2
     )
@@ -191,16 +188,16 @@ class Game(lvl: Level, plr: Player, world: World) extends Scene {
     Text.mediumFont.draw(
       batch,
       s"${player.stats.health}/${player.stats.maxHealth}",
-      -cameraLocation.x * screenUnit,
-      -cameraLocation.y * screenUnit + Geometry.ScreenHeight - screenUnit
+      -Trog.translationX * screenUnit,
+      -Trog.translationY * screenUnit + Geometry.ScreenHeight - screenUnit
     )
     drawConsole(batch)
     if (showingCharacterSheet) {
       batch.setColor(Color.DARK_GRAY)
       batch.draw(
         Trog.Square,
-        -cameraLocation.x * screenUnit + (2 * screenUnit),
-        -cameraLocation.y * screenUnit + (2 * screenUnit),
+        -Trog.translationX * screenUnit + (2 * screenUnit),
+        -Trog.translationY * screenUnit + (2 * screenUnit),
         (Geometry.ScreenWidth - (4 * screenUnit)),
         (Geometry.ScreenHeight - (4 * screenUnit))
       )
@@ -219,8 +216,8 @@ class Game(lvl: Level, plr: Player, world: World) extends Scene {
           s"Damage Bonus: ${player.stats.damageMod}\n " +
           s"Crit Modifier: %${player.stats.critMod * 100}\n " +
           s"Crit Chance: %${player.stats.critChance}",
-        -cameraLocation.x * screenUnit + (2 * screenUnit),
-        (-cameraLocation.y * screenUnit) + Geometry.ScreenHeight - (2 * screenUnit)
+        -Trog.translationX * screenUnit + (2 * screenUnit),
+        (-Trog.translationY * screenUnit) + Geometry.ScreenHeight - (2 * screenUnit)
       )
     }
   }
@@ -239,9 +236,9 @@ class GameControl(game: Game) extends InputAdapter {
 
   override def mouseMoved(screenX: Int, screenY: Int): Boolean = {
     game.mouseLocOnGrid.x =
-      (screenX / screenUnit).floor.toInt - game.cameraLocation.x
+      (screenX / screenUnit).floor.toInt - Trog.translationX
     game.mouseLocOnGrid.y =
-      ((Geometry.ScreenHeight - screenY) / screenUnit).floor.toInt - game.cameraLocation.y
+      ((Geometry.ScreenHeight - screenY) / screenUnit).floor.toInt - Trog.translationY
     true
   }
 

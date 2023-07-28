@@ -26,16 +26,16 @@ trait Enemy extends Actor {
   }
 }
 
-case class IceImp(gm: Game) extends Enemy {
+case class Humanoid(gm: Game) extends Enemy {
   var game: Game = gm
-  var texture: TextureWrapper = TextureWrapper.load("iceimp.png")
+  var texture: TextureWrapper = TextureWrapper.load("hostv1.png")
   var stats: Stats = Stats()
   stats.level = Random.nextInt(game.floor) + 1
   stats.maxHealth = 5*stats.level
   stats.health = 5*stats.level
   stats.ac = 3+stats.level
   stats.sightRad = 10
-  stats.exp = 10*stats.level
+  stats.exp = 5*stats.level
 
   override def update(delta: Float): Unit = {
 

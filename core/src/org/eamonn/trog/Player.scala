@@ -28,7 +28,7 @@ case class Player() extends Actor {
   var dead = false
   var stats = Stats()
   var inCombat = false
-  var playerIcon: TextureWrapper = TextureWrapper.load("charv1.png")
+  var playerIcon: TextureWrapper = TextureWrapper.load("charv2.png")
   var game: Game = _
   var location: Vec2 = Vec2(0, 0)
   var destination: Vec2 = Vec2(0, 0)
