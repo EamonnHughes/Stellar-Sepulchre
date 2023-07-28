@@ -21,7 +21,9 @@ class CharCreation(world: World) extends Scene {
   }
   override def update(delta: Float): Option[Scene] = {
     if (ready) player.archetype = arches(selectedArch)
-    if (ready) Some(new LevelGen(player, None, world)) else None
+    if (ready)
+      Some(new LevelGen(player, None, world))
+    else None
   }
 
   override def render(batch: PolygonSpriteBatch): Unit = {}
@@ -41,7 +43,7 @@ class CharCreation(world: World) extends Scene {
         batch,
         s"[${i + 1}] ${a.name}",
         -Trog.translationX * screenUnit,
-        (-Trog.translationY * screenUnit) + (Geometry.ScreenHeight / 2) - (screenUnit*(i+1))
+        (-Trog.translationY * screenUnit) + (Geometry.ScreenHeight / 2) - (screenUnit * (i + 1))
       )
     })
 

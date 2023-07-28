@@ -11,7 +11,11 @@ import org.eamonn.trog.util.TextureWrapper
 
 import scala.util.Random
 
-class LevelGen(player: Player, game: Option[Game], world: World) extends Scene {
+class LevelGen(
+    player: Player,
+    game: Option[Game],
+    world: World
+) extends Scene {
   var background: TextureWrapper = TextureWrapper.load("generate.png")
   var cameraLocation: Vec2 = Vec2(0, 0)
   var genMap = GeneratedMap(45, 6, 10, .2f)
@@ -22,13 +26,13 @@ class LevelGen(player: Player, game: Option[Game], world: World) extends Scene {
     new LevelGenControl(this)
   }
   override def update(delta: Float): Option[Scene] = {
-    while(!doneGenerating) doneGenerating = genMap.generate()
+    while (!doneGenerating) doneGenerating = genMap.generate()
 
-      if (level.walkables.isEmpty) {
-        level = genMap.doExport()
-        player.location = level.upLadder.copy()
-        player.destination = level.upLadder.copy()
-      }
+    if (level.walkables.isEmpty) {
+      level = genMap.doExport()
+      player.location = level.upLadder.copy()
+      player.destination = level.upLadder.copy()
+    }
 
     var gameNew = new Game(level, player, world)
     if (game.nonEmpty) {

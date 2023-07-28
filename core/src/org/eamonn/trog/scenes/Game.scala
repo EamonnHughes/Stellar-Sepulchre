@@ -212,7 +212,7 @@ class Game(lvl: Level, plr: Player, world: World) extends Scene {
           s"Sight Radius: ${player.stats.sightRad}\n " +
           s"Attack Bonus: ${player.stats.attackMod}\n " +
           s"Damage Bonus: ${player.stats.damageMod}\n " +
-          s"Crit Modifier: %${player.stats.critMod*100}\n " +
+          s"Crit Modifier: %${player.stats.critMod * 100}\n " +
           s"Crit Chance: %${player.stats.critChance}",
         -cameraLocation.x * screenUnit + (2 * screenUnit),
         (-cameraLocation.y * screenUnit) + Geometry.ScreenHeight - (2 * screenUnit)
