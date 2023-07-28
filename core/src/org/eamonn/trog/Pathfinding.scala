@@ -44,18 +44,6 @@ object Pathfinding {
   }
 }
 
-case class connectPath(list: List[Connection]) {
-  def extendPath(alreadyUsed: mutable.Set[Connection], genMap: GeneratedMap): List[connectPath] = {
-    for{
-      con <- list.head.getConnected(genMap.connections)
-      if(alreadyUsed.add(con))
-    } yield add(con)
-  }
-
-  def add(con: Connection): connectPath = connectPath(con :: list)
-}
-
-
 case class Path(list: List[Vec2]) {
   def extendHalfPath(visCells: mutable.Set[Vec2], level: Level): List[Path] = {
     for {

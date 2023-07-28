@@ -6,7 +6,7 @@ import jdk.javadoc.internal.doclets.formats.html.markup.Navigation
 import org.eamonn.trog.Trog.garbage
 import org.eamonn.trog.procgen.MapGeneration.fullyWalkableLevel
 import org.eamonn.trog.util.TextureWrapper
-import org.eamonn.trog.{Path, Pathfinding, Trog, Vec2, connectPath, screenUnit}
+import org.eamonn.trog.{Path, Pathfinding, Trog, Vec2, screenUnit}
 
 import scala.collection.mutable
 import scala.util.Random
@@ -33,7 +33,117 @@ case class GeneratedMap(
 
   var rooms: List[Room] = List.empty
   var mainRooms: List[Room] = List.empty
-  var connections: List[Connection] = List.empty
+
+  def setAdjacentsAsConnected(): Unit = {
+    rooms.foreach(r => {
+      rooms
+        .filterNot(r2 => { (r2 eq r) || r2.connected.contains(r) })
+        .foreach(r2 => {
+          if (
+            r.getAllTiles.exists(t =>
+              t.getAdjacents.exists(a => {
+                (r2.getAllTiles.exists(t2 =>
+                  t2.getAdjacents.exists(a2 => {
+                    t == t2 || t == a2 || t2 == a
+                  })
+                )
+                )
+              })
+            )
+          ) {
+            r.connected = r2 :: r.connected
+            r2.connected = r :: r2.connected
+          }
+
+        })
+    })
+  }
+  def connectConnections(): Boolean = {
+    var change = false
+    rooms.foreach(r => {
+      r.connected.foreach(r2 => {
+        r2.connected
+          .filterNot(r3 =>
+            r.connected.contains(r3) || r3.connected.contains(r) || r3 == r
+          )
+          .foreach(r3 => {
+            r.connected = r3 :: r.connected
+            r3.connected = r :: r3.connected
+            change = true
+          })
+      })
+    })
+    change
+  }
+
+  def generate(): Boolean = {
+    var done = true
+    //makes rooms
+    if (rooms.isEmpty) {
+      done = false
+      for (i <- 0 until (dimensions * roomDensity).toInt) {
+        val scale = roomMin + Random.nextInt((roomMax - roomMin) / 2)
+        var size: Vec2 = Vec2(-100, -100)
+        var location: Vec2 = Vec2(-100, -100)
+        var tick = 0
+        while (
+          (size == Vec2(-100, -100) || Room(location, size).getAllTiles.exists(
+            t => rooms.exists(r => r.getAllTiles.contains(t))
+          )) && tick <= 1000
+        ) {
+          size = Vec2(
+            scale + Random.nextInt((roomMax - roomMin) / 2),
+            scale + Random.nextInt((roomMax - roomMin) / 2)
+          )
+          location = Vec2(
+            Random.nextInt(dimensions - size.x),
+            Random.nextInt(dimensions - size.y)
+          )
+          tick += 1
+        }
+        var room = Room(location, size)
+        rooms = room :: rooms
+        mainRooms = room :: mainRooms
+      }
+    }
+
+    setAdjacentsAsConnected()
+    var c = true
+    while (c) {
+      c = connectConnections()
+    }
+    //println(s"Main Rooms: ${mainRooms.mkString("; ")}")
+    val rooml = mainRooms.filter(r =>
+      mainRooms
+        .filter(r2 => r2 != r)
+        .exists(r2 => {
+          !r2.connected.contains(r)
+        })
+    )
+    if (rooml.nonEmpty) {
+      done = false
+      val fr = rooml.minBy(r => r.connected.length)
+      //println(s"FR: $fr")
+      val sr = mainRooms
+        .filter(r2 => (!r2.connected.contains(fr) && r2 != fr))
+        .minBy(r2 => {
+          Math.sqrt(
+            ((fr.location.x - r2.location.x) * (fr.location.x - r2.location.x)) +
+              ((fr.location.y - r2.location.y) * (fr.location.y - r2.location.y))
+          )
+        })
+      //println(s"SR: $sr")
+      val p = Pathfinding.findHalfPath(
+        fr.getAllOnBorder(Random.nextInt(fr.getAllOnBorder.length)),
+        sr.getAllOnBorder(Random.nextInt(sr.getAllOnBorder.length)),
+        MapGeneration.fullyWalkableLevel(dimensions)
+      )
+      p.foreach(l => {
+        l.list.foreach(loc => rooms = Room(loc, Vec2(1, 1)) :: rooms)
+      })
+    }
+    done
+  }
 
   def draw(batch: PolygonSpriteBatch): Unit = {
     rooms.foreach(r => {
@@ -55,141 +165,7 @@ case class GeneratedMap(
       )
     })
   }
-  var connectTick = 0f
-  def connectedTo(r: Room, r2: Room): Boolean = {
-    val alreadyUsed = mutable.Set.empty[Connection]
-    var tick = 0
-    var conLists: List[connectPath] = List.empty
-    connections
-      .filter(c => c.rooms._1 == r || c.rooms._2 == r)
-      .foreach(c => conLists = connectPath(List(c)) :: conLists)
-    while (
-      !conLists.exists(c =>
-        c.list.exists(l => l.rooms._1 == r2 || l.rooms._2 == r2)
-      ) && tick < 1000
-    ) {
-      tick += 1
-      conLists.foreach(conOne =>
-        for {
-          con <- conOne.list
-          if (alreadyUsed).add(con)
-        } yield conOne.add(con)
-      )
-    }
-    (tick < 1000)
-  }
-  def sAdjC(): Unit = {
-    //sets adjacent rooms as connected
-    rooms.foreach(r => {
-      rooms
-        .filterNot(r2 => r eq r2)
-        .foreach(r2 => {
-          var level = new Level()
-          level.dimensions = dimensions
-          rooms.foreach(r => {
-            r.getAllTiles.foreach(t => level.walkables = t :: level.walkables)
-          })
-          if (Pathfinding.findHalfPath(r.location, r2.location, level).nonEmpty)
-            connections = Connection((r, r2)) :: connections
-        })
-    })
-  }
-  def generate(): Boolean = {
-    var done = true
-
-    //creates rooms
-    if (rooms.isEmpty) {
-      done = false
-      for (i <- 0 until (dimensions * roomDensity).toInt) {
-        var scale = roomMin + Random.nextInt((roomMax - roomMin) / 2)
-        var size: Vec2 = Vec2(-100, -100)
-        var location: Vec2 = Vec2(-100, -100)
-        var tick = 0
-        while (
-          (size == Vec2(-100, -100) || Room(location, size).getAllTiles.exists(
-            t => rooms.exists(r => r.getAllTiles.contains(t))
-          )) && tick <= 1000
-        ) {
-          size = Vec2(
-            scale + Random.nextInt((roomMax - roomMin) / 2),
-            scale + Random.nextInt((roomMax - roomMin) / 2)
-          )
-          location = Vec2(
-            Random.nextInt(dimensions - size.x),
-            Random.nextInt(dimensions - size.y)
-          )
-          tick += 1
-        }
-        rooms = Room(location, size) :: rooms
-        mainRooms = Room(location, size) :: mainRooms
-      }
-    }
-
-    sAdjC()
-
-    //generates connections
-    if (!isTotallyConnected) {
-      done = false
-      connectTick += 1
-      var r = mainRooms.minBy(r =>
-        connections.count(c => c.rooms._1 == r || c.rooms._2 == r)
-      )
-      var r2 = mainRooms
-        .filterNot(r2 => {
-          r2 == r || connectedTo(r, r2) || connectedTo(r2, r)
-        })
-        .minBy(r2 => {
-          Math.sqrt(
-            ((r2.location.x - r.location.x) * (r2.location.x - r.location.x)) + ((r2.location.y - r.location.y) * (r2.location.y - r.location.y))
-          )
-        })
-      var shortestPath: Option[Path] = None
-      r.getAllOnBorder.foreach(rT =>
-        r2.getAllOnBorder.foreach(r2T => {
-          var path =
-            Pathfinding.findHalfPath(rT, r2T, fullyWalkableLevel(dimensions))
-          path.foreach(p => {
-            if (shortestPath.nonEmpty) {
-              if ((p.list.length < shortestPath.head.list.length))
-                shortestPath = Some(p)
-            } else {
-              shortestPath = Some(p)
-            }
-          })
-        })
-      )
-      shortestPath.foreach(sp => {
-        sp.list.foreach(spL =>
-          if (!rooms.exists(r => r.getAllTiles.contains(spL.copy()))) {
-            rooms = Room(spL.copy(), Vec2(1, 1)) :: rooms
-          }
-        )
-      })
-    }
-    done
-  }
-
-  def isTotallyConnected: Boolean = mainRooms.forall(r =>
-    mainRooms.forall(r2 => {
-      connectedTo(r, r2)
-    })
-  )
-
   def doExport(): Level = {
-    var shiftX = 0 - rooms.minBy(m => m.location.x).location.x
-    var shiftY = 0 - rooms.minBy(m => m.location.x).location.x
-    rooms.foreach(m => {
-      m.location.x += shiftX
-      m.location.y += shiftY
-    })
-    var lengthX = rooms
-      .maxBy(m => m.location.x + m.size.x)
-      .location
-      .x + rooms.maxBy(m => m.location.x + m.size.x).size.x
-    var lengthY = rooms
-      .maxBy(m => m.location.y + m.size.y)
-      .location
-      .y + rooms.maxBy(m => m.location.y + m.size.y).size.y
     var level = new Level
     rooms.foreach(r => {
       r.getAllTiles.foreach(t => level.walkables = t :: level.walkables)
@@ -211,6 +187,8 @@ case class GeneratedMap(
 }
 
 case class Room(location: Vec2, size: Vec2) {
+  val id = Room.nextGid()
+  var connected = List.empty[Room]
   def getAllTiles: List[Vec2] = {
     var tiles = List.empty[Vec2]
     for (x <- location.x until location.x + size.x) {
@@ -229,6 +207,18 @@ case class Room(location: Vec2, size: Vec2) {
     tiles
   }
 
+  override def toString: String = {
+    s"Room[$id, connected=[${connected.map(_.id).sorted.mkString(",")}]]"
+  }
+}
+
+object Room {
+  private var gid = 0
+  private def nextGid(): Int = {
+    val id = gid
+    gid = gid + 1
+    id
+  }
 }
 
 case class Connection(rooms: (Room, Room)) {
@@ -276,8 +266,20 @@ class Level {
         screenUnit
       )
     })
-    batch.draw(ladderUp, upLadder.x * screenUnit, upLadder.y * screenUnit, screenUnit, screenUnit)
-    batch.draw(ladderDown, downLadder.x * screenUnit, downLadder.y * screenUnit, screenUnit, screenUnit)
+    batch.draw(
+      ladderUp,
+      upLadder.x * screenUnit,
+      upLadder.y * screenUnit,
+      screenUnit,
+      screenUnit
+    )
+    batch.draw(
+      ladderDown,
+      downLadder.x * screenUnit,
+      downLadder.y * screenUnit,
+      screenUnit,
+      screenUnit
+    )
 
   }
 }

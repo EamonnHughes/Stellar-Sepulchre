@@ -117,7 +117,8 @@ case class ExpSuf() extends suffix {
 case class DamageSuf() extends suffix {
   val names: List[String] = List(
     "knight",
-    "breaker"
+    "breaker",
+    "blade"
   )
 
   override def onSelect(game: Game): Unit = {

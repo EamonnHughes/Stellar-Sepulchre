@@ -14,7 +14,7 @@ import scala.util.Random
 class LevelGen(player: Player, game: Option[Game], world: World) extends Scene {
   var background: TextureWrapper = TextureWrapper.load("generate.png")
   var cameraLocation: Vec2 = Vec2(0, 0)
-  var genMap = GeneratedMap(45, 6, 10, .25f)
+  var genMap = GeneratedMap(45, 6, 10, .2f)
   var doneGenerating = false
   var level = new Level
 
@@ -22,14 +22,14 @@ class LevelGen(player: Player, game: Option[Game], world: World) extends Scene {
     new LevelGenControl(this)
   }
   override def update(delta: Float): Option[Scene] = {
-    if (!doneGenerating) { doneGenerating = genMap.generate() }
-    else {
+    while(!doneGenerating) doneGenerating = genMap.generate()
+
       if (level.walkables.isEmpty) {
         level = genMap.doExport()
         player.location = level.upLadder.copy()
         player.destination = level.upLadder.copy()
       }
-    }
+
     var gameNew = new Game(level, player, world)
     if (game.nonEmpty) {
       game.foreach(g => {
@@ -51,20 +51,21 @@ class LevelGen(player: Player, game: Option[Game], world: World) extends Scene {
 
   override def render(batch: PolygonSpriteBatch): Unit = {
     batch.setColor(Color.WHITE)
-    batch.draw(
+    /*batch.draw(
       background,
       -Trog.translationX * screenUnit,
       -Trog.translationY * screenUnit,
       Geometry.ScreenWidth,
       Geometry.ScreenHeight
-    )
+    )*/
+    genMap.draw(batch)
   }
 
   override def renderUI(batch: PolygonSpriteBatch): Unit = {
     Text.mediumFont.setColor(Color.WHITE)
     Text.mediumFont.draw(
       batch,
-      " Facing terrors beyond mortal comprehension(generating floor)",
+      "Generating",
       -Trog.translationX * screenUnit,
       -Trog.translationY * screenUnit + Geometry.ScreenHeight / 2
     )
