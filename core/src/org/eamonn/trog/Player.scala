@@ -12,6 +12,7 @@ import scala.util.Random
 
 case class Player() extends Actor {
   var archetype: Archetype = _
+  var archApplied = false
   def levelUp(): Unit = {
     stats.exp -=stats.nextExp
     stats.nextExp *= 2
@@ -80,20 +81,21 @@ case class Player() extends Actor {
       }
     }
     if (yourTurn) {
-      if (game.keysDown.contains(Keys.S)) {
+      if (game.keysDown.contains(Keys.S) || game.keysDown.contains(Keys.DOWN)) {
         destination.y = location.y - 1
         destination.x = location.x
-      } else if (game.keysDown.contains(Keys.W)) {
+      } else if (game.keysDown.contains(Keys.W) || game.keysDown.contains(Keys.UP)) {
         destination.y = location.y + 1
         destination.x = location.x
-      } else if (game.keysDown.contains(Keys.D)) {
+      } else if (game.keysDown.contains(Keys.D) || game.keysDown.contains(Keys.RIGHT)) {
         destination.y = location.y
         destination.x = location.x + 1
-      } else if (game.keysDown.contains(Keys.A)) {
+      } else if (game.keysDown.contains(Keys.A) || game.keysDown.contains(Keys.LEFT)) {
         destination.y = location.y
         destination.x = location.x - 1
       } else if (game.keysDown.contains(Keys.SPACE)) {
         yourTurn = false
+        game.enemyTurn = true
         if (!inCombat && stats.health < stats.maxHealth) stats.healing += 1
       } else if (game.clicked) {
         destination = game.mouseLocOnGrid.copy()

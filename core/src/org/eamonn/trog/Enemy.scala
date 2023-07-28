@@ -21,17 +21,21 @@ trait Enemy extends Actor {
     batch.draw(Square, location.x * screenUnit, location.y * screenUnit, screenUnit * stats.health/stats.maxHealth, screenUnit*.1f)
     batch.setColor(Color.WHITE)
     batch.draw(texture, location.x * screenUnit, location.y * screenUnit, screenUnit, screenUnit)
+    Text.smallFont.setColor(Color.WHITE)
+    Text.smallFont.draw(batch, stats.level.toString, location.x * screenUnit, (location.y + 1) * screenUnit)
   }
 }
 
-case class IceImp() extends Enemy {
-  var game: Game = _
+case class IceImp(gm: Game) extends Enemy {
+  var game: Game = gm
   var texture: TextureWrapper = TextureWrapper.load("iceimp.png")
   var stats: Stats = Stats()
-  stats.maxHealth = 5
-  stats.health = 5
-  stats.ac = 5
+  stats.level = Random.nextInt(game.floor) + 1
+  stats.maxHealth = 5*stats.level
+  stats.health = 5*stats.level
+  stats.ac = 3+stats.level
   stats.sightRad = 10
+  stats.exp = 10*stats.level
 
   override def update(delta: Float): Unit = {
 
@@ -49,7 +53,7 @@ case class IceImp() extends Enemy {
 
     if(stats.health <= 0){
       game.enemies = game.enemies.filterNot(e => e eq this)
-      game.player.stats.exp += 10
+      game.player.stats.exp += stats.exp
     }
   }
 

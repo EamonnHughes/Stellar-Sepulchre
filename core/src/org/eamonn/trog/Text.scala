@@ -18,6 +18,8 @@ object Text {
     )
     val parameter = new FreeTypeFontGenerator.FreeTypeFontParameter
     parameter.characters = FreeTypeFontGenerator.DEFAULT_CHARS + CharExtras
+    parameter.size = (screenUnit).toInt
+    largeFont = garbage.add(generator.generateFont(parameter))
     parameter.size = (screenUnit/2).toInt
     mediumFont = garbage.add(generator.generateFont(parameter))
     parameter.size = (screenUnit/3).toInt
@@ -29,6 +31,7 @@ object Text {
 
   private val CharExtras = ""
 
+  var largeFont: BitmapFont = _
   var mediumFont: BitmapFont = _
   var smallFont: BitmapFont = _
   var tinyFont: BitmapFont = _

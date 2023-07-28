@@ -27,7 +27,10 @@ class Game(lvl: Level, plr: Player, world: World) extends Scene {
   var enemies: List[Enemy] = List.empty
   override def init(): InputAdapter = {
     player.game = this
-    player.archetype.onSelect(this)
+    if(!player.archApplied){
+      player.archetype.onSelect(this)
+      player.archApplied = true
+    }
     player.stats.health = player.stats.maxHealth
     new GameControl(this)
   }
@@ -54,7 +57,7 @@ class Game(lvl: Level, plr: Player, world: World) extends Scene {
   }
   override def update(delta: Float): Option[Scene] = {
     if (!allSpawned) {
-      for (i <- 0 until 10) {
+      for (i <- 0 until (floor*10).toInt) {
         var loc = level.walkables.filterNot(w =>
           player.location == w && enemies.exists(e => e.location == w)
         )(
@@ -66,9 +69,8 @@ class Game(lvl: Level, plr: Player, world: World) extends Scene {
               .length
           )
         )
-        var enemy = IceImp()
+        var enemy = IceImp(this)
         enemy.location = loc
-        enemy.game = this
         enemies = enemy :: enemies
       }
       allSpawned = true
@@ -142,7 +144,9 @@ class Game(lvl: Level, plr: Player, world: World) extends Scene {
       }
     }
   }
+  def drawConsole(batch: PolygonSpriteBatch): Unit = {
 
+  }
   def renderUI(batch: PolygonSpriteBatch): Unit = {
     batch.setColor(Color.WHITE)
     Text.mediumFont.draw(
@@ -190,6 +194,7 @@ class Game(lvl: Level, plr: Player, world: World) extends Scene {
       -cameraLocation.x * screenUnit,
       -cameraLocation.y * screenUnit + Geometry.ScreenHeight - screenUnit
     )
+    drawConsole(batch)
     if (showingCharacterSheet) {
       batch.setColor(Color.DARK_GRAY)
       batch.draw(
