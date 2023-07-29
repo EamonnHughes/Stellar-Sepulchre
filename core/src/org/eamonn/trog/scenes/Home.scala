@@ -62,7 +62,6 @@ class Home(wld: World) extends Scene {
       -Trog.translationY * screenUnit + Geometry.ScreenHeight / 2
     )
     Text.largeFont.setColor(Color.WHITE)
-    if (!game.loadable) Text.largeFont.setColor(Color.GRAY)
     Text.largeFont.draw(
       batch,
       "\n\n\n\n  Select World: [W]",

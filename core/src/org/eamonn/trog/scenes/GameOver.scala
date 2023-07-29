@@ -5,20 +5,23 @@ import com.badlogic.gdx.Input.Keys
 import com.badlogic.gdx.InputAdapter
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.g2d.PolygonSpriteBatch
-import org.eamonn.trog.procgen.World
+import org.eamonn.trog.procgen.{Level, World}
 import org.eamonn.trog.{Geometry, Scene, Text, Trog}
 import org.eamonn.trog.scenes.Home
 
 class GameOver(world: World) extends Scene {
   var done = false
+  var home = new Home(world)
   override def init(): InputAdapter = {
+    SaveLoad.saveState(new Game(new Level, new Player, world), 0)
+    home.game = SaveLoad.loadState(0, world)
     new GameOverInput(this)
   }
 
   override def updateCamera(): Unit = {}
 
   override def update(delta: Float): Option[Scene] = {
-    if (done) Some(new Home(world)) else None
+    if (done) Some(home) else None
   }
 
   override def render(batch: PolygonSpriteBatch): Unit = {}
