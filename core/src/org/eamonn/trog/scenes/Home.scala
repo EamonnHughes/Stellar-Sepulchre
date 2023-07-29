@@ -14,6 +14,7 @@ class Home(wld: World) extends Scene {
   var next = false
   var game: Game = _
   var gameLoaded = false
+  var selecting = false
 
   override def updateCamera(): Unit = {}
 
@@ -22,7 +23,8 @@ class Home(wld: World) extends Scene {
   }
   override def update(delta: Float): Option[Scene] = {
 
-    if (gameLoaded && game.loadable) Some(game)
+    if(selecting) Some(new WorldSelect(this))
+    else if (gameLoaded && game.loadable) Some(game)
     else if (next) Some(new CharCreation(world))
     else None
   }
