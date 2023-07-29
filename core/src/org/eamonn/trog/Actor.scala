@@ -1,6 +1,6 @@
 package org.eamonn.trog
 
-trait Actor {
-var location: Vec2
+trait Actor extends Serializable {
+  var location: Vec2
   var stats: Stats
 }

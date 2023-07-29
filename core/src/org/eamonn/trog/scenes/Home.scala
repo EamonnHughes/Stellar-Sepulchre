@@ -9,10 +9,11 @@ import org.eamonn.trog.Trog.garbage
 import org.eamonn.trog.procgen.{GeneratedMap, Level, World}
 import org.eamonn.trog.util.TextureWrapper
 
-class Home(world: World) extends Scene {
-  var background: TextureWrapper = TextureWrapper.load("sepulctbg.png")
-  var timage: TextureWrapper = TextureWrapper.load("TitleImage.png")
+class Home(wld: World) extends Scene {
+  var world: World = wld
   var next = false
+  var game: Game = _
+  var gameLoaded = false
 
   override def updateCamera(): Unit = {}
 
@@ -21,21 +22,23 @@ class Home(world: World) extends Scene {
   }
   override def update(delta: Float): Option[Scene] = {
 
-    if (next) Some(new CharCreation(world)) else None
+    if (gameLoaded && game.loadable) Some(game)
+    else if (next) Some(new CharCreation(world))
+    else None
   }
 
   override def render(batch: PolygonSpriteBatch): Unit = {
     batch.setColor(Color.WHITE)
 
     batch.draw(
-      background,
+      Trog.homeBG,
       -Trog.translationX * screenUnit,
       -Trog.translationY * screenUnit,
       Geometry.ScreenWidth,
       Geometry.ScreenHeight
     )
     batch.draw(
-      timage,
+      Trog.titleIMG,
       -Trog.translationX * screenUnit,
       -Trog.translationY * screenUnit + Geometry.ScreenHeight - screenUnit * 8,
       screenUnit * 1600 / 64,
@@ -47,7 +50,22 @@ class Home(world: World) extends Scene {
     Text.largeFont.setColor(Color.WHITE)
     Text.largeFont.draw(
       batch,
-      "Descend: [ENTER]",
+      "  Descend: [ENTER]",
+      -Trog.translationX * screenUnit,
+      -Trog.translationY * screenUnit + Geometry.ScreenHeight / 2
+    )
+    if (!game.loadable) Text.largeFont.setColor(Color.GRAY)
+    Text.largeFont.draw(
+      batch,
+      "\n\n  Load Last Save: [L]",
+      -Trog.translationX * screenUnit,
+      -Trog.translationY * screenUnit + Geometry.ScreenHeight / 2
+    )
+    Text.largeFont.setColor(Color.WHITE)
+    if (!game.loadable) Text.largeFont.setColor(Color.GRAY)
+    Text.largeFont.draw(
+      batch,
+      "\n\n\n\n  Select World: [W]",
       -Trog.translationX * screenUnit,
       -Trog.translationY * screenUnit + Geometry.ScreenHeight / 2
     )

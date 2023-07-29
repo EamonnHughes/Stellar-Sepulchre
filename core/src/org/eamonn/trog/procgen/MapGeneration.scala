@@ -235,13 +235,13 @@ case class Connection(rooms: (Room, Room)) {
 
 }
 
-class Level {
-  var floor: TextureWrapper = TextureWrapper.load("floortile.png")
-  var ladderUp: TextureWrapper = TextureWrapper.load("ladderup.png")
-  var ladderDown: TextureWrapper = TextureWrapper.load("ladderdown.png")
+class Level extends Serializable{
+  def floorTile: TextureWrapper = Trog.floorTile
+  def ladderUpTile: TextureWrapper = Trog.ladderUpTile
+  def ladderDownTile: TextureWrapper = Trog.ladderDownTile
+  def wallTile: TextureWrapper = Trog.wallTile
   var downLadder: Vec2 = _
   var upLadder: Vec2 = _
-  var wall: TextureWrapper = TextureWrapper.load("walltile.png")
   var dimensions = 0
   var walkables: List[Vec2] = List.empty
   def draw(batch: PolygonSpriteBatch): Unit = {
@@ -250,7 +250,7 @@ class Level {
       w.getAdjacents.foreach(a => {
         if (!walkables.contains(a)) {
           batch.draw(
-            wall,
+            wallTile,
             a.x * screenUnit,
             a.y * screenUnit,
             screenUnit,
@@ -259,7 +259,7 @@ class Level {
         }
       })
       batch.draw(
-        floor,
+        floorTile,
         w.x * screenUnit,
         w.y * screenUnit,
         screenUnit,
@@ -267,14 +267,14 @@ class Level {
       )
     })
     batch.draw(
-      ladderUp,
+      ladderUpTile,
       upLadder.x * screenUnit,
       upLadder.y * screenUnit,
       screenUnit,
       screenUnit
     )
     batch.draw(
-      ladderDown,
+      ladderDownTile,
       downLadder.x * screenUnit,
       downLadder.y * screenUnit,
       screenUnit,

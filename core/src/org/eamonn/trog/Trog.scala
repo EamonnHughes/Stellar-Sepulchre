@@ -6,8 +6,8 @@ import com.badlogic.gdx.graphics.g2d.PolygonSpriteBatch
 import com.badlogic.gdx.math.Matrix4
 import com.badlogic.gdx.utils.ScreenUtils
 import com.badlogic.gdx.{ApplicationAdapter, Gdx, Input}
-import org.eamonn.trog.procgen.World
-import org.eamonn.trog.scenes.Home
+import org.eamonn.trog.procgen.{Level, World}
+import org.eamonn.trog.scenes.{Game, Home}
 import org.eamonn.trog.util.{GarbageCan, TextureWrapper}
 
 class Trog extends ApplicationAdapter {
@@ -23,14 +23,17 @@ class Trog extends ApplicationAdapter {
 
     batch = garbage.add(new PolygonSpriteBatch())
 
-    Trog.Square = TextureWrapper.load("Square.png")
-    Trog.Circle = TextureWrapper.load("Circle.png")
-
     //    Trog.sound = Trog.loadSound("triangle.mp3")
 
     Text.loadFonts()
-
-    setScene(new Home(World()))
+    var home: Home = new Home(World())
+     if(SaveLoad.worldList.nonEmpty){
+      home.world = SaveLoad.loadState(0, SaveLoad.worldList.head).world
+    } else {
+      SaveLoad.saveState(new Game(new Level, new Player, home.world), 0)
+    }
+    home.game = SaveLoad.loadState(0, home.world.name)
+    setScene(home)
   }
 
   override def render(): Unit = {
@@ -40,7 +43,11 @@ class Trog extends ApplicationAdapter {
     scene.updateCamera()
     ScreenUtils.clear(0f, 0f, 0f, 1)
     batch.begin()
-    batch.getTransformMatrix.setToTranslation(Trog.translationX*screenUnit, Trog.translationY*screenUnit, 0)
+    batch.getTransformMatrix.setToTranslation(
+      Trog.translationX * screenUnit,
+      Trog.translationY * screenUnit,
+      0
+    )
     scene.render(batch)
     scene.renderUI(batch)
     batch.end()
@@ -61,8 +68,17 @@ object Trog {
   implicit val garbage: GarbageCan = new GarbageCan
 
   var sound: Sound = _
-  var Square: TextureWrapper = _
-  var Circle: TextureWrapper = _
+  lazy val Square: TextureWrapper = TextureWrapper.load("Square.png")
+  lazy val Circle: TextureWrapper = TextureWrapper.load("Circle.png")
+  lazy val humanoidHostileTexture: TextureWrapper =
+    TextureWrapper.load("hostv1.png")
+  lazy val homeBG: TextureWrapper = TextureWrapper.load("sepulctbg.png")
+  lazy val titleIMG: TextureWrapper = TextureWrapper.load("TitleImage.png")
+  lazy val playerTexture: TextureWrapper = TextureWrapper.load("charv2.png")
+  lazy val floorTile: TextureWrapper = TextureWrapper.load("floortile.png")
+  lazy val ladderUpTile: TextureWrapper = TextureWrapper.load("ladderup.png")
+  lazy val ladderDownTile: TextureWrapper = TextureWrapper.load("ladderdown.png")
+  lazy val wallTile: TextureWrapper = TextureWrapper.load("walltile.png")
   var translationX = 0
   var translationY = 0
 

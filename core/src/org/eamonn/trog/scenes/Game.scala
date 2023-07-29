@@ -5,12 +5,15 @@ import com.badlogic.gdx.Input.Keys
 import com.badlogic.gdx.InputAdapter
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.g2d.PolygonSpriteBatch
+import org.eamonn.trog.SaveLoad.saveState
 import org.eamonn.trog.Scene
 import org.eamonn.trog.procgen.{GeneratedMap, Level, World}
 
 import scala.util.Random
 
-class Game(lvl: Level, plr: Player, world: World) extends Scene {
+class Game(lvl: Level, plr: Player, wld: World) extends Scene with Serializable {
+  var loadable = false
+  var world = wld
   var keysDown: List[Int] = List.empty
   var showingCharacterSheet = false
   var level: Level = lvl
@@ -24,7 +27,6 @@ class Game(lvl: Level, plr: Player, world: World) extends Scene {
   var clicked = false
   var mouseLocOnGrid: Vec2 = Vec2(0, 0)
   var enemies: List[Enemy] = List.empty
-  def saveState(): Unit = {}
   override def init(): InputAdapter = {
     player.game = this
     if (!player.archApplied) {
@@ -65,7 +67,7 @@ class Game(lvl: Level, plr: Player, world: World) extends Scene {
   }
   override def update(delta: Float): Option[Scene] = {
     if (keysDown.contains(Keys.S) && keysDown.contains(Keys.CONTROL_LEFT))
-      saveState()
+      saveState(this, 0)
     if (!allSpawned) {
       for (i <- 0 until (floor * 10).toInt) {
         var loc = level.walkables.filterNot(w =>

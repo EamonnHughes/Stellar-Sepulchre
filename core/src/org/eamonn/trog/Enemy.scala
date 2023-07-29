@@ -13,7 +13,7 @@ trait Enemy extends Actor {
   var game: Game
   var location: Vec2 = Vec2(0, 0)
   var dest: Vec2 = Vec2(0, 0)
-  var texture: TextureWrapper
+  def texture: TextureWrapper
   def update(delta: Float): Unit
   def attack(target: Actor): Unit
   def draw(batch: PolygonSpriteBatch): Unit = {
@@ -27,8 +27,8 @@ trait Enemy extends Actor {
 }
 
 case class Humanoid(gm: Game) extends Enemy {
+  def texture: TextureWrapper = Trog.humanoidHostileTexture
   var game: Game = gm
-  var texture: TextureWrapper = TextureWrapper.load("hostv1.png")
   var stats: Stats = Stats()
   stats.level = Random.nextInt(game.floor) + 1
   stats.maxHealth = 5*stats.level

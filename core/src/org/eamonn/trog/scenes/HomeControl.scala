@@ -23,6 +23,9 @@ class HomeControl(home: Home) extends InputAdapter {
     if (keycode == Keys.ENTER) {
       home.next = true
     }
+    if(keycode == Keys.L){
+      home.gameLoaded = true
+    }
 
     true
   }

@@ -16,7 +16,6 @@ class LevelGen(
     game: Option[Game],
     world: World
 ) extends Scene {
-  var background: TextureWrapper = TextureWrapper.load("generate.png")
   var cameraLocation: Vec2 = Vec2(0, 0)
   var genMap = GeneratedMap(45, 6, 10, .2f)
   var doneGenerating = false
@@ -35,6 +34,7 @@ class LevelGen(
     }
 
     var gameNew = new Game(level, player, world)
+    gameNew.loadable = true
     if (game.nonEmpty) {
       game.foreach(g => {
         gameNew = g
