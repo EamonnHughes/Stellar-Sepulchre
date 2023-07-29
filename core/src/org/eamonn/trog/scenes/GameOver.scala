@@ -15,6 +15,8 @@ class GameOver(world: World) extends Scene {
     new GameOverInput(this)
   }
 
+  override def updateCamera(): Unit = {}
+
   override def update(delta: Float): Option[Scene] = {
     if (done) Some(new Home(world)) else None
   }
@@ -23,7 +25,12 @@ class GameOver(world: World) extends Scene {
 
   override def renderUI(batch: PolygonSpriteBatch): Unit = {
     Text.mediumFont.setColor(Color.WHITE)
-    Text.mediumFont.draw(batch, " You have perished. \n Accept your fate: [ENTER]", -Trog.translationX * screenUnit, -Trog.translationY * screenUnit + Geometry.ScreenHeight / 2)
+    Text.mediumFont.draw(
+      batch,
+      " You have perished. \n Accept your fate: [ENTER]",
+      -Trog.translationX * screenUnit,
+      -Trog.translationY * screenUnit + Geometry.ScreenHeight / 2
+    )
   }
 }
 class GameOverInput(over: GameOver) extends InputAdapter {

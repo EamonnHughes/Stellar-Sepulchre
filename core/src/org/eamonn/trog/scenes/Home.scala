@@ -14,6 +14,8 @@ class Home(world: World) extends Scene {
   var timage: TextureWrapper = TextureWrapper.load("TitleImage.png")
   var next = false
 
+  override def updateCamera(): Unit = {}
+
   override def init(): InputAdapter = {
     new HomeControl(this)
   }
@@ -35,9 +37,9 @@ class Home(world: World) extends Scene {
     batch.draw(
       timage,
       -Trog.translationX * screenUnit,
-      -Trog.translationY * screenUnit + Geometry.ScreenHeight - screenUnit*8,
-      screenUnit*1600/64,
-      screenUnit*8
+      -Trog.translationY * screenUnit + Geometry.ScreenHeight - screenUnit * 8,
+      screenUnit * 1600 / 64,
+      screenUnit * 8
     )
   }
 

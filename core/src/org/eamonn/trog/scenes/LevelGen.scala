@@ -74,5 +74,7 @@ class LevelGen(
       -Trog.translationY * screenUnit + Geometry.ScreenHeight / 2
     )
   }
+
+  override def updateCamera(): Unit = {}
 }
 class LevelGenControl(gen: LevelGen) extends InputAdapter {}

@@ -24,9 +24,10 @@ class Game(lvl: Level, plr: Player, world: World) extends Scene {
   var clicked = false
   var mouseLocOnGrid: Vec2 = Vec2(0, 0)
   var enemies: List[Enemy] = List.empty
+  def saveState(): Unit = {}
   override def init(): InputAdapter = {
     player.game = this
-    if(!player.archApplied){
+    if (!player.archApplied) {
       player.archetype.onSelect(this)
       player.archApplied = true
     }
@@ -35,28 +36,38 @@ class Game(lvl: Level, plr: Player, world: World) extends Scene {
   }
 
   def updateCamera(): Unit = {
-    if (updatingCameraX) {
-      if (
-        Trog.translationX < (Geometry.ScreenWidth / 2 / screenUnit).toInt - player.location.x
-      ) Trog.translationX += 1
-      else if (
-        Trog.translationX > (Geometry.ScreenWidth / 2 / screenUnit).toInt - player.location.x
-      ) Trog.translationX -= 1
-      else updatingCameraX = false
-    }
-    if (updatingCameraY) {
-      if (
-        Trog.translationY < (Geometry.ScreenHeight / 2 / screenUnit).toInt - player.location.y
-      ) Trog.translationY += 1
-      else if (
-        Trog.translationY > (Geometry.ScreenHeight / 2 / screenUnit).toInt - player.location.y
-      ) Trog.translationY -= 1
-      else updatingCameraY = false
+    if (
+      player.location.x < -Trog.translationX + 5 || player.location.x > -Trog.translationX + (Geometry.ScreenWidth / screenUnit) - 5
+    ) updatingCameraX = true
+    if (
+      player.location.y < -Trog.translationY + 5 || player.location.y > -Trog.translationY + (Geometry.ScreenHeight / screenUnit) - 5
+    ) updatingCameraY = true
+    if (updatingCameraX || updatingCameraY) {
+      if (updatingCameraX) {
+        if (
+          Trog.translationX < (Geometry.ScreenWidth / 2 / screenUnit).toInt - player.location.x
+        ) Trog.translationX += 1
+        else if (
+          Trog.translationX > (Geometry.ScreenWidth / 2 / screenUnit).toInt - player.location.x
+        ) Trog.translationX -= 1
+        else updatingCameraX = false
+      }
+      if (updatingCameraY) {
+        if (
+          Trog.translationY < (Geometry.ScreenHeight / 2 / screenUnit).toInt - player.location.y
+        ) Trog.translationY += 1
+        else if (
+          Trog.translationY > (Geometry.ScreenHeight / 2 / screenUnit).toInt - player.location.y
+        ) Trog.translationY -= 1
+        else updatingCameraY = false
+      }
     }
   }
   override def update(delta: Float): Option[Scene] = {
+    if (keysDown.contains(Keys.S) && keysDown.contains(Keys.CONTROL_LEFT))
+      saveState()
     if (!allSpawned) {
-      for (i <- 0 until (floor*10).toInt) {
+      for (i <- 0 until (floor * 10).toInt) {
         var loc = level.walkables.filterNot(w =>
           player.location == w && enemies.exists(e => e.location == w)
         )(
@@ -74,13 +85,6 @@ class Game(lvl: Level, plr: Player, world: World) extends Scene {
       }
       allSpawned = true
     }
-    if (
-      player.location.x < -Trog.translationX + 5 || player.location.x > -Trog.translationX + (Geometry.ScreenWidth / screenUnit) - 5
-    ) updatingCameraX = true
-    if (
-      player.location.y < -Trog.translationY + 5 || player.location.y > -Trog.translationY + (Geometry.ScreenHeight / screenUnit) - 5
-    ) updatingCameraY = true
-    if (updatingCameraX || updatingCameraY) updateCamera()
     player.update(delta)
     enemies.foreach(e => e.update(delta))
     enemyTurn = false
@@ -141,10 +145,9 @@ class Game(lvl: Level, plr: Player, world: World) extends Scene {
       }
     }
   }
-  def drawConsole(batch: PolygonSpriteBatch): Unit = {
-
-  }
+  def drawConsole(batch: PolygonSpriteBatch): Unit = {}
   def renderUI(batch: PolygonSpriteBatch): Unit = {
+
     batch.setColor(Color.WHITE)
     Text.mediumFont.draw(
       batch,

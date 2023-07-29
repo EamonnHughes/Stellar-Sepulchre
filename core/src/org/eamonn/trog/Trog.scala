@@ -37,6 +37,7 @@ class Trog extends ApplicationAdapter {
 
     val delta = Gdx.graphics.getDeltaTime
     scene.update(delta) foreach setScene
+    scene.updateCamera()
     ScreenUtils.clear(0f, 0f, 0f, 1)
     batch.begin()
     batch.getTransformMatrix.setToTranslation(Trog.translationX*screenUnit, Trog.translationY*screenUnit, 0)

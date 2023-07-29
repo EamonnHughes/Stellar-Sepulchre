@@ -48,6 +48,8 @@ class CharCreation(world: World) extends Scene {
     })
 
   }
+
+  override def updateCamera(): Unit = {}
 }
 
 class CharCreationControl(creation: CharCreation) extends InputAdapter {
