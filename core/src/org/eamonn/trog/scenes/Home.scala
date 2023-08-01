@@ -43,8 +43,8 @@ class Home(wld: World) extends Scene {
       Trog.titleIMG,
       -Trog.translationX * screenUnit,
       -Trog.translationY * screenUnit + Geometry.ScreenHeight - screenUnit * 8,
-      screenUnit * 1600 / 64,
-      screenUnit * 8
+      Geometry.ScreenWidth,
+      (Geometry.ScreenWidth/200)*64
     )
   }
 
@@ -66,7 +66,7 @@ class Home(wld: World) extends Scene {
     Text.largeFont.setColor(Color.WHITE)
     Text.largeFont.draw(
       batch,
-      "\n\n\n\n  Select World: [W]",
+      "\n\n\n\n  New World: [W]",
       -Trog.translationX * screenUnit,
       -Trog.translationY * screenUnit + Geometry.ScreenHeight / 2
     )

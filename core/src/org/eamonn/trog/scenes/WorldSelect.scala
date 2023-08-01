@@ -36,7 +36,7 @@ class WorldSelect(home: Home) extends Scene {
     Text.mediumFont.setColor(Color.WHITE)
     Text.mediumFont.draw(
       batch,
-      "Are you sure you want to delete your current world\nand start a new one?\n[y/n]",
+      "Are you absolutely certain you want to delete your current \nworld and start a new one? This action is permanent, and will \nerase all progress you have made in the game.\n[y/n]",
       -Trog.translationX * screenUnit,
       (-Trog.translationY * screenUnit) + (Geometry.ScreenHeight / 2) + (screenUnit * 4)
     )

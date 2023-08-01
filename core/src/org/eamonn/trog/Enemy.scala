@@ -33,7 +33,8 @@ case class Humanoid(gm: Game) extends Enemy {
   def texture: TextureWrapper = Trog.humanoidHostileTexture
   var game: Game = gm
   var stats: Stats = Stats()
-  stats.level = Random.nextInt(game.floor) + 1
+  stats.level = Random.nextInt(game.floor) + 1 + (Random.nextInt(11)/10)
+  name = "Bandit "+stats.level
   stats.maxHealth = 5*stats.level
   stats.health = 5*stats.level
   stats.ac = 3+stats.level
