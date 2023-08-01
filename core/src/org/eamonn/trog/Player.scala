@@ -13,8 +13,10 @@ import scala.util.Random
 case class Player() extends Actor {
   var archetype: Archetype = _
   var archApplied = false
+  var equipment: Equipment = new Equipment
+  equipment.weapon = Some(Sword(0))
   def levelUp(): Unit = {
-    stats.exp -=stats.nextExp
+    stats.exp -= stats.nextExp
     stats.nextExp *= 2
     stats.maxHealth += d(2, 5)
     archetype.onLevelUp(game)
@@ -25,6 +27,7 @@ case class Player() extends Actor {
     if (location == game.level.downLadder) game.descending = true
   }
   var resting = false
+  var name = "Player"
   var dead = false
   var stats = Stats()
   var inCombat = false
@@ -36,10 +39,12 @@ case class Player() extends Actor {
   var tick = 0f
   var speed = .25f
   def attack(target: Enemy): Unit = {
-    if (d(10) + stats.attackMod > target.stats.ac) {
-      var damage = (d(3) + stats.damageMod)
-      if(Random.nextInt(100) <= stats.critChance) damage = (stats.critMod*damage).toInt
-      target.stats.health -= damage
+    if (equipment.weapon.nonEmpty) {
+      equipment.weapon.foreach(w => w.onAttack(this, target))
+    } else {
+      if (d(10) > target.stats.ac) {
+        target.stats.health -= 1
+      }
     }
   }
   def draw(batch: PolygonSpriteBatch) = {
@@ -53,7 +58,7 @@ case class Player() extends Actor {
     )
   }
   def update(delta: Float) = {
-    if(stats.health <= 0) dead = true
+    if (stats.health <= 0) dead = true
     if (resting) speed = .05f else speed = .25f
     if (stats.healing > 4 && stats.health < stats.maxHealth) {
       stats.health += 1
@@ -84,13 +89,19 @@ case class Player() extends Actor {
       if (game.keysDown.contains(Keys.S) || game.keysDown.contains(Keys.DOWN)) {
         destination.y = location.y - 1
         destination.x = location.x
-      } else if (game.keysDown.contains(Keys.W) || game.keysDown.contains(Keys.UP)) {
+      } else if (
+        game.keysDown.contains(Keys.W) || game.keysDown.contains(Keys.UP)
+      ) {
         destination.y = location.y + 1
         destination.x = location.x
-      } else if (game.keysDown.contains(Keys.D) || game.keysDown.contains(Keys.RIGHT)) {
+      } else if (
+        game.keysDown.contains(Keys.D) || game.keysDown.contains(Keys.RIGHT)
+      ) {
         destination.y = location.y
         destination.x = location.x + 1
-      } else if (game.keysDown.contains(Keys.A) || game.keysDown.contains(Keys.LEFT)) {
+      } else if (
+        game.keysDown.contains(Keys.A) || game.keysDown.contains(Keys.LEFT)
+      ) {
         destination.y = location.y
         destination.x = location.x - 1
       } else if (game.keysDown.contains(Keys.SPACE)) {
@@ -134,4 +145,3 @@ case class Player() extends Actor {
     }
   }
 }
-

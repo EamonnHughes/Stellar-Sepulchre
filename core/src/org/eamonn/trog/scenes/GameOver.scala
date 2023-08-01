@@ -14,7 +14,8 @@ class GameOver(world: World) extends Scene {
   var home = new Home(world)
   override def init(): InputAdapter = {
     SaveLoad.saveState(new Game(new Level, new Player, world), 0)
-    home.game = SaveLoad.loadState(0, world)
+    home.game = SaveLoad.loadState(0)
+    home.world = home.game.world
     new GameOverInput(this)
   }
 

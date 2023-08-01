@@ -11,8 +11,14 @@ import org.eamonn.trog.procgen.{GeneratedMap, Level, World}
 
 import scala.util.Random
 
-class Game(lvl: Level, plr: Player, wld: World) extends Scene with Serializable {
+class Game(lvl: Level, plr: Player, wld: World)
+    extends Scene
+    with Serializable {
+  def addMessage(message: String): Unit = {
+    messages = message :: messages
+  }
   var loadable = false
+  var messages = List.empty[String]
   var world = wld
   var keysDown: List[Int] = List.empty
   var showingCharacterSheet = false
@@ -147,7 +153,21 @@ class Game(lvl: Level, plr: Player, wld: World) extends Scene with Serializable 
       }
     }
   }
-  def drawConsole(batch: PolygonSpriteBatch): Unit = {}
+  def drawConsole(batch: PolygonSpriteBatch): Unit = {
+    var log = messages
+      .take(5)
+      .reverse
+      .mkString("\n")
+
+    Text.smallFont.setColor(Color.WHITE)
+    Text.smallFont.draw(
+      batch,
+      log,
+      (-Trog.translationX * screenUnit + screenUnit),
+      ((-Trog.translationY + 5) * screenUnit)
+    )
+
+  }
   def renderUI(batch: PolygonSpriteBatch): Unit = {
 
     batch.setColor(Color.WHITE)
@@ -207,6 +227,17 @@ class Game(lvl: Level, plr: Player, wld: World) extends Scene with Serializable 
         (Geometry.ScreenHeight - (4 * screenUnit))
       )
       Text.mediumFont.setColor(Color.WHITE)
+      def uiHelmName: String = {
+        "None"
+      }
+      def uiArmorName: String = {
+        "None"
+      }
+      def uiWeaponName: String = {
+        var str = "None"
+        player.equipment.weapon.foreach(w => str = w.name)
+        str
+      }
       Text.mediumFont.draw(
         batch,
         s" \n " +
@@ -220,7 +251,10 @@ class Game(lvl: Level, plr: Player, wld: World) extends Scene with Serializable 
           s"Attack Bonus: ${player.stats.attackMod}\n " +
           s"Damage Bonus: ${player.stats.damageMod}\n " +
           s"Crit Modifier: %${player.stats.critMod * 100}\n " +
-          s"Crit Chance: %${player.stats.critChance}",
+          s"Crit Chance: %${player.stats.critChance}\n\n " +
+          s"Helm: ${uiHelmName}\n " +
+          s"Body Armor: ${uiArmorName}\n " +
+          s"Weapon: ${uiWeaponName}",
         -Trog.translationX * screenUnit + (2 * screenUnit),
         (-Trog.translationY * screenUnit) + Geometry.ScreenHeight - (2 * screenUnit)
       )

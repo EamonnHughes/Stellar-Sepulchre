@@ -27,12 +27,12 @@ class Trog extends ApplicationAdapter {
 
     Text.loadFonts()
     var home: Home = new Home(World())
-     if(SaveLoad.worldList.nonEmpty){
-      home.world = SaveLoad.loadState(0, SaveLoad.worldList.head).world
+     if(SaveLoad.getSaveFile(0).exists()){
+      home.world = SaveLoad.loadState(0).world
     } else {
       SaveLoad.saveState(new Game(new Level, new Player, home.world), 0)
     }
-    home.game = SaveLoad.loadState(0, home.world.name)
+    home.game = SaveLoad.loadState(0)
     setScene(home)
   }
 

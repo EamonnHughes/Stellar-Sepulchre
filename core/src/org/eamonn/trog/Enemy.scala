@@ -27,6 +27,9 @@ trait Enemy extends Actor {
 }
 
 case class Humanoid(gm: Game) extends Enemy {
+  var equipment: Equipment = new Equipment
+  var name: String = "Bandit"
+  equipment.weapon = Some(Dagger(0))
   def texture: TextureWrapper = Trog.humanoidHostileTexture
   var game: Game = gm
   var stats: Stats = Stats()
@@ -54,10 +57,15 @@ case class Humanoid(gm: Game) extends Enemy {
     if(stats.health <= 0){
       game.enemies = game.enemies.filterNot(e => e eq this)
       game.player.stats.exp += stats.exp
+      game.addMessage(name + " has been slain")
     }
   }
 
   override def attack(target: Actor): Unit = {
-   if(d(10) > target.stats.ac) target.stats.health -= d(2)
+    if(equipment.weapon.nonEmpty){
+
+      equipment.weapon.foreach(w => w.onAttack(this, target))
+    } else if(d(10) > target.stats.ac) target.stats.health -= 1
   }
+
 }
