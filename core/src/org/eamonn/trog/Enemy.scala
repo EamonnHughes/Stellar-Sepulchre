@@ -32,14 +32,20 @@ case class Humanoid(gm: Game) extends Enemy {
   equipment.weapon = Some(Dagger(0))
   def texture: TextureWrapper = Trog.humanoidHostileTexture
   var game: Game = gm
-  var stats: Stats = Stats()
-  stats.level = Random.nextInt(game.floor) + 1 + (Random.nextInt(11)/10)
-  name = "Bandit "+stats.level
-  stats.maxHealth = 5*stats.level
-  stats.health = 5*stats.level
-  stats.ac = 3+stats.level
-  stats.sightRad = 10
-  stats.exp = 5*stats.level
+  var lev: Int = Random.nextInt(game.floor) + 1 + (Random.nextInt(11)/10)
+  var stats: Stats = makeStats(
+    mAc = (3 + lev) min 9,
+    mExp = 5*lev,
+    mNExp = 0,
+    mMHeal = 5*lev,
+    mHeal = 5*lev,
+    mSrad = 7,
+    mLev = lev,
+    mDmg = 0,
+    mAtk = .35f*lev,
+    mCrc = 3+(lev min 10),
+    mCrm = 1.9f+(lev*.1f)
+  )
 
   override def update(delta: Float): Unit = {
 

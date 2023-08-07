@@ -8,11 +8,16 @@ class Equipment extends Serializable {
 }
 
 trait Item {
+  var location: Option[Vec2]
+  var possessor: Option[Actor]
+}
+
+trait Gear extends Item{
   def onEquip(equipper: Actor)
   def onUnequip(equipper: Actor)
 }
 
-trait Weapon extends Item {
+trait Weapon extends Gear {
   def name: String = {
     if (mod > 0) {
       s"${weaponType} (+$mod)"
@@ -34,7 +39,7 @@ case class Sword(var mod: Int) extends Weapon {
       if (Random.nextInt(100) <= attacker.stats.critChance) {
         damage = (attacker.stats.critMod * damage).toInt
       }
-      target.stats.health -= damage
+      target.stats.health -= damage.toInt
     }
   }
 
@@ -43,6 +48,8 @@ case class Sword(var mod: Int) extends Weapon {
   override def onUnequip(equipper: Actor): Unit = {}
 
   var weaponType: String = "Sword"
+  override var location: Option[Vec2] = None
+  override var possessor: Option[Actor] = None
 }
 
 case class Dagger(var mod: Int) extends Weapon {
@@ -51,7 +58,7 @@ case class Dagger(var mod: Int) extends Weapon {
       var damage = (d(3) + attacker.stats.damageMod + mod)
       if (Random.nextInt(100) <= attacker.stats.critChance)
         damage = (attacker.stats.critMod * damage).toInt
-      target.stats.health -= damage
+      target.stats.health -= damage.toInt
     }
   }
 
@@ -59,5 +66,6 @@ case class Dagger(var mod: Int) extends Weapon {
 
   override def onUnequip(equipper: Actor): Unit = {}
   var weaponType: String = "Dagger"
-
+  override var location: Option[Vec2] = None
+  override var possessor: Option[Actor] = None
 }

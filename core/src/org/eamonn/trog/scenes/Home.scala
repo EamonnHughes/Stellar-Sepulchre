@@ -22,7 +22,6 @@ class Home(wld: World) extends Scene {
     new HomeControl(this)
   }
   override def update(delta: Float): Option[Scene] = {
-
     if(selecting) Some(new WorldSelect(this))
     else if (gameLoaded && game.loadable) Some(game)
     else if (next) Some(new CharCreation(world))

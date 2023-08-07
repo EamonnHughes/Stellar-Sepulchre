@@ -12,9 +12,31 @@ import scala.util.Random
 
 case class Player() extends Actor {
   var archetype: Archetype = _
-  var archApplied = false
+  var initialized = false
+  var healing = 0f
+  var healingFactor = 0.1f
   var equipment: Equipment = new Equipment
-  equipment.weapon = Some(Sword(0))
+  var resting = false
+  var name = ""
+  var dead = false
+  var stats: Stats = basePlayerStats()
+  var inCombat = false
+  var game: Game = _
+  var location: Vec2 = Vec2(0, 0)
+  var destination: Vec2 = Vec2(0, 0)
+  var yourTurn = true
+  var tick = 0f
+  var speed = .25f
+  def initially(gme: Game): Unit = {
+    val weapon = Sword(0)
+    gme.items = weapon :: gme.items
+    equipment.weapon = Some(weapon)
+    archetype.onSelect(gme)
+    game = gme
+    stats.health = stats.maxHealth
+    initialized = true
+  }
+  def playerIcon: TextureWrapper = Trog.playerTexture
   def levelUp(): Unit = {
     stats.exp -= stats.nextExp
     stats.nextExp *= 2
@@ -26,18 +48,6 @@ case class Player() extends Actor {
   def tryToGoDown(): Unit = {
     if (location == game.level.downLadder) game.descending = true
   }
-  var resting = false
-  var name = "Player"
-  var dead = false
-  var stats = Stats()
-  var inCombat = false
-  def playerIcon: TextureWrapper = Trog.playerTexture
-  var game: Game = _
-  var location: Vec2 = Vec2(0, 0)
-  var destination: Vec2 = Vec2(0, 0)
-  var yourTurn = true
-  var tick = 0f
-  var speed = .25f
   def attack(target: Enemy): Unit = {
     if (equipment.weapon.nonEmpty) {
       equipment.weapon.foreach(w => w.onAttack(this, target))
@@ -59,17 +69,17 @@ case class Player() extends Actor {
   }
   def update(delta: Float) = {
     if (stats.health <= 0) dead = true
-    if (resting) speed = .05f else speed = .25f
-    if (stats.healing > 4 && stats.health < stats.maxHealth) {
+    if (resting) speed = .005f else speed = .25f
+    if (healing > 4 && stats.health < stats.maxHealth) {
       stats.health += 1
-      stats.healing = 0
+      healing = 0
     }
     if (stats.exp >= stats.nextExp) {
       levelUp()
     }
     if (
       game.enemies.exists(e => {
-        var path = Pathfinding.findPath(e.location, location, game.level)
+        val path = Pathfinding.findPath(e.location, location, game.level)
         var dist = Int.MaxValue
         path.foreach(p => {
           dist = p.list.length
@@ -105,9 +115,8 @@ case class Player() extends Actor {
         destination.y = location.y
         destination.x = location.x - 1
       } else if (game.keysDown.contains(Keys.SPACE)) {
-        yourTurn = false
+        resting = true
         game.enemyTurn = true
-        if (!inCombat && stats.health < stats.maxHealth) stats.healing += 1
       } else if (game.clicked) {
         destination = game.mouseLocOnGrid.copy()
       } else if (game.keysDown.contains(Keys.R)) {
@@ -120,15 +129,12 @@ case class Player() extends Actor {
         tryToGoDown()
       }
     }
-    if (resting && (stats.health == stats.maxHealth || inCombat)) {
-      resting = false
-    }
     if ((destination != location || resting) && yourTurn) {
       if (!resting) {
-        var path = Pathfinding.findPath(location, destination, game.level)
+        val path = Pathfinding.findPath(location, destination, game.level)
         path.foreach(p => {
-          var dest = p.list.reverse(1).copy()
-          var enemy = game.enemies.filter(e => e.location == dest)
+          val dest = p.list.reverse(1).copy()
+          val enemy = game.enemies.filter(e => e.location == dest)
           if (enemy.isEmpty) { location = dest.copy() }
           else {
             attack(enemy.head)
@@ -137,11 +143,14 @@ case class Player() extends Actor {
         })
       } else {
         destination = location.copy()
-        if (!inCombat && stats.health < stats.maxHealth) stats.healing += 1
+        if (!inCombat && stats.health < stats.maxHealth) (healing += healingFactor*10)
       }
-      if (!inCombat && stats.health < stats.maxHealth) stats.healing += 1
+      if (stats.health < stats.maxHealth) healing += healingFactor
       yourTurn = false
       game.enemyTurn = true
+    }
+    if (resting && (stats.health == stats.maxHealth || inCombat)) {
+      resting = false
     }
   }
 }

@@ -5,7 +5,7 @@ import com.badlogic.gdx.Input.Keys
 import com.badlogic.gdx.InputAdapter
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.g2d.PolygonSpriteBatch
-import org.eamonn.trog.SaveLoad.saveState
+import org.eamonn.trog.SaveLoad.{loadState, saveState}
 import org.eamonn.trog.Scene
 import org.eamonn.trog.procgen.{GeneratedMap, Level, World}
 
@@ -17,6 +17,7 @@ class Game(lvl: Level, plr: Player, wld: World)
   def addMessage(message: String): Unit = {
     messages = message :: messages
   }
+  var saveTick = 0f
   var loadable = false
   var messages = List.empty[String]
   var world = wld
@@ -29,17 +30,22 @@ class Game(lvl: Level, plr: Player, wld: World)
   var floor = 1
   var updatingCameraX = false
   var updatingCameraY = false
+  var mainMenuing = false
   var allSpawned = false
   var clicked = false
   var mouseLocOnGrid: Vec2 = Vec2(0, 0)
   var enemies: List[Enemy] = List.empty
+  var items: List[Item] = List.empty
+  def home: Home = {
+    var h = new Home(world)
+    h.game = loadState(0)
+    h
+  }
   override def init(): InputAdapter = {
     player.game = this
-    if (!player.archApplied) {
-      player.archetype.onSelect(this)
-      player.archApplied = true
+    if (!player.initialized) {
+      player.initially(this)
     }
-    player.stats.health = player.stats.maxHealth
     new GameControl(this)
   }
 
@@ -72,8 +78,14 @@ class Game(lvl: Level, plr: Player, wld: World)
     }
   }
   override def update(delta: Float): Option[Scene] = {
-    if (keysDown.contains(Keys.S) && keysDown.contains(Keys.CONTROL_LEFT))
-      saveState(this, 0)
+    if (keysDown.contains(Keys.CONTROL_LEFT)) {
+      if (keysDown.contains(Keys.S)) {
+        saveState(this, 0)
+      } else if (keysDown.contains(Keys.Q)) {
+        saveState(this, 0)
+        mainMenuing = true
+      }
+    }
     if (!allSpawned) {
       for (i <- 0 until (floor * 10).toInt) {
         var loc = level.walkables.filterNot(w =>
@@ -95,9 +107,17 @@ class Game(lvl: Level, plr: Player, wld: World)
     }
     player.update(delta)
     enemies.foreach(e => e.update(delta))
-    enemyTurn = false
+    if (enemyTurn) {
+      saveTick += 1
+      enemyTurn = false
+    }
+    if (saveTick >= 5) {
+      saveState(this, 0)
+      saveTick = 0f
+    }
     if (descending) floor += 1
-    if (descending) Some(new LevelGen(player, Some(this), world))
+    if (mainMenuing) Some(home)
+    else if (descending) Some(new LevelGen(player, Some(this), world))
     else if (player.dead) Some(new GameOver(world))
     else None
   }
@@ -173,7 +193,7 @@ class Game(lvl: Level, plr: Player, wld: World)
     batch.setColor(Color.WHITE)
     Text.mediumFont.draw(
       batch,
-      s"Level ${player.stats.level} ${player.archetype.name} on floor ${floor}",
+      s"${player.name}, the level ${player.stats.level} ${player.archetype.name} on floor ${floor}",
       -Trog.translationX * screenUnit,
       -Trog.translationY * screenUnit + Geometry.ScreenHeight
     )
@@ -241,6 +261,7 @@ class Game(lvl: Level, plr: Player, wld: World)
       Text.mediumFont.draw(
         batch,
         s" \n " +
+          s"Name: ${player.name}\n " +
           s"Archetype: ${player.archetype.name}\n " +
           s"Level: ${player.stats.level}\n " +
           s"Experience: ${player.stats.exp}/${player.stats.nextExp}\n " +

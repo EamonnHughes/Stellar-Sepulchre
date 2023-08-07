@@ -14,14 +14,24 @@ import java.awt.RenderingHints.Key
 class CharCreation(world: World) extends Scene {
   var arches: List[Archetype] = world.archetypeList
   var player: Player = Player()
-  var ready = false
+  var name = ""
   var selectedArch = 0
+  var entered = false
   override def init(): InputAdapter = {
     new CharCreationControl(this)
   }
   override def update(delta: Float): Option[Scene] = {
-    if (ready) player.archetype = arches(selectedArch)
-    if (ready)
+    if (entered && (player.archetype eq null)) {
+      player.archetype = arches(selectedArch)
+      entered = false
+    }
+    if (name != "" && entered && (player.archetype ne null)) {
+      player.name = name
+      entered = false
+    } else {
+      entered = false
+    }
+    if (!(player.archetype eq null) && player.name != "")
       Some(new LevelGen(player, None, world))
     else None
   }
@@ -30,22 +40,31 @@ class CharCreation(world: World) extends Scene {
 
   override def renderUI(batch: PolygonSpriteBatch): Unit = {
     Text.mediumFont.setColor(Color.WHITE)
-    Text.mediumFont.draw(
-      batch,
-      s" Select an Archetype:",
-      -Trog.translationX * screenUnit,
-      -Trog.translationY * screenUnit + Geometry.ScreenHeight / 2
-    )
-    arches.zipWithIndex.foreach({ case (a, i) =>
-      if (selectedArch == i) Text.mediumFont.setColor(Color.WHITE)
-      else Text.mediumFont.setColor(Color.LIGHT_GRAY)
+    if (player.archetype eq null) {
       Text.mediumFont.draw(
         batch,
-        s"[${i + 1}] ${a.name}",
+        s" Select an Archetype:",
         -Trog.translationX * screenUnit,
-        (-Trog.translationY * screenUnit) + (Geometry.ScreenHeight / 2) - (screenUnit * (i + 1))
+        -Trog.translationY * screenUnit + Geometry.ScreenHeight / 2
       )
-    })
+      arches.zipWithIndex.foreach({ case (a, i) =>
+        if (selectedArch == i) Text.mediumFont.setColor(Color.WHITE)
+        else Text.mediumFont.setColor(Color.LIGHT_GRAY)
+        Text.mediumFont.draw(
+          batch,
+          s"[${i + 1}] ${a.name}",
+          -Trog.translationX * screenUnit,
+          (-Trog.translationY * screenUnit) + (Geometry.ScreenHeight / 2) - (screenUnit * (i + 1))
+        )
+      })
+    } else {
+      Text.mediumFont.draw(
+        batch,
+        s" Enter Your Name: $name",
+        -Trog.translationX * screenUnit,
+        -Trog.translationY * screenUnit + Geometry.ScreenHeight / 2
+      )
+    }
 
   }
 
@@ -69,7 +88,18 @@ class CharCreationControl(creation: CharCreation) extends InputAdapter {
 
   override def keyDown(keycode: Int): Boolean = {
     if (keycode == Keys.ENTER) {
-      creation.ready = true
+      creation.entered = true
+    }
+    if(!(creation.player.name eq null)) {
+      if (keycode == Keys.BACKSPACE) {
+        creation.name = creation.name.dropRight(1)
+      } else if (keycode == Keys.SPACE && creation.name.length < 20) {
+        creation.name = creation.name + " "
+      } else if (
+        Keys.toString(keycode).length == 1 && creation.name.length < 20
+      ) {
+        creation.name = creation.name + Keys.toString(keycode)
+      }
     }
     true
   }

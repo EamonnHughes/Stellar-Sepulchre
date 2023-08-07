@@ -26,6 +26,7 @@ class WorldSelect(home: Home) extends Scene {
   override def update(delta: Float): Option[Scene] = {
     if(done) {
       home.world = world
+      home.game = SaveLoad.loadState(0)
     }
     if (done) Some(home) else None
   }
