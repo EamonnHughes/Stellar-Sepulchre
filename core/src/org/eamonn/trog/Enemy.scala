@@ -48,20 +48,24 @@ case class Criminal() extends Enemy {
   var game: Game = _
   var lev: Int = _
   var name: String = _
-
   var stats: Stats = _
   def initialize(gm: Game, loc: Vec2): Unit = {
     game = gm
     location = loc
-    game.enemies = this :: game.enemies
-    val weapon = makeCommonItem(0, game, 1, 3)
+    lev = Random.nextInt(game.floor) + 1 + (Random.nextInt(11) / 10)
+    var weapon: Weapon = makeCommonItem(0, game, 1, 3)
+    if (lev > 4) {
+      weapon = makeCommonItem(0, game, 1, 6)
+    }
     weapon.possessor = Some(this)
     weapon.location = None
     game.items = weapon :: game.items
     equipment.weapon = Some(weapon)
-    lev = Random.nextInt(game.floor) + 1 + (Random.nextInt(11) / 10)
-    name = enemyNames.getCriminalName(lev)(Random.nextInt(enemyNames.getCriminalName(lev).length)).substring(1)
-
+    name = enemyNames
+      .getCriminalName(lev)(
+        Random.nextInt(enemyNames.getCriminalName(lev).length)
+      )
+      .substring(1)
     stats = makeStats(
       mAc = (3 + lev) min 9,
       mExp = 5 * lev,
@@ -75,8 +79,9 @@ case class Criminal() extends Enemy {
       mCrc = 3 + (lev min 10),
       mCrm = 1.9f + (lev * .1f)
     )
+    game.enemies = this :: game.enemies
   }
-  def texture: TextureWrapper = Trog.humanoidHostileTexture
+  def texture: TextureWrapper = TextureWrapper.load(s"Criminal${lev min 5}.png")
 
   override def update(delta: Float): Unit = {
 
