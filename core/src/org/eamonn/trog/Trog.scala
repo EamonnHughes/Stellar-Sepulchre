@@ -69,12 +69,8 @@ object Trog {
 
   var sound: Sound = _
   lazy val Square: TextureWrapper = TextureWrapper.load("Square.png")
-  lazy val Circle: TextureWrapper = TextureWrapper.load("Circle.png")
-  lazy val humanoidHostileTexture: TextureWrapper =
-    TextureWrapper.load("hostv1.png")
   lazy val homeBG: TextureWrapper = TextureWrapper.load("sepulctbg.png")
   lazy val titleIMG: TextureWrapper = TextureWrapper.load("TitleImage.png")
-  lazy val playerTexture: TextureWrapper = TextureWrapper.load("charv2.png")
   lazy val floorTile: TextureWrapper = TextureWrapper.load("floortile.png")
   lazy val ladderUpTile: TextureWrapper = TextureWrapper.load("ladderup.png")
   lazy val ladderDownTile: TextureWrapper = TextureWrapper.load("ladderdown.png")

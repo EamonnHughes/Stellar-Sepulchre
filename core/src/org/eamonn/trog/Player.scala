@@ -37,7 +37,7 @@ case class Player() extends Actor {
     stats.health = stats.maxHealth
     initialized = true
   }
-  def playerIcon: TextureWrapper = Trog.playerTexture
+  def playerIcon: TextureWrapper = TextureWrapper.load(s"Player${archetype.metaArchName}.png")
   def levelUp(): Unit = {
     stats.exp -= stats.nextExp
     stats.nextExp *= 2
