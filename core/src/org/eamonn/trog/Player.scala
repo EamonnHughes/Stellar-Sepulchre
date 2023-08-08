@@ -4,7 +4,8 @@ import com.badlogic.gdx.Input.Keys
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.g2d.PolygonSpriteBatch
 import org.eamonn.trog.Trog.garbage
-import org.eamonn.trog.character.{Archetype, Archetypes}
+import org.eamonn.trog.character.{Archetype, Archetypes, Equipment}
+import org.eamonn.trog.items.{HealingPotion, makeCommonWeapon}
 import org.eamonn.trog.scenes.Game
 import org.eamonn.trog.util.TextureWrapper
 
@@ -33,10 +34,16 @@ case class Player() extends Actor {
   var clickTick = 0f
   def initially(gme: Game): Unit = {
     game = gme
-    val weapon = makeCommonItem(0, game, 1, 6)
+    val weapon = makeCommonWeapon(0, game, 1, 6)
     weapon.possessor = Some(this)
+    weapon.game = game
     game.items = weapon :: game.items
     equipment.weapon = Some(weapon)
+    val potion: HealingPotion = HealingPotion()
+    potion.number = 10
+    potion.possessor = Some(this)
+    potion.game = game
+    game.items = potion :: game.items
     archetype.onSelect(game)
     stats.health = stats.maxHealth
     initialized = true
@@ -44,6 +51,7 @@ case class Player() extends Actor {
   def playerIcon: TextureWrapper =
     TextureWrapper.load(s"Player${archetype.metaArchName}.png")
   def levelUp(): Unit = {
+    game.addMessage("You levelled up")
     stats.exp -= stats.nextExp
     stats.nextExp *= 2
     stats.maxHealth += d(2, 5)
@@ -74,6 +82,13 @@ case class Player() extends Actor {
     )
   }
   def update(delta: Float) = {
+    if (!yourTurn) {
+      tick += delta
+      if (tick > speed) {
+        yourTurn = true
+        tick = 0f
+      }
+    }
     clickTick += delta
     if (clickTick > .325f) {
       clickTick = 0f
@@ -105,13 +120,6 @@ case class Player() extends Actor {
       })
     ) inCombat = true
     else inCombat = false
-    if (!yourTurn) {
-      tick += delta
-      if (tick > speed) {
-        yourTurn = true
-        tick = 0f
-      }
-    }
     if (yourTurn) {
       if (game.keysDown.contains(Keys.S) || game.keysDown.contains(Keys.DOWN)) {
         destination.y = location.y - 1
@@ -187,7 +195,7 @@ case class Player() extends Actor {
       .filter(i => i.possessor.contains(this))
       .filter(n => n.tNum >= 1)
     if (inventory.nonEmpty) {
-      if(inventory.length < inventoryItemSelected){
+      if (inventory.length < inventoryItemSelected) {
         inventoryItemSelected -= 1
       }
 
@@ -200,13 +208,18 @@ case class Player() extends Actor {
           (inventoryItemSelected + inventory.length - 1) % inventory.length
         clicked = true
       }
-      if (
-        game.keysDown.contains(Keys.ENTER) || game.keysDown.contains(Keys.SPACE)
-      ) {
-        if(inventory.length >= inventoryItemSelected) {
-          inventory(inventoryItemSelected).use(this)
+      if (yourTurn) {
+        if (
+          game.keysDown
+            .contains(Keys.ENTER) || game.keysDown.contains(Keys.SPACE)
+        ) {
+          if (inventory.length >= inventoryItemSelected) {
+            inventory(inventoryItemSelected).use(this)
+          }
+          clicked = true
+          yourTurn = false
+          game.enemyTurn = true
         }
-        clicked = true
       }
     }
     clicked

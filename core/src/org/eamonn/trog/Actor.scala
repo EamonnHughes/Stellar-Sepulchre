@@ -1,5 +1,8 @@
 package org.eamonn.trog
 
+import org.eamonn.trog.character.Equipment
+import org.eamonn.trog.items.{Item, Weapon}
+
 trait Actor extends Serializable {
   var location: Vec2
   var stats: Stats

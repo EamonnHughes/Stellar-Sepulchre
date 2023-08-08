@@ -7,6 +7,7 @@ import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.g2d.PolygonSpriteBatch
 import org.eamonn.trog.SaveLoad.{loadState, saveState}
 import org.eamonn.trog.Scene
+import org.eamonn.trog.items.Item
 import org.eamonn.trog.procgen.{GeneratedMap, Level, World}
 
 import scala.util.Random

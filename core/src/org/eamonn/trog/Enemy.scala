@@ -3,6 +3,8 @@ package org.eamonn.trog
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.g2d.PolygonSpriteBatch
 import org.eamonn.trog.Trog.{Square, garbage}
+import org.eamonn.trog.character.Equipment
+import org.eamonn.trog.items.{Weapon, makeCommonWeapon}
 import org.eamonn.trog.scenes.Game
 import org.eamonn.trog.util.TextureWrapper
 
@@ -53,7 +55,7 @@ case class Criminal() extends Enemy {
     game = gm
     location = loc
     lev = Random.nextInt(game.floor) + 1 + (Random.nextInt(11) / 10)
-    var weapon: Weapon = makeCommonItem(0, game, 1, (lev min 5) + 1)
+    var weapon: Weapon = makeCommonWeapon(0, game, 1, (lev min 5) + 1)
     weapon.possessor = Some(this)
     weapon.location = None
     game.items = weapon :: game.items
