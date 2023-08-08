@@ -30,7 +30,7 @@ case class Player() extends Actor {
   var speed = .25f
   def initially(gme: Game): Unit = {
     game = gme
-    val weapon = Sword(0, game)
+    val weapon = makeCommonItem(0, game, 1, 6)
     game.items = weapon :: game.items
     equipment.weapon = Some(weapon)
     archetype.onSelect(game)

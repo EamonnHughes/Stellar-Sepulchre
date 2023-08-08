@@ -54,15 +54,14 @@ case class Criminal() extends Enemy {
     game = gm
     location = loc
     game.enemies = this :: game.enemies
-    val dagger = Dagger(0, game)
-    dagger.possessor = Some(this)
-    dagger.location = None
-    game.items = dagger :: game.items
-    equipment.weapon = Some(dagger)
+    val weapon = makeCommonItem(0, game, 1, 3)
+    weapon.possessor = Some(this)
+    weapon.location = None
+    game.items = weapon :: game.items
+    equipment.weapon = Some(weapon)
     lev = Random.nextInt(game.floor) + 1 + (Random.nextInt(11) / 10)
-    name = enemyNames.criminalNames(
-      ((lev min enemyNames.criminalNames.length) - 1)
-    )
+    name = enemyNames.getCriminalName(lev)(Random.nextInt(enemyNames.getCriminalName(lev).length)).substring(1)
+
     stats = makeStats(
       mAc = (3 + lev) min 9,
       mExp = 5 * lev,
@@ -109,8 +108,9 @@ case class Criminal() extends Enemy {
   override def attack(target: Actor): Unit = {
     if (equipment.weapon.nonEmpty) {
       equipment.weapon.foreach(w => w.onAttack(this, target))
-    } else if (d(10) > target.stats.ac) {target.stats.health -= 1
-    if(target == game.player) game.player.lastStrike = s"a $name"
+    } else if (d(10) > target.stats.ac) {
+      target.stats.health -= 1
+      if (target == game.player) game.player.lastStrike = s"a $name"
     }
   }
 
@@ -118,14 +118,17 @@ case class Criminal() extends Enemy {
 
 object enemyNames {
   val criminalNames: List[String] = List(
-    "Cutpurse",
-    "Thief",
-    "Mugger",
-    "Bandit",
-    "Bandit Captain",
-    "Smuggler",
-    "Arms Dealer",
-    "Thieves Guild Officer",
-    "Thief Lord"
+    "1Cutpurse",
+    "1Thief",
+    "2Mugger",
+    "2Bandit",
+    "3Bandit Captain",
+    "3Smuggler",
+    "4Arms Dealer",
+    "4Thieves Guild Officer",
+    "5Thief Lord"
   )
+  def getCriminalName(lev: Int): List[String] = {
+    criminalNames.filter(c => c.charAt(0) == (lev min 5).toString.charAt(0))
+  }
 }

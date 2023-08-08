@@ -21,9 +21,10 @@ trait Item {
   var possessor: Option[Actor]
   var number: Int = 1
   def pickUp(actor: Actor): Unit = {
-    var l = game.items.filter(i => i.possessor.nonEmpty && i.possessor.head == actor)
+    var l =
+      game.items.filter(i => i.possessor.nonEmpty && i.possessor.head == actor)
     l.foreach(i => {
-      if(i.name == this.name && i.number < 99){
+      if (i.name == this.name && i.number < 99) {
         game.items = game.items.filterNot(it => it eq this)
         i.number += 1
       } else {
@@ -31,24 +32,28 @@ trait Item {
         possessor = Some(actor)
       }
     })
-    if(l.isEmpty){
+    if (l.isEmpty) {
       location = None
       possessor = Some(actor)
     }
   }
   def draw(batch: PolygonSpriteBatch): Unit = {
-      location.foreach(l => {
-        batch.setColor(Color.WHITE)
-        batch.draw(groundTexture, l.x * screenUnit, l.y * screenUnit, screenUnit, screenUnit)
-      })
+    location.foreach(l => {
+      batch.setColor(Color.WHITE)
+      batch.draw(
+        groundTexture,
+        l.x * screenUnit,
+        l.y * screenUnit,
+        screenUnit,
+        screenUnit
+      )
+    })
   }
 }
 
-trait Usable extends Item{
+trait Usable extends Item {}
 
-}
-
-trait Gear extends Item{
+trait Gear extends Item {
   def onEquip(equipper: Actor)
   def onUnequip(equipper: Actor)
 }
@@ -67,47 +72,45 @@ trait Weapon extends Gear {
   var weaponType: String
   def onAttack(attacker: Actor, target: Actor)
 }
-
-case class Sword(var mod: Int, var game: Game) extends Weapon {
+case class makeCommonItem(var mod: Int, var game: Game, nODie: Int, die: Int)
+    extends Weapon {
   override def onAttack(attacker: Actor, target: Actor): Unit = {
     if (d(10) + attacker.stats.attackMod + mod > target.stats.ac) {
-      var damage = (d(6) + attacker.stats.damageMod + mod)
-      if (Random.nextInt(100) <= attacker.stats.critChance) {
-        damage = (attacker.stats.critMod * damage).toInt
-      }
-      target.stats.health -= damage.toInt
-      if(target == game.player) game.player.lastStrike = s"a ${attacker.name}"
-    }
-  }
-
-  override def onEquip(equipper: Actor): Unit = {}
-
-  override def onUnequip(equipper: Actor): Unit = {}
-
-  var weaponType: String = "Sword"
-  override var location: Option[Vec2] = None
-  override var possessor: Option[Actor] = None
-  override def groundTexture: TextureWrapper = TextureWrapper.load("swordImage.png")
-
-}
-
-case class Dagger(var mod: Int, var game: Game) extends Weapon {
-  override def onAttack(attacker: Actor, target: Actor): Unit = {
-    if (d(10) + attacker.stats.attackMod + mod > target.stats.ac) {
-      var damage = (d(3) + attacker.stats.damageMod + mod)
+      var damage = (d(nODie, die) + attacker.stats.damageMod + mod)
       if (Random.nextInt(100) <= attacker.stats.critChance)
         damage = (attacker.stats.critMod * damage).toInt
       target.stats.health -= damage.toInt
-      if(target == game.player) game.player.lastStrike = s"a ${attacker.name}"
+      if (target == game.player) game.player.lastStrike = s"a ${attacker.name}"
     }
   }
 
   override def onEquip(equipper: Actor): Unit = {}
 
   override def onUnequip(equipper: Actor): Unit = {}
-  var weaponType: String = "Dagger"
+  var weaponType: String = itemNames
+    .getCINofD(nODie, die)(
+      Random.nextInt(itemNames.getCINofD(nODie, die).length)
+    )
+    .substring(2)
   override var location: Option[Vec2] = None
   override var possessor: Option[Actor] = None
 
-  override def groundTexture: TextureWrapper = TextureWrapper.load("daggerImage.png")
+  override def groundTexture: TextureWrapper =
+    TextureWrapper.load(s"$weaponType.png")
+}
+
+object itemNames {
+  val commonItemNames: List[String] =
+    List(
+      "13Dagger",
+      "13Club",
+      "13Knuckledusters",
+      "13Shortsword",
+      "16Longsword"
+    )
+  def getCINofD(nODie: Int, die: Int): List[String] = {
+    commonItemNames.filter(CIN =>
+      CIN.charAt(0) == nODie.toString.charAt(0) && CIN.charAt(1) == die.toString.charAt(0)
+    )
+  }
 }
