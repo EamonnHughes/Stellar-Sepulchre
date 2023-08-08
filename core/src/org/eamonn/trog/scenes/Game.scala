@@ -79,6 +79,9 @@ class Game(lvl: Level, plr: Player, wld: World)
     }
   }
   override def update(delta: Float): Option[Scene] = {
+    items.foreach(ite => {
+      if(ite.number < 1) items = items.filterNot(item => item eq ite)
+    })
     if (keysDown.contains(Keys.CONTROL_LEFT)) {
       if (keysDown.contains(Keys.S)) {
         saveState(this, 0)
