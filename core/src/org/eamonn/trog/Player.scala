@@ -15,6 +15,7 @@ case class Player() extends Actor {
   var initialized = false
   var healing = 0f
   var healingFactor = 0.1f
+  var lastStrike: String = "Unknown Forces"
   var equipment: Equipment = new Equipment
   var resting = false
   var name = ""
@@ -28,11 +29,11 @@ case class Player() extends Actor {
   var tick = 0f
   var speed = .25f
   def initially(gme: Game): Unit = {
-    val weapon = Sword(0)
-    gme.items = weapon :: gme.items
-    equipment.weapon = Some(weapon)
-    archetype.onSelect(gme)
     game = gme
+    val weapon = Sword(0, game)
+    game.items = weapon :: game.items
+    equipment.weapon = Some(weapon)
+    archetype.onSelect(game)
     stats.health = stats.maxHealth
     initialized = true
   }
@@ -127,6 +128,15 @@ case class Player() extends Actor {
         ) || game.keysDown.contains(Keys.SHIFT_LEFT))
       ) {
         tryToGoDown()
+      } else if (game.keysDown.contains(Keys.G)) {
+        game.items.foreach(ite => {
+          ite.location.foreach(l => {
+            if (l == location) {
+              ite.pickUp(this)
+              game.addMessage(s"You picked up x${ite.number} ${ite.name}")
+            }
+          })
+        })
       }
     }
     if ((destination != location || resting) && yourTurn) {
@@ -143,7 +153,8 @@ case class Player() extends Actor {
         })
       } else {
         destination = location.copy()
-        if (!inCombat && stats.health < stats.maxHealth) (healing += healingFactor*10)
+        if (!inCombat && stats.health < stats.maxHealth)
+          (healing += healingFactor * 10)
       }
       if (stats.health < stats.maxHealth) healing += healingFactor
       yourTurn = false

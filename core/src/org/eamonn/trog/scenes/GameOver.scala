@@ -9,7 +9,7 @@ import org.eamonn.trog.procgen.{Level, World}
 import org.eamonn.trog.{Geometry, Scene, Text, Trog}
 import org.eamonn.trog.scenes.Home
 
-class GameOver(world: World) extends Scene {
+class GameOver(world: World, enemy: String) extends Scene {
   var done = false
   var home = new Home(world)
   override def init(): InputAdapter = {
@@ -31,7 +31,7 @@ class GameOver(world: World) extends Scene {
     Text.mediumFont.setColor(Color.WHITE)
     Text.mediumFont.draw(
       batch,
-      " You have perished. \n Accept your fate: [ENTER]",
+      s" You have perished at the hands of $enemy. \n Accept your fate: [ENTER]",
       -Trog.translationX * screenUnit,
       -Trog.translationY * screenUnit + Geometry.ScreenHeight / 2
     )

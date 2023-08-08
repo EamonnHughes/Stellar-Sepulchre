@@ -22,7 +22,8 @@ class Game(lvl: Level, plr: Player, wld: World)
   var messages = List.empty[String]
   var world = wld
   var keysDown: List[Int] = List.empty
-  var showingCharacterSheet = false
+  var inCharacterSheet = false
+  var inInventory = false
   var level: Level = lvl
   var descending = false
   var player: Player = plr
@@ -89,19 +90,18 @@ class Game(lvl: Level, plr: Player, wld: World)
     if (!allSpawned) {
       for (i <- 0 until (floor * 10).toInt) {
         var loc = level.walkables.filterNot(w =>
-          player.location == w && enemies.exists(e => e.location == w)
+          player.location == w || enemies.exists(e => e.location == w)
         )(
           Random.nextInt(
             level.walkables
               .filterNot(w =>
-                player.location == w && enemies.exists(e => e.location == w)
+                player.location == w || enemies.exists(e => e.location == w)
               )
               .length
           )
         )
-        var enemy = Humanoid(this)
-        enemy.location = loc
-        enemies = enemy :: enemies
+        var enemy = Criminal()
+        enemy.initialize(this, loc)
       }
       allSpawned = true
     }
@@ -111,20 +111,23 @@ class Game(lvl: Level, plr: Player, wld: World)
       saveTick += 1
       enemyTurn = false
     }
-    if (saveTick >= 5) {
+    if (saveTick >= 25) {
+      var kd = keysDown
       saveState(this, 0)
+      keysDown = kd
       saveTick = 0f
     }
     if (descending) floor += 1
     if (mainMenuing) Some(home)
     else if (descending) Some(new LevelGen(player, Some(this), world))
-    else if (player.dead) Some(new GameOver(world))
+    else if (player.dead) Some(new GameOver(world, player.lastStrike))
     else None
   }
 
   override def render(batch: PolygonSpriteBatch): Unit = {
     level.draw(batch)
     player.draw(batch)
+    items.foreach(ite => ite.draw(batch))
     enemies.foreach(e => e.draw(batch))
     for (
       x <-
@@ -184,7 +187,7 @@ class Game(lvl: Level, plr: Player, wld: World)
       batch,
       log,
       (-Trog.translationX * screenUnit + screenUnit),
-      ((-Trog.translationY + 5) * screenUnit)
+      ((-Trog.translationY + 2.5f) * screenUnit)
     )
 
   }
@@ -237,8 +240,8 @@ class Game(lvl: Level, plr: Player, wld: World)
       -Trog.translationY * screenUnit + Geometry.ScreenHeight - screenUnit
     )
     drawConsole(batch)
-    if (showingCharacterSheet) {
-      batch.setColor(Color.DARK_GRAY)
+    if (inCharacterSheet) {
+      batch.setColor(0f, 0f, 0f, .5f)
       batch.draw(
         Trog.Square,
         -Trog.translationX * screenUnit + (2 * screenUnit),
@@ -260,7 +263,7 @@ class Game(lvl: Level, plr: Player, wld: World)
       }
       Text.mediumFont.draw(
         batch,
-        s" \n " +
+        s" " +
           s"Name: ${player.name}\n " +
           s"Archetype: ${player.archetype.name}\n " +
           s"Level: ${player.stats.level}\n " +
@@ -279,6 +282,27 @@ class Game(lvl: Level, plr: Player, wld: World)
         -Trog.translationX * screenUnit + (2 * screenUnit),
         (-Trog.translationY * screenUnit) + Geometry.ScreenHeight - (2 * screenUnit)
       )
+    } else if (inInventory) {
+      batch.setColor(0f, 0f, 0f, .5f)
+      batch.draw(
+        Trog.Square,
+        -Trog.translationX * screenUnit + (2 * screenUnit),
+        -Trog.translationY * screenUnit + (2 * screenUnit),
+        (Geometry.ScreenWidth - (4 * screenUnit)),
+        (Geometry.ScreenHeight - (4 * screenUnit))
+      )
+      var inv: String = ""
+      items
+        .filter(i => i.possessor.nonEmpty && i.possessor.head == player)
+        .foreach(ite => {
+          inv = s"$inv \n x${ite.number} ${ite.name}"
+        })
+      Text.mediumFont.draw(
+        batch,
+        s"INVENTORY:\n$inv",
+        -Trog.translationX * screenUnit + (2 * screenUnit),
+        (-Trog.translationY * screenUnit) + Geometry.ScreenHeight - (2 * screenUnit)
+      )
     }
   }
 }
@@ -289,8 +313,14 @@ class GameControl(game: Game) extends InputAdapter {
   }
   override def keyUp(keycode: Int): Boolean = {
     game.keysDown = game.keysDown.filterNot(f => f == keycode)
-    if (keycode == Keys.C)
-      game.showingCharacterSheet = !game.showingCharacterSheet
+    if (keycode == Keys.C) {
+      game.inCharacterSheet = !game.inCharacterSheet
+      game.inInventory = false
+    } else if (keycode == Keys.I) {
+      game.inInventory = !game.inInventory
+      game.inCharacterSheet = false
+
+    }
     true
   }
 

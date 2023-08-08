@@ -98,7 +98,7 @@ class CharCreationControl(creation: CharCreation) extends InputAdapter {
       } else if (
         Keys.toString(keycode).length == 1 && creation.name.length < 20
       ) {
-        creation.name = creation.name + Keys.toString(keycode)
+        creation.name = creation.name + Keys.toString(keycode).toLowerCase
       }
     }
     true
