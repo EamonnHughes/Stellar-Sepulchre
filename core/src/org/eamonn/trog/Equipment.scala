@@ -10,7 +10,6 @@ import scala.util.Random
 
 class Equipment extends Serializable {
   var weapon: Option[Weapon] = None
-
 }
 
 trait Item {
@@ -18,8 +17,10 @@ trait Item {
   def name: String
   def groundTexture: TextureWrapper
   var location: Option[Vec2]
+  def use(actor: Actor): Unit
   var possessor: Option[Actor]
   var number: Int = 1
+  def tNum: Int
   def pickUp(actor: Actor): Unit = {
     var l =
       game.items.filter(i => i.possessor.nonEmpty && i.possessor.head == actor)
@@ -56,6 +57,14 @@ trait Usable extends Item {}
 trait Gear extends Item {
   def onEquip(equipper: Actor)
   def onUnequip(equipper: Actor)
+  override def tNum: Int = {
+    var n = number
+    if (possessor.forall(p => p.equipment.weapon.contains(this))) {
+      n -= 1
+    }
+
+    n
+  }
 }
 
 trait Weapon extends Gear {
@@ -97,20 +106,25 @@ case class makeCommonItem(var mod: Int, var game: Game, nODie: Int, die: Int)
 
   override def groundTexture: TextureWrapper =
     TextureWrapper.load(s"$weaponType.png")
+
+  override def use(actor: Actor): Unit = {
+    actor.equip(this)
+  }
 }
 
 object itemNames {
   val commonItemNames: List[String] =
     List(
-      "13Dagger",
-      "13Club",
+      "12Club",
       "13Knuckledusters",
-      "13Shortsword",
+      "14Dagger",
+      "15Shortsword",
       "16Longsword"
     )
   def getCINofD(nODie: Int, die: Int): List[String] = {
     commonItemNames.filter(CIN =>
-      CIN.charAt(0) == nODie.toString.charAt(0) && CIN.charAt(1) == die.toString.charAt(0)
+      CIN.charAt(0) == nODie.toString.charAt(0) && CIN.charAt(1) == die.toString
+        .charAt(0)
     )
   }
 }

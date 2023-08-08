@@ -293,9 +293,16 @@ class Game(lvl: Level, plr: Player, wld: World)
       )
       var inv: String = ""
       items
-        .filter(i => i.possessor.nonEmpty && i.possessor.head == player)
-        .foreach(ite => {
-          inv = s"$inv \n x${ite.number} ${ite.name}"
+        .filter(i => i.possessor.nonEmpty && i.possessor.head == player).filter(n => n.tNum >= 1)
+        .zipWithIndex
+        .foreach({
+          case (item, index) => {
+            if (index == player.inventoryItemSelected) {
+              inv = s"$inv \n - x${item.tNum} ${item.name}"
+            } else {
+              inv = s"$inv \n x${item.tNum} ${item.name}"
+            }
+          }
         })
       Text.mediumFont.draw(
         batch,

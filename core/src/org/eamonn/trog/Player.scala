@@ -11,6 +11,7 @@ import org.eamonn.trog.util.TextureWrapper
 import scala.util.Random
 
 case class Player() extends Actor {
+  var inventoryItemSelected: Int = 0
   var archetype: Archetype = _
   var initialized = false
   var healing = 0f
@@ -28,16 +29,20 @@ case class Player() extends Actor {
   var yourTurn = true
   var tick = 0f
   var speed = .25f
+  var clickInInv = false
+  var clickTick = 0f
   def initially(gme: Game): Unit = {
     game = gme
     val weapon = makeCommonItem(0, game, 1, 6)
+    weapon.possessor = Some(this)
     game.items = weapon :: game.items
     equipment.weapon = Some(weapon)
     archetype.onSelect(game)
     stats.health = stats.maxHealth
     initialized = true
   }
-  def playerIcon: TextureWrapper = TextureWrapper.load(s"Player${archetype.metaArchName}.png")
+  def playerIcon: TextureWrapper =
+    TextureWrapper.load(s"Player${archetype.metaArchName}.png")
   def levelUp(): Unit = {
     stats.exp -= stats.nextExp
     stats.nextExp *= 2
@@ -69,7 +74,18 @@ case class Player() extends Actor {
     )
   }
   def update(delta: Float) = {
+    clickTick += delta
+    if (clickTick > .325f) {
+      clickTick = 0f
+      clickInInv = false
+    }
     if (stats.health <= 0) dead = true
+    if (!game.inInventory && !game.inCharacterSheet) gameControl(delta)
+    else if (game.inInventory && !clickInInv)
+      clickInInv = inventoryControl(delta)
+    else if (game.inCharacterSheet) charSheetControl(delta)
+  }
+  def gameControl(delta: Float) = {
     if (resting) speed = .005f else speed = .25f
     if (healing > 4 && stats.health < stats.maxHealth) {
       stats.health += 1
@@ -145,8 +161,9 @@ case class Player() extends Actor {
         path.foreach(p => {
           val dest = p.list.reverse(1).copy()
           val enemy = game.enemies.filter(e => e.location == dest)
-          if (enemy.isEmpty) { location = dest.copy() }
-          else {
+          if (enemy.isEmpty) {
+            location = dest.copy()
+          } else {
             attack(enemy.head)
             destination = location.copy()
           }
@@ -164,4 +181,35 @@ case class Player() extends Actor {
       resting = false
     }
   }
+  def inventoryControl(delta: Float): Boolean = {
+    var clicked = false
+    var inventory = game.items
+      .filter(i => i.possessor.contains(this))
+      .filter(n => n.tNum >= 1)
+    if (inventory.nonEmpty) {
+      if(inventory.length < inventoryItemSelected){
+        inventoryItemSelected -= 1
+      }
+
+      if (game.keysDown.contains(Keys.DOWN) || game.keysDown.contains(Keys.S)) {
+        inventoryItemSelected = (inventoryItemSelected + 1) % inventory.length
+        clicked = true
+      }
+      if (game.keysDown.contains(Keys.UP) || game.keysDown.contains(Keys.W)) {
+        inventoryItemSelected =
+          (inventoryItemSelected + inventory.length - 1) % inventory.length
+        clicked = true
+      }
+      if (
+        game.keysDown.contains(Keys.ENTER) || game.keysDown.contains(Keys.SPACE)
+      ) {
+        if(inventory.length >= inventoryItemSelected) {
+          inventory(inventoryItemSelected).use(this)
+        }
+        clicked = true
+      }
+    }
+    clicked
+  }
+  def charSheetControl(delta: Float) = {}
 }

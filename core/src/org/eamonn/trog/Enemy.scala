@@ -53,10 +53,7 @@ case class Criminal() extends Enemy {
     game = gm
     location = loc
     lev = Random.nextInt(game.floor) + 1 + (Random.nextInt(11) / 10)
-    var weapon: Weapon = makeCommonItem(0, game, 1, 3)
-    if (lev > 4) {
-      weapon = makeCommonItem(0, game, 1, 6)
-    }
+    var weapon: Weapon = makeCommonItem(0, game, 1, (lev min 5) + 1)
     weapon.possessor = Some(this)
     weapon.location = None
     game.items = weapon :: game.items
