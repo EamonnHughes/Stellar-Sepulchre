@@ -123,20 +123,21 @@ case class Player() extends Actor {
         .find(key => Character.isDigit(Keys.toString(key).charAt(0)))
         .foreach(n => {
           var keyn = Keys.toString(n).toInt
-          if (stats.skills.length >= keyn) stats.skills(keyn - 1) match {
-            case range: rangedSkill => {
-              if (range.ccd == 0) {
-                range
-                  .selectTarget(game, this)
-                  .foreach(t => range.onUse(this, t, game))
-                range.ccd = range.coolDown
-                if (range.takesTurn) {
-                  yourTurn = false
-                  game.enemyTurn = true
+          if (stats.skills.length >= keyn && keyn > 0)
+            stats.skills(keyn - 1) match {
+              case range: rangedSkill => {
+                if (range.ccd == 0) {
+                  range
+                    .selectTarget(game, this)
+                    .foreach(t => range.onUse(this, t, game))
+                  range.ccd = range.coolDown
+                  if (range.takesTurn) {
+                    yourTurn = false
+                    game.enemyTurn = true
+                  }
                 }
               }
             }
-          }
         })
 
       if (game.keysDown.contains(Keys.S) || game.keysDown.contains(Keys.DOWN)) {
