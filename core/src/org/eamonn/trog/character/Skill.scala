@@ -34,10 +34,10 @@ trait rangedSkill extends Skill {
   }
 }
 
-case class throwRock() extends rangedSkill {
-  override var name: String = "Throw Rock"
+case class throwDagger() extends rangedSkill {
+  override var name: String = "Throw Dagger"
 
-  override def icon: TextureWrapper = TextureWrapper.load("RockThrow.png")
+  override def icon: TextureWrapper = TextureWrapper.load("ThrowDagger.png")
 
   override def onUse(
       user: Actor,
@@ -46,7 +46,8 @@ case class throwRock() extends rangedSkill {
   ): Unit = {
     var ended = false
     Pathfinding
-      .findPath(user.location, target.location, game.level).filter(p => p.list.length <= range)
+      .findPath(user.location, target.location, game.level)
+      .filter(p => p.list.length <= range)
       .foreach(p => {
         game.enemies.foreach(e => {
           if (p.list.contains(e.location) && !ended) {

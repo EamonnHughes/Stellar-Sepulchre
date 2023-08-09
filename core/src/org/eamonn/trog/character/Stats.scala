@@ -28,7 +28,7 @@ case class basePlayerStats() extends Stats {
   var attackMod = 0f
   var critChance = 5
   var critMod = 2f
-  override var skills: List[Skill] = List(throwRock())
+  override var skills: List[Skill] = List(throwDagger())
 }
 
 case class makeStats(
