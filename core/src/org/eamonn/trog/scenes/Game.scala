@@ -7,6 +7,7 @@ import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.g2d.PolygonSpriteBatch
 import org.eamonn.trog.SaveLoad.{loadState, saveState}
 import org.eamonn.trog.Scene
+import org.eamonn.trog.character.Player
 import org.eamonn.trog.items.Item
 import org.eamonn.trog.procgen.{GeneratedMap, Level, World}
 
@@ -81,7 +82,7 @@ class Game(lvl: Level, plr: Player, wld: World)
   }
   override def update(delta: Float): Option[Scene] = {
     items.foreach(ite => {
-      if(ite.number < 1) items = items.filterNot(item => item eq ite)
+      if (ite.number < 1) items = items.filterNot(item => item eq ite)
     })
     if (keysDown.contains(Keys.CONTROL_LEFT)) {
       if (keysDown.contains(Keys.S)) {
@@ -114,6 +115,7 @@ class Game(lvl: Level, plr: Player, wld: World)
     if (enemyTurn) {
       saveTick += 1
       enemyTurn = false
+      player.stats.skills.foreach(sk => if (sk.ccd > 0) sk.ccd -= 1)
     }
     if (saveTick >= 25) {
       var kd = keysDown
@@ -190,14 +192,39 @@ class Game(lvl: Level, plr: Player, wld: World)
     Text.smallFont.draw(
       batch,
       log,
-      (-Trog.translationX * screenUnit + screenUnit),
-      ((-Trog.translationY + 2.5f) * screenUnit)
+      (-Trog.translationX * screenUnit),
+      ((-Trog.translationY + 2) * screenUnit)
     )
 
   }
   def renderUI(batch: PolygonSpriteBatch): Unit = {
-
     batch.setColor(Color.WHITE)
+    player.stats.skills.zipWithIndex.foreach({
+      case (s, i) => {
+        batch.draw(
+          s.icon,
+          -Trog.translationX * screenUnit + (((i * 1.5f) + 6) * screenUnit),
+          -Trog.translationY * screenUnit,
+          screenUnit * 1.5f,
+          screenUnit * 1.5f
+        )
+        Text.smallFont.draw(
+          batch,
+          s"${i + 1}",
+          -Trog.translationX * screenUnit + (((i * 1.5f) + 6) * screenUnit),
+          -Trog.translationY * screenUnit + (screenUnit * 1.83f)
+        )
+        if (s.ccd > 0) {
+          Text.hugeFont.setColor(1f, 1f, 1f, 0.5f)
+          Text.hugeFont.draw(
+            batch,
+            s"${s.ccd.toString}",
+            -Trog.translationX * screenUnit + (((i * 1.5f) + 6) * screenUnit),
+            -Trog.translationY * screenUnit + (screenUnit * 1.5f)
+          )
+        }
+      }
+    })
     Text.mediumFont.draw(
       batch,
       s"${player.name}, the level ${player.stats.level} ${player.archetype.name} on floor ${floor}",
@@ -297,7 +324,8 @@ class Game(lvl: Level, plr: Player, wld: World)
       )
       var inv: String = ""
       items
-        .filter(i => i.possessor.nonEmpty && i.possessor.head == player).filter(n => n.tNum >= 1)
+        .filter(i => i.possessor.nonEmpty && i.possessor.head == player)
+        .filter(n => n.tNum >= 1)
         .zipWithIndex
         .foreach({
           case (item, index) => {

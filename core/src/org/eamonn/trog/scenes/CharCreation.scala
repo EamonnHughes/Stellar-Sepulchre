@@ -6,7 +6,7 @@ import com.badlogic.gdx.InputAdapter
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.g2d.PolygonSpriteBatch
 import org.eamonn.trog.Scene
-import org.eamonn.trog.character.{Archetype, Archetypes}
+import org.eamonn.trog.character.{Archetype, Archetypes, Player}
 import org.eamonn.trog.procgen.{GeneratedMap, Level, World}
 
 import java.awt.RenderingHints.Key

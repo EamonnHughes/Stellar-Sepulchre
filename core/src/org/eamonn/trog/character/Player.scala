@@ -1,15 +1,13 @@
-package org.eamonn.trog
+package org.eamonn.trog.character
 
 import com.badlogic.gdx.Input.Keys
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.g2d.PolygonSpriteBatch
 import org.eamonn.trog.Trog.garbage
-import org.eamonn.trog.character.{Archetype, Archetypes, Equipment}
 import org.eamonn.trog.items.{HealingPotion, makeCommonWeapon}
 import org.eamonn.trog.scenes.Game
 import org.eamonn.trog.util.TextureWrapper
-
-import scala.util.Random
+import org.eamonn.trog.{Actor, Enemy, Pathfinding, Vec2, d, screenUnit}
 
 case class Player() extends Actor {
   var inventoryItemSelected: Int = 0
@@ -121,6 +119,26 @@ case class Player() extends Actor {
     ) inCombat = true
     else inCombat = false
     if (yourTurn) {
+      game.keysDown
+        .find(key => Character.isDigit(Keys.toString(key).charAt(0)))
+        .foreach(n => {
+          var keyn = Keys.toString(n).toInt
+          if (stats.skills.length >= keyn) stats.skills(keyn - 1) match {
+            case range: rangedSkill => {
+              if (range.ccd == 0) {
+                range
+                  .selectTarget(game, this)
+                  .foreach(t => range.onUse(this, t, game))
+                range.ccd = range.coolDown
+                if (range.takesTurn) {
+                  yourTurn = false
+                  game.enemyTurn = true
+                }
+              }
+            }
+          }
+        })
+
       if (game.keysDown.contains(Keys.S) || game.keysDown.contains(Keys.DOWN)) {
         destination.y = location.y - 1
         destination.x = location.x

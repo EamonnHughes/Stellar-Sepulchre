@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.g2d.PolygonSpriteBatch
 import org.eamonn.trog.Scene
 import org.eamonn.trog.Trog.garbage
+import org.eamonn.trog.character.Player
 import org.eamonn.trog.procgen.{GeneratedMap, Level, World}
 import org.eamonn.trog.util.TextureWrapper
 

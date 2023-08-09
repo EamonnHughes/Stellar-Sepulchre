@@ -4,10 +4,10 @@ import com.badlogic.gdx.Input.Keys
 import com.badlogic.gdx.InputAdapter
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.g2d.PolygonSpriteBatch
+import org.eamonn.trog.character.Player
 import org.eamonn.trog.procgen.{Level, World}
 import org.eamonn.trog.{
   Geometry,
-  Player,
   SaveLoad,
   Scene,
   Text,

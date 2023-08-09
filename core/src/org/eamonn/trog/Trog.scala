@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.g2d.PolygonSpriteBatch
 import com.badlogic.gdx.math.Matrix4
 import com.badlogic.gdx.utils.ScreenUtils
 import com.badlogic.gdx.{ApplicationAdapter, Gdx, Input}
+import org.eamonn.trog.character.Player
 import org.eamonn.trog.procgen.{Level, World}
 import org.eamonn.trog.scenes.{Game, Home}
 import org.eamonn.trog.util.{GarbageCan, TextureWrapper}

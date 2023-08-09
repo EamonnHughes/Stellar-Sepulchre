@@ -3,7 +3,7 @@ package org.eamonn.trog
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.g2d.PolygonSpriteBatch
 import org.eamonn.trog.Trog.{Square, garbage}
-import org.eamonn.trog.character.Equipment
+import org.eamonn.trog.character.{Equipment, Stats, makeStats}
 import org.eamonn.trog.items.{Weapon, makeCommonWeapon}
 import org.eamonn.trog.scenes.Game
 import org.eamonn.trog.util.TextureWrapper

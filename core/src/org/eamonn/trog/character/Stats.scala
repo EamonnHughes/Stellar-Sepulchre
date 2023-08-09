@@ -1,6 +1,6 @@
-package org.eamonn.trog
+package org.eamonn.trog.character
 
-trait Stats{
+trait Stats {
 
   var ac: Int
   var exp: Int
@@ -13,6 +13,7 @@ trait Stats{
   var attackMod: Float
   var critChance: Int
   var critMod: Float
+  var skills: List[Skill]
 }
 
 case class basePlayerStats() extends Stats {
@@ -27,9 +28,22 @@ case class basePlayerStats() extends Stats {
   var attackMod = 0f
   var critChance = 5
   var critMod = 2f
+  override var skills: List[Skill] = List(throwRock())
 }
 
-case class makeStats(mAc: Int, mExp: Int, mNExp: Int, mMHeal: Int, mHeal: Int, mSrad: Int, mLev: Int, mDmg: Int, mAtk: Float, mCrc: Int, mCrm: Float) extends Stats {
+case class makeStats(
+    mAc: Int,
+    mExp: Int,
+    mNExp: Int,
+    mMHeal: Int,
+    mHeal: Int,
+    mSrad: Int,
+    mLev: Int,
+    mDmg: Int,
+    mAtk: Float,
+    mCrc: Int,
+    mCrm: Float
+) extends Stats {
   var ac: Int = mAc
   var exp: Int = mExp
   var nextExp: Int = mNExp
@@ -41,4 +55,5 @@ case class makeStats(mAc: Int, mExp: Int, mNExp: Int, mMHeal: Int, mHeal: Int, m
   var attackMod: Float = mAtk
   var critChance: Int = mCrc
   var critMod: Float = mCrm
+  override var skills: List[Skill] = List.empty
 }

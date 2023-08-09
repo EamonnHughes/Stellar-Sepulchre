@@ -2,16 +2,11 @@ package org.eamonn.trog
 
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.files.FileHandle
+import org.eamonn.trog.character.Player
 import org.eamonn.trog.procgen.{Level, World}
 import org.eamonn.trog.scenes.Game
 
-import java.io.{
-  File,
-  FileInputStream,
-  FileOutputStream,
-  ObjectInputStream,
-  ObjectOutputStream
-}
+import java.io.{File, FileInputStream, FileOutputStream, ObjectInputStream, ObjectOutputStream}
 
 object SaveLoad {
   def mainDir = "sepultus/"
