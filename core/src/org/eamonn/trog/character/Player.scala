@@ -32,11 +32,6 @@ case class Player() extends Actor {
   var clickTick = 0f
   def initially(gme: Game): Unit = {
     game = gme
-    val weapon = makeCommonWeapon(0, game, 1, 6)
-    weapon.possessor = Some(this)
-    weapon.game = game
-    game.items = weapon :: game.items
-    equipment.weapon = Some(weapon)
     val potion: HealingPotion = HealingPotion()
     potion.number = 10
     potion.possessor = Some(this)

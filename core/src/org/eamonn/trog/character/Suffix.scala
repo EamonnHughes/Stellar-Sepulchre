@@ -1,5 +1,6 @@
 package org.eamonn.trog.character
 
+import org.eamonn.trog.items.makeCommonWeapon
 import org.eamonn.trog.scenes.Game
 
 trait Suffix {
@@ -19,6 +20,12 @@ case class RogueSuffix() extends Suffix {
     game.player.stats.attackMod += .5f
     game.player.stats.critChance += 2
     game.player.stats.critMod += .2f
+    game.player.stats.skills = throwDagger() :: game.player.stats.skills
+    val weapon = makeCommonWeapon(0, game, 1, 4)
+    weapon.possessor = Some(game.player)
+    weapon.game = game
+    game.items = weapon :: game.items
+    game.player.equipment.weapon = Some(weapon)
   }
 
   override def onLevelUp(game: Game): Unit = {
@@ -37,6 +44,11 @@ case class FighterSuffix() extends Suffix {
   override def onSelect(game: Game): Unit = {
     game.player.stats.attackMod += 1
     game.player.stats.damageMod += 1
+    val weapon = makeCommonWeapon(0, game, 1, 6)
+    weapon.possessor = Some(game.player)
+    weapon.game = game
+    game.items = weapon :: game.items
+    game.player.equipment.weapon = Some(weapon)
   }
 
   override def onLevelUp(game: Game): Unit = {
