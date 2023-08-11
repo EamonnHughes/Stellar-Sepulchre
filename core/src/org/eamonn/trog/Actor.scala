@@ -1,11 +1,12 @@
 package org.eamonn.trog
 
-import org.eamonn.trog.character.{Equipment, Stats}
+import org.eamonn.trog.character.{Equipment, Stats, Statuses}
 import org.eamonn.trog.items.{Item, Weapon}
 
 trait Actor extends Serializable {
   var location: Vec2
   var destination: Vec2
+  var statuses: Statuses = Statuses()
   var stats: Stats
   var equipment: Equipment
   var name: String

@@ -33,6 +33,16 @@ trait rangedSkill extends Skill {
     })
   }
 }
+trait meleeSkill extends Skill {
+  def onUse(
+      user: Actor,
+      target: Actor,
+      game: Game
+  ): Unit
+  def selectTarget(game: Game, user: Actor): Option[Actor] = {
+    game.enemies.find(e => user.location.getAdjacents.contains(e.location))
+  }
+}
 
 case class throwDagger() extends rangedSkill {
   override var name: String = "Throw Dagger"
@@ -90,4 +100,24 @@ case class Dash() extends rangedSkill {
   override var ccd: Int = 0
   override val takesTurn: Boolean = true
   override var range: Int = 4
+}
+
+case class shieldBash() extends meleeSkill {
+  override var name: String = "Shield Bash"
+
+  override def icon: TextureWrapper = TextureWrapper.load("ShieldBash.png")
+
+  override def onUse(
+      user: Actor,
+      target: Actor,
+      game: Game
+  ): Unit = {
+    user.attack(target)
+    target.statuses.stunned = 2
+
+  }
+
+  override val coolDown: Int = 4
+  override var ccd: Int = 0
+  override val takesTurn: Boolean = true
 }

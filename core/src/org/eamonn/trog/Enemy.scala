@@ -19,6 +19,16 @@ trait Enemy extends Actor {
   def update(delta: Float): Unit
   def attack(target: Actor): Unit
   def draw(batch: PolygonSpriteBatch): Unit = {
+    if (statuses.stunned > 0) {
+      batch.setColor(Color.YELLOW)
+      batch.draw(
+        Square,
+        location.x * screenUnit,
+        location.y * screenUnit,
+        screenUnit,
+        screenUnit
+      )
+    }
     batch.setColor(Color.RED)
     batch.draw(
       Square,
@@ -85,17 +95,20 @@ case class Criminal() extends Enemy {
   override def update(delta: Float): Unit = {
 
     if (game.enemyTurn) {
-      destination = game.player.location.copy()
-      var path = Pathfinding
-        .findPath(location, destination, game.level)
-        .filter(p => p.list.length < stats.sightRad)
-      path.foreach(p => {
-        var next = p.list.reverse(1).copy()
-        if (!game.enemies.exists(e => e.location == next)) {
-          if (game.player.location == next) attack(game.player)
-          else location = next.copy()
-        }
-      })
+      if (statuses.stunned > 0) statuses.stunned -= 1
+      else {
+        destination = game.player.location.copy()
+        var path = Pathfinding
+          .findPath(location, destination, game.level)
+          .filter(p => p.list.length < stats.sightRad)
+        path.foreach(p => {
+          var next = p.list.reverse(1).copy()
+          if (!game.enemies.exists(e => e.location == next)) {
+            if (game.player.location == next) attack(game.player)
+            else location = next.copy()
+          }
+        })
+      }
     }
 
     if (stats.health <= 0) {

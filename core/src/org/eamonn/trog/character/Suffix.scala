@@ -50,7 +50,8 @@ case class FighterSuffix() extends Suffix {
   override def onSelect(game: Game): Unit = {
     game.player.stats.attackMod += 1
     game.player.stats.damageMod += 1
-    game.player.stats.skills = Dash() :: game.player.stats.skills
+    game.player.stats.skills =
+      Dash() :: shieldBash() :: game.player.stats.skills
     val weapon = makeCommonWeapon(0, game, 1, 6)
     weapon.possessor = Some(game.player)
     weapon.game = game
