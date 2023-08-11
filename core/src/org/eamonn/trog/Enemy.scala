@@ -14,7 +14,7 @@ trait Enemy extends Actor {
   def initialize(gm: Game, loc: Vec2): Unit
   var game: Game
   var location: Vec2 = Vec2(0, 0)
-  var dest: Vec2 = Vec2(0, 0)
+  var destination: Vec2 = Vec2(0, 0)
   def texture: TextureWrapper
   def update(delta: Float): Unit
   def attack(target: Actor): Unit
@@ -85,9 +85,9 @@ case class Criminal() extends Enemy {
   override def update(delta: Float): Unit = {
 
     if (game.enemyTurn) {
-      dest = game.player.location.copy()
+      destination = game.player.location.copy()
       var path = Pathfinding
-        .findPath(location, dest, game.level)
+        .findPath(location, destination, game.level)
         .filter(p => p.list.length < stats.sightRad)
       path.foreach(p => {
         var next = p.list.reverse(1).copy()

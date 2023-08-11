@@ -64,3 +64,30 @@ case class throwDagger() extends rangedSkill {
   override val takesTurn: Boolean = true
   override var range: Int = 5
 }
+
+case class Dash() extends rangedSkill {
+  override var name: String = "Dash"
+
+  override def icon: TextureWrapper = TextureWrapper.load("Dash.png")
+
+  override def onUse(
+      user: Actor,
+      target: Actor,
+      game: Game
+  ): Unit = {
+    Pathfinding
+      .findPath(user.location, target.location, game.level)
+      .filter(p => p.list.length <= range)
+      .foreach(p => {
+        user.location = p.list(1).copy()
+        user.destination = p.list(1).copy()
+        user.attack(target)
+      })
+
+  }
+
+  override val coolDown: Int = 5
+  override var ccd: Int = 0
+  override val takesTurn: Boolean = true
+  override var range: Int = 4
+}

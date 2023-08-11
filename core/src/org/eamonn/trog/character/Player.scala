@@ -55,7 +55,7 @@ case class Player() extends Actor {
   def tryToGoDown(): Unit = {
     if (location == game.level.downLadder) game.descending = true
   }
-  def attack(target: Enemy): Unit = {
+  def attack(target: Actor): Unit = {
     if (equipment.weapon.nonEmpty) {
       equipment.weapon.foreach(w => w.onAttack(this, target))
     } else {
@@ -124,12 +124,14 @@ case class Player() extends Actor {
                 if (range.ccd == 0) {
                   range
                     .selectTarget(game, this)
-                    .foreach(t => range.onUse(this, t, game))
-                  range.ccd = range.coolDown
-                  if (range.takesTurn) {
-                    yourTurn = false
-                    game.enemyTurn = true
-                  }
+                    .foreach(t => {
+                      range.onUse(this, t, game)
+                      range.ccd = range.coolDown
+                      if (range.takesTurn) {
+                        yourTurn = false
+                        game.enemyTurn = true
+                      }
+                    })
                 }
               }
             }

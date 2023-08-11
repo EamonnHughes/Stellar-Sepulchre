@@ -12,7 +12,10 @@ trait Suffix {
 
 case class RogueSuffix() extends Suffix {
   val names: List[String] = List(
-    "blade", "thief", "taker", "trickster"
+    "blade",
+    "thief",
+    "taker",
+    "trickster"
   )
   val metaArchName: String = "Rogue"
 
@@ -37,13 +40,17 @@ case class RogueSuffix() extends Suffix {
 
 case class FighterSuffix() extends Suffix {
   val names: List[String] = List(
-    "knight", "paladin", "breaker", "sword"
+    "knight",
+    "paladin",
+    "breaker",
+    "sword"
   )
   val metaArchName: String = "Fighter"
 
   override def onSelect(game: Game): Unit = {
     game.player.stats.attackMod += 1
     game.player.stats.damageMod += 1
+    game.player.stats.skills = Dash() :: game.player.stats.skills
     val weapon = makeCommonWeapon(0, game, 1, 6)
     weapon.possessor = Some(game.player)
     weapon.game = game
