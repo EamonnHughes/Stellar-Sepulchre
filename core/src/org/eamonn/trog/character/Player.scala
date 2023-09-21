@@ -3,7 +3,7 @@ package org.eamonn.trog.character
 import com.badlogic.gdx.Input.Keys
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.g2d.PolygonSpriteBatch
-import org.eamonn.trog.Trog.garbage
+import org.eamonn.trog.Trog.{Square, garbage}
 import org.eamonn.trog.items.{HealingPotion, makeCommonWeapon}
 import org.eamonn.trog.scenes.Game
 import org.eamonn.trog.util.TextureWrapper
@@ -22,6 +22,15 @@ case class Player() extends Actor {
   var dead = false
   var stats: Stats = basePlayerStats()
   var inCombat = false
+  var rangedSkillUsing: Option[rangedSkill] = None
+  var rangedSkillTargetables: List[Actor] = List.empty
+  var rangedSkillOption = 0
+  def clearRangedStuff(): Unit = {
+    rangedSkillUsing = None
+    rangedSkillTargetables = List.empty
+    rangedSkillOption = 0
+    game.clickedForTargeting = false
+  }
   var game: Game = _
   var location: Vec2 = Vec2(0, 0)
   var destination: Vec2 = Vec2(0, 0)
@@ -65,6 +74,17 @@ case class Player() extends Actor {
     }
   }
   def draw(batch: PolygonSpriteBatch) = {
+
+    if (stats.health > 0) {
+      batch.setColor(Color.RED)
+      batch.draw(
+        Square,
+        location.x * screenUnit,
+        location.y * screenUnit,
+        screenUnit * stats.health / stats.maxHealth,
+        screenUnit * .1f
+      )
+    }
     batch.setColor(Color.WHITE)
     batch.draw(
       playerIcon,
@@ -127,16 +147,7 @@ case class Player() extends Actor {
               stats.skills(keyn - 1) match {
                 case range: rangedSkill => {
                   if (range.ccd == 0) {
-                    range
-                      .selectTarget(game, this)
-                      .foreach(t => {
-                        range.onUse(this, t, game)
-                        range.ccd = range.coolDown
-                        if (range.takesTurn) {
-                          yourTurn = false
-                          game.enemyTurn = true
-                        }
-                      })
+                    rangedSkillUsing = Some(range)
                   }
                 }
                 case melee: meleeSkill => {

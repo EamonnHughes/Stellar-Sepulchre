@@ -2,7 +2,7 @@ package org.eamonn.trog
 
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.g2d.PolygonSpriteBatch
-import org.eamonn.trog.Trog.{Square, garbage}
+import org.eamonn.trog.Trog.{Square, asleep, garbage, targetReticle}
 import org.eamonn.trog.character.{Equipment, Stats, makeStats}
 import org.eamonn.trog.items.{Weapon, makeCommonWeapon}
 import org.eamonn.trog.scenes.Game
@@ -19,24 +19,36 @@ trait Enemy extends Actor {
   def update(delta: Float): Unit
   def attack(target: Actor): Unit
   def draw(batch: PolygonSpriteBatch): Unit = {
-    if (statuses.stunned > 0) {
-      batch.setColor(Color.YELLOW)
+    if (selected) {
+      batch.setColor(Color.ORANGE)
       batch.draw(
-        Square,
+        targetReticle,
         location.x * screenUnit,
         location.y * screenUnit,
         screenUnit,
         screenUnit
       )
     }
-    batch.setColor(Color.RED)
-    batch.draw(
-      Square,
-      location.x * screenUnit,
-      location.y * screenUnit,
-      screenUnit * stats.health / stats.maxHealth,
-      screenUnit * .1f
-    )
+    if (statuses.stunned > 0) {
+      batch.setColor(Color.YELLOW)
+      batch.draw(
+        asleep,
+        location.x * screenUnit,
+        location.y * screenUnit,
+        screenUnit,
+        screenUnit
+      )
+    }
+    if (stats.health > 0) {
+      batch.setColor(Color.RED)
+      batch.draw(
+        Square,
+        location.x * screenUnit,
+        location.y * screenUnit,
+        screenUnit * stats.health / stats.maxHealth,
+        screenUnit * .1f
+      )
+    }
     batch.setColor(Color.WHITE)
     batch.draw(
       texture,

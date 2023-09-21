@@ -7,6 +7,7 @@ trait Actor extends Serializable {
   var location: Vec2
   var destination: Vec2
   var statuses: Statuses = Statuses()
+  var selected = false
   var stats: Stats
   var equipment: Equipment
   var name: String

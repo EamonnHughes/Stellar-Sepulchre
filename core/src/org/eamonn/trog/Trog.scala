@@ -76,6 +76,9 @@ object Trog {
   lazy val ladderUpTile: TextureWrapper = TextureWrapper.load("ladderup.png")
   lazy val ladderDownTile: TextureWrapper = TextureWrapper.load("ladderdown.png")
   lazy val wallTile: TextureWrapper = TextureWrapper.load("walltile.png")
+  lazy val targetReticle: TextureWrapper = TextureWrapper.load("targetReticle.png")
+  lazy val asleep: TextureWrapper = TextureWrapper.load("asleep.png")
+
   var translationX = 0
   var translationY = 0
 

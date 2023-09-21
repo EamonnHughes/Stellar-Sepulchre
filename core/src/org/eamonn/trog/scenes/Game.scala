@@ -19,6 +19,7 @@ class Game(lvl: Level, plr: Player, wld: World)
   def addMessage(message: String): Unit = {
     messages = message :: messages
   }
+  var clickedForTargeting = false
   var saveTick = 0f
   var loadable = false
   var messages = List.empty[String]
@@ -81,6 +82,7 @@ class Game(lvl: Level, plr: Player, wld: World)
     }
   }
   override def update(delta: Float): Option[Scene] = {
+    enemies.foreach(e => e.selected = false)
     items.foreach(ite => {
       if (ite.number < 1) items = items.filterNot(item => item eq ite)
     })
@@ -110,18 +112,63 @@ class Game(lvl: Level, plr: Player, wld: World)
       }
       allSpawned = true
     }
-    player.update(delta)
-    enemies.foreach(e => e.update(delta))
-    if (enemyTurn) {
-      saveTick += 1
-      enemyTurn = false
-      player.stats.skills.foreach(sk => if (sk.ccd > 0) sk.ccd -= 1)
-    }
-    if (saveTick >= 25) {
-      var kd = keysDown
-      saveState(this, 0)
-      keysDown = kd
-      saveTick = 0f
+    if (player.rangedSkillUsing.nonEmpty) {
+      player.rangedSkillUsing.foreach(sk => {
+        player.rangedSkillTargetables = enemies.filter(e => {
+          Pathfinding
+            .findPath(player.location, e.location, level)
+            .exists(p => p.list.length <= sk.range)
+        })
+        if (player.rangedSkillTargetables.isEmpty) {
+          player.clearRangedStuff()
+        }
+        player.rangedSkillTargetables(player.rangedSkillOption).selected = true
+        if (keysDown.contains(Keys.LEFT)) {
+          if (!clickedForTargeting) {
+            player.rangedSkillOption =
+              (player.rangedSkillOption + (player.rangedSkillTargetables.length - 1)) % player.rangedSkillTargetables.length
+          }
+          clickedForTargeting = true
+        } else if (keysDown.contains(Keys.RIGHT)) {
+          if (!clickedForTargeting) {
+            player.rangedSkillOption =
+              (player.rangedSkillOption + 1) % player.rangedSkillTargetables.length
+          }
+          clickedForTargeting = true
+        } else {
+          clickedForTargeting = false
+        }
+        if (keysDown.contains(Keys.ENTER)) {
+          sk.onUse(
+            player,
+            player.rangedSkillTargetables(player.rangedSkillOption),
+            this
+          )
+          sk.ccd = sk.coolDown
+          if (sk.takesTurn) {
+            player.yourTurn = false
+            enemyTurn = true
+          }
+          player.clearRangedStuff()
+        }
+        if (keysDown.contains(Keys.ESCAPE)) {
+          player.clearRangedStuff()
+        }
+      })
+    } else {
+      player.update(delta)
+      enemies.foreach(e => e.update(delta))
+      if (enemyTurn) {
+        saveTick += 1
+        enemyTurn = false
+        player.stats.skills.foreach(sk => if (sk.ccd > 0) sk.ccd -= 1)
+      }
+      if (saveTick >= 25) {
+        var kd = keysDown
+        saveState(this, 0)
+        keysDown = kd
+        saveTick = 0f
+      }
     }
     if (descending) floor += 1
     if (mainMenuing) Some(home)

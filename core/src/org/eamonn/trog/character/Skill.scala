@@ -2,9 +2,8 @@ package org.eamonn.trog.character
 
 import org.eamonn.trog.Trog.garbage
 import org.eamonn.trog.scenes.Game
-import org.eamonn.trog.{Actor, Pathfinding, Vec2, d}
+import org.eamonn.trog.{Actor, Pathfinding, d}
 import org.eamonn.trog.util.TextureWrapper
-import cats.syntax.option._
 
 trait Skill {
   var name: String
@@ -21,17 +20,6 @@ trait rangedSkill extends Skill {
       target: Actor,
       game: Game
   ): Unit
-  def selectTarget(game: Game, user: Actor): Option[Actor] = {
-    game.enemies.minByOption(e => {
-      var dist = Int.MaxValue
-      Pathfinding
-        .findPath(user.location, e.location, game.level)
-        .foreach(p => {
-          dist = p.list.length
-        })
-      dist
-    })
-  }
 }
 trait meleeSkill extends Skill {
   def onUse(
