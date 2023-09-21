@@ -9,6 +9,8 @@ import org.eamonn.trog.scenes.Game
 import org.eamonn.trog.util.TextureWrapper
 import org.eamonn.trog.{Actor, Enemy, Pathfinding, Vec2, d, screenUnit}
 
+import scala.util.Random
+
 case class Player() extends Actor {
   var inventoryItemSelected: Int = 0
   var archetype: Archetype = _
@@ -20,6 +22,7 @@ case class Player() extends Actor {
   var resting = false
   var name = ""
   var dead = false
+  var exploring = false
   var stats: Stats = basePlayerStats()
   var inCombat = false
   var rangedSkillUsing: Option[rangedSkill] = None
@@ -95,9 +98,11 @@ case class Player() extends Actor {
     )
   }
   def update(delta: Float) = {
+    println(speed)
+    if (resting || exploring) speed = .005f else speed = .25f
     if (!yourTurn) {
       tick += delta
-      if (tick > speed) {
+      if (tick >= speed) {
         yourTurn = true
         tick = 0f
       }
@@ -114,7 +119,10 @@ case class Player() extends Actor {
     else if (game.inCharacterSheet) charSheetControl(delta)
   }
   def gameControl(delta: Float) = {
-    if (resting) speed = .005f else speed = .25f
+    if (inCombat) {
+      destination = location.copy()
+      exploring = false
+    }
     if (healing > 4 && stats.health < stats.maxHealth) {
       stats.health += 1
       healing = 0
@@ -131,8 +139,9 @@ case class Player() extends Actor {
         })
         dist < stats.sightRad
       })
-    ) inCombat = true
-    else inCombat = false
+    ) {
+      inCombat = true
+    } else inCombat = false
     if (yourTurn) {
       if (statuses.stunned > 0) {
         statuses.stunned -= 1
@@ -166,7 +175,25 @@ case class Player() extends Actor {
                 }
               }
           })
-
+        if (game.keysDown.contains(Keys.Z)) {
+          exploring = !exploring
+          if (!exploring) destination = location.copy()
+        }
+        if (
+          exploring && destination == location && !game.level.walkables.forall(
+            w => game.explored.contains(w)
+          )
+        ) {
+          var dest =
+            game.level.walkables.filter(w => !game.explored.contains(w))(
+              Random.nextInt(
+                game.level.walkables.count(w => !game.explored.contains(w))
+              )
+            )
+          destination = dest.copy()
+        }
+        if (game.level.walkables.forall(w => game.explored.contains(w)))
+          exploring = false
         if (
           game.keysDown.contains(Keys.S) || game.keysDown.contains(Keys.DOWN)
         ) {
@@ -189,11 +216,13 @@ case class Player() extends Actor {
           destination.x = location.x - 1
         } else if (game.keysDown.contains(Keys.SPACE)) {
           resting = true
+          exploring = false
           game.enemyTurn = true
         } else if (game.clicked) {
           destination = game.mouseLocOnGrid.copy()
         } else if (game.keysDown.contains(Keys.R)) {
           resting = true
+          exploring = false
         } else if (
           game.keysDown.contains(Keys.PERIOD) && (game.keysDown.contains(
             Keys.SHIFT_RIGHT
@@ -231,6 +260,18 @@ case class Player() extends Actor {
         }
         if (stats.health < stats.maxHealth) healing += healingFactor
         yourTurn = false
+
+        game.level.walkables
+          .filter(w =>
+            Pathfinding
+              .findPath(location, w, game.level)
+              .forall(p => p.list.length < stats.sightRad)
+          )
+          .foreach(w => {
+            if (!game.explored.contains(w)) {
+              game.explored = w :: game.explored
+            }
+          })
         game.enemyTurn = true
       }
       if (resting && (stats.health == stats.maxHealth || inCombat)) {

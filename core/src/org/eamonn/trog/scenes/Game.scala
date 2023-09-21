@@ -5,6 +5,7 @@ import com.badlogic.gdx.Input.Keys
 import com.badlogic.gdx.InputAdapter
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.g2d.PolygonSpriteBatch
+import jdk.javadoc.internal.doclets.formats.html.markup.Navigation
 import org.eamonn.trog.SaveLoad.{loadState, saveState}
 import org.eamonn.trog.Scene
 import org.eamonn.trog.character.Player
@@ -21,6 +22,7 @@ class Game(lvl: Level, plr: Player, wld: World)
   }
   var clickedForTargeting = false
   var saveTick = 0f
+  var explored: List[Vec2] = List.empty
   var loadable = false
   var messages = List.empty[String]
   var world = wld
@@ -121,38 +123,40 @@ class Game(lvl: Level, plr: Player, wld: World)
         })
         if (player.rangedSkillTargetables.isEmpty) {
           player.clearRangedStuff()
-        }
-        player.rangedSkillTargetables(player.rangedSkillOption).selected = true
-        if (keysDown.contains(Keys.LEFT)) {
-          if (!clickedForTargeting) {
-            player.rangedSkillOption =
-              (player.rangedSkillOption + (player.rangedSkillTargetables.length - 1)) % player.rangedSkillTargetables.length
-          }
-          clickedForTargeting = true
-        } else if (keysDown.contains(Keys.RIGHT)) {
-          if (!clickedForTargeting) {
-            player.rangedSkillOption =
-              (player.rangedSkillOption + 1) % player.rangedSkillTargetables.length
-          }
-          clickedForTargeting = true
         } else {
-          clickedForTargeting = false
-        }
-        if (keysDown.contains(Keys.ENTER)) {
-          sk.onUse(
-            player,
-            player.rangedSkillTargetables(player.rangedSkillOption),
-            this
-          )
-          sk.ccd = sk.coolDown
-          if (sk.takesTurn) {
-            player.yourTurn = false
-            enemyTurn = true
+          player.rangedSkillTargetables(player.rangedSkillOption).selected =
+            true
+          if (keysDown.contains(Keys.LEFT)) {
+            if (!clickedForTargeting) {
+              player.rangedSkillOption =
+                (player.rangedSkillOption + (player.rangedSkillTargetables.length - 1)) % player.rangedSkillTargetables.length
+            }
+            clickedForTargeting = true
+          } else if (keysDown.contains(Keys.RIGHT)) {
+            if (!clickedForTargeting) {
+              player.rangedSkillOption =
+                (player.rangedSkillOption + 1) % player.rangedSkillTargetables.length
+            }
+            clickedForTargeting = true
+          } else {
+            clickedForTargeting = false
           }
-          player.clearRangedStuff()
-        }
-        if (keysDown.contains(Keys.ESCAPE)) {
-          player.clearRangedStuff()
+          if (keysDown.contains(Keys.ENTER)) {
+            sk.onUse(
+              player,
+              player.rangedSkillTargetables(player.rangedSkillOption),
+              this
+            )
+            sk.ccd = sk.coolDown
+            if (sk.takesTurn) {
+              player.yourTurn = false
+              enemyTurn = true
+            }
+            player.clearRangedStuff()
+          }
+          if (keysDown.contains(Keys.ESCAPE)) {
+            player.clearRangedStuff()
+          }
         }
       })
     } else {

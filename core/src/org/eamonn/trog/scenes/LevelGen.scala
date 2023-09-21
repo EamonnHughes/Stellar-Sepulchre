@@ -48,6 +48,7 @@ class LevelGen(
     gameNew.keysDown = List.empty
     gameNew.clicked = false
     gameNew.inCharacterSheet = false
+    gameNew.explored = List.empty
 
     if (doneGenerating && level.walkables.nonEmpty) {
       Some(gameNew)
