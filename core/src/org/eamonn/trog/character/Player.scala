@@ -98,11 +98,9 @@ case class Player() extends Actor {
     )
   }
   def update(delta: Float) = {
-    println(speed)
-    if (resting || exploring) speed = .005f else speed = .25f
     if (!yourTurn) {
       tick += delta
-      if (tick >= speed) {
+      if (tick >= speed || resting || exploring) {
         yourTurn = true
         tick = 0f
       }
@@ -119,6 +117,7 @@ case class Player() extends Actor {
     else if (game.inCharacterSheet) charSheetControl(delta)
   }
   def gameControl(delta: Float) = {
+    var initLoc = location.copy()
     if (inCombat) {
       destination = location.copy()
       exploring = false
@@ -185,11 +184,11 @@ case class Player() extends Actor {
           )
         ) {
           var dest =
-            game.level.walkables.filter(w => !game.explored.contains(w))(
-              Random.nextInt(
-                game.level.walkables.count(w => !game.explored.contains(w))
+            game.level.walkables
+              .filter(w => !game.explored.contains(w))
+              .minBy(w =>
+                Pathfinding.findPath(location, w, game.level).head.list.length
               )
-            )
           destination = dest.copy()
         }
         if (game.level.walkables.forall(w => game.explored.contains(w)))
@@ -260,13 +259,16 @@ case class Player() extends Actor {
         }
         if (stats.health < stats.maxHealth) healing += healingFactor
         yourTurn = false
+        if (initLoc != location) {
+          getVisible = game.level.walkables
+            .filter(w =>
+              Pathfinding
+                .findPath(location, w, game.level)
+                .forall(p => p.list.length < stats.sightRad)
+            )
+        }
 
-        game.level.walkables
-          .filter(w =>
-            Pathfinding
-              .findPath(location, w, game.level)
-              .forall(p => p.list.length < stats.sightRad)
-          )
+        getVisible
           .foreach(w => {
             if (!game.explored.contains(w)) {
               game.explored = w :: game.explored
@@ -279,6 +281,7 @@ case class Player() extends Actor {
       }
     }
   }
+  var getVisible: List[Vec2] = List.empty
   def inventoryControl(delta: Float): Boolean = {
     var clicked = false
     var inventory = game.items

@@ -161,7 +161,7 @@ class Game(lvl: Level, plr: Player, wld: World)
       })
     } else {
       player.update(delta)
-      enemies.foreach(e => e.update(delta))
+      enemies.filter(e => player.getVisible.contains(e.location)).foreach(e => e.update(delta))
       if (enemyTurn) {
         saveTick += 1
         enemyTurn = false
