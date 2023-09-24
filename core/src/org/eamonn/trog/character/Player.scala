@@ -174,7 +174,7 @@ case class Player() extends Actor {
                 }
               }
           })
-        if (game.keysDown.contains(Keys.Z)) {
+        if (game.keysDown.contains(Keys.Z) && !inCombat) {
           exploring = !exploring
           if (!exploring) destination = location.copy()
         }

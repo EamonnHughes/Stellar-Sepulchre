@@ -18,7 +18,7 @@ class LevelGen(
     world: World
 ) extends Scene {
   var cameraLocation: Vec2 = Vec2(0, 0)
-  var genMap = GeneratedMap(45, 6, 10, .2f)
+  var genMap = GeneratedMap(30, 4, 6, .2f)
   var doneGenerating = false
   var level = new Level
 
@@ -50,7 +50,7 @@ class LevelGen(
     gameNew.inCharacterSheet = false
     gameNew.explored = List.empty
     gameNew.items = gameNew.items.filterNot(i =>
-      i.possessor.nonEmpty && i.possessor.head.isInstanceOf[Player]
+      i.possessor.nonEmpty && !i.possessor.head.isInstanceOf[Player]
     )
 
     if (doneGenerating && level.walkables.nonEmpty) {
