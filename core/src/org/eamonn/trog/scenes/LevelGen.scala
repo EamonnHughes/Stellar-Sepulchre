@@ -5,7 +5,7 @@ import com.badlogic.gdx.InputAdapter
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.g2d.PolygonSpriteBatch
 import org.eamonn.trog.Scene
-import org.eamonn.trog.Trog.garbage
+import org.eamonn.trog.Trog.{garbage, homeBG, loadBG}
 import org.eamonn.trog.character.Player
 import org.eamonn.trog.procgen.{GeneratedMap, Level, World}
 import org.eamonn.trog.util.TextureWrapper
@@ -49,7 +49,9 @@ class LevelGen(
     gameNew.clicked = false
     gameNew.inCharacterSheet = false
     gameNew.explored = List.empty
-    gameNew.items = List.empty
+    gameNew.items = gameNew.items.filterNot(i =>
+      i.possessor.nonEmpty && i.possessor.head.isInstanceOf[Player]
+    )
 
     if (doneGenerating && level.walkables.nonEmpty) {
       Some(gameNew)
@@ -58,13 +60,13 @@ class LevelGen(
 
   override def render(batch: PolygonSpriteBatch): Unit = {
     batch.setColor(Color.WHITE)
-    /*batch.draw(
-      background,
+    batch.draw(
+      loadBG,
       -Trog.translationX * screenUnit,
       -Trog.translationY * screenUnit,
       Geometry.ScreenWidth,
       Geometry.ScreenHeight
-    )*/
+    )
     genMap.draw(batch)
   }
 
