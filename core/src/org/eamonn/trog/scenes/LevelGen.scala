@@ -49,6 +49,7 @@ class LevelGen(
     gameNew.clicked = false
     gameNew.inCharacterSheet = false
     gameNew.explored = List.empty
+    gameNew.items = List.empty
 
     if (doneGenerating && level.walkables.nonEmpty) {
       Some(gameNew)
