@@ -3,20 +3,15 @@ package org.eamonn.trog.character
 import org.eamonn.trog.items.makeCommonWeapon
 import org.eamonn.trog.scenes.Game
 
-trait Suffix {
-  val names: List[String]
+trait Archetype {
+  val name: String
   def onSelect(game: Game): Unit
   def onLevelUp(game: Game): Unit
   val metaArchName: String
 }
 
-case class RogueSuffix() extends Suffix {
-  val names: List[String] = List(
-    "blade",
-    "thief",
-    "taker",
-    "trickster"
-  )
+case class RogueArchetype() extends Archetype {
+  val name = "Infiltrator"
   val metaArchName: String = "Rogue"
 
   override def onSelect(game: Game): Unit = {
@@ -38,13 +33,9 @@ case class RogueSuffix() extends Suffix {
   }
 }
 
-case class FighterSuffix() extends Suffix {
-  val names: List[String] = List(
-    "knight",
-    "paladin",
-    "breaker",
-    "sword"
-  )
+case class FighterArchetype() extends Archetype {
+  val name: String = "Caedenaut"
+
   val metaArchName: String = "Fighter"
 
   override def onSelect(game: Game): Unit = {

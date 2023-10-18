@@ -4,7 +4,7 @@ import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.g2d.PolygonSpriteBatch
 import org.eamonn.trog.Trog.{Square, asleep, garbage, targetReticle}
 import org.eamonn.trog.character.{Equipment, Stats, makeStats}
-import org.eamonn.trog.items.{Weapon, makeCommonWeapon}
+import org.eamonn.trog.items.{MedKit, Weapon, makeCommonWeapon}
 import org.eamonn.trog.scenes.Game
 import org.eamonn.trog.util.TextureWrapper
 
@@ -67,7 +67,7 @@ trait Enemy extends Actor {
   }
 }
 
-case class Criminal() extends Enemy {
+case class Servitor() extends Enemy {
   var equipment: Equipment = new Equipment
   var game: Game = _
   var lev: Int = _
@@ -83,8 +83,8 @@ case class Criminal() extends Enemy {
     game.items = weapon :: game.items
     equipment.weapon = Some(weapon)
     name = enemyNames
-      .getCriminalName(lev)(
-        Random.nextInt(enemyNames.getCriminalName(lev).length)
+      .getServitorName(lev)(
+        Random.nextInt(enemyNames.getServitorName(lev).length)
       )
       .substring(1)
     stats = makeStats(
@@ -102,7 +102,7 @@ case class Criminal() extends Enemy {
     )
     game.enemies = this :: game.enemies
   }
-  def texture: TextureWrapper = TextureWrapper.load(s"Criminal${lev min 5}.png")
+  def texture: TextureWrapper = TextureWrapper.load(s"Servitor${lev min 5}.png")
 
   override def update(delta: Float): Unit = {
 
@@ -124,10 +124,10 @@ case class Criminal() extends Enemy {
     }
 
     if (stats.health <= 0) {
-      equipment.weapon.foreach(w => {
-        w.possessor = None
-        w.location = Some(location.copy())
-      })
+      var w = new MedKit()
+      w.location = Some(location.copy())
+      w.game = game
+      game.items = w :: game.items
       game.enemies = game.enemies.filterNot(e => e eq this)
       game.player.stats.exp += stats.exp
       game.addMessage(name + " has been slain")
@@ -146,18 +146,15 @@ case class Criminal() extends Enemy {
 }
 
 object enemyNames {
-  val criminalNames: List[String] = List(
-    "1Cutpurse",
-    "1Thief",
-    "2Mugger",
-    "2Bandit",
-    "3Bandit Captain",
-    "3Smuggler",
-    "4Arms Dealer",
-    "4Thieves Guild Officer",
-    "5Thief Lord"
+  val Servo: List[String] = List(
+    "1Drone",
+    "1Menial",
+    "2Servitor",
+    "3Suppressor",
+    "4Hemisynapt",
+    "5Synapt"
   )
-  def getCriminalName(lev: Int): List[String] = {
-    criminalNames.filter(c => c.charAt(0) == (lev min 5).toString.charAt(0))
+  def getServitorName(lev: Int): List[String] = {
+    Servo.filter(c => c.charAt(0) == (lev min 5).toString.charAt(0))
   }
 }

@@ -47,7 +47,6 @@ case class makeCommonWeapon(var mod: Int, var game: Game, nODie: Int, die: Int)
     )
     .substring(2)
   override var location: Option[Vec2] = None
-  override var possessor: Option[Actor] = None
 
   override def groundTexture: TextureWrapper =
     TextureWrapper.load(s"$weaponType.png")

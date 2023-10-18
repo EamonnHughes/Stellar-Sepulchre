@@ -6,12 +6,12 @@ import org.eamonn.trog.scenes.Game
 import org.eamonn.trog.util.TextureWrapper
 import org.eamonn.trog.{Actor, d}
 
-trait Potion extends Usable {}
+trait Consumable extends Usable {}
 
-case class HealingPotion() extends Potion {
+case class MedKit() extends Consumable {
   override def use(user: Actor): Unit = {
     if (user.stats.health < user.stats.maxHealth && number >= 1) {
-      user.stats.health = (user.stats.health + d(6)) min user.stats.maxHealth
+      user.stats.health = (user.stats.health + d(2, 4)) min user.stats.maxHealth
       number -= 1
       game.addMessage("You consumed 1 " + name)
     }
@@ -19,14 +19,13 @@ case class HealingPotion() extends Potion {
 
   override var game: Game = _
 
-  override def name: String = "Healing Potion"
+  override def name: String = "MedKit"
 
   override def groundTexture: TextureWrapper =
-    TextureWrapper.load("HealingPotion.png")
+    TextureWrapper.load("MedKit.png")
 
   override var location: Option[trog.Vec2] = None
 
-  override var possessor: Option[Actor] = None
 
   override def tNum: Int = number
 }

@@ -12,7 +12,7 @@ trait Item {
   def groundTexture: TextureWrapper
   var location: Option[Vec2]
   def use(actor: Actor): Unit
-  var possessor: Option[Actor]
+  var possessor: Option[Actor] = None
   var number: Int = 1
   def tNum: Int
   def pickUp(actor: Actor): Unit = {

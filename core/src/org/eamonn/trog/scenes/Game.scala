@@ -109,7 +109,7 @@ class Game(lvl: Level, plr: Player, wld: World)
               .length
           )
         )
-        var enemy = Criminal()
+        var enemy = Servitor()
         enemy.initialize(this, loc)
       }
       allSpawned = true

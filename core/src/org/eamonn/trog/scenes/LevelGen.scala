@@ -49,8 +49,7 @@ class LevelGen(
     gameNew.clicked = false
     gameNew.inCharacterSheet = false
     gameNew.explored = List.empty
-    gameNew.items = gameNew.items.filterNot(i =>
-      i.possessor.nonEmpty && !i.possessor.head.isInstanceOf[Player]
+    gameNew.items = gameNew.items.filter(i => i.possessor.nonEmpty && i.possessor.head.isInstanceOf[Player]
     )
 
     if (doneGenerating && level.walkables.nonEmpty) {

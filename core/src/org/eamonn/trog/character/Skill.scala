@@ -77,9 +77,11 @@ case class Dash() extends rangedSkill {
       .findPath(user.location, target.location, game.level)
       .filter(p => p.list.length <= range)
       .foreach(p => {
-        user.location = p.list(1).copy()
-        user.destination = p.list(1).copy()
-        user.attack(target)
+        if (!game.enemies.exists(e => e.location == p.list(1))) {
+          user.location = p.list(1).copy()
+          user.destination = p.list(1).copy()
+          user.attack(target)
+        }
       })
 
   }

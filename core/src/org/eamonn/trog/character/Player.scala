@@ -4,7 +4,7 @@ import com.badlogic.gdx.Input.Keys
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.g2d.PolygonSpriteBatch
 import org.eamonn.trog.Trog.{Square, garbage}
-import org.eamonn.trog.items.{HealingPotion, makeCommonWeapon}
+import org.eamonn.trog.items.{MedKit, makeCommonWeapon}
 import org.eamonn.trog.scenes.Game
 import org.eamonn.trog.util.TextureWrapper
 import org.eamonn.trog.{Actor, Enemy, Pathfinding, Vec2, d, screenUnit}
@@ -44,11 +44,11 @@ case class Player() extends Actor {
   var clickTick = 0f
   def initially(gme: Game): Unit = {
     game = gme
-    val potion: HealingPotion = HealingPotion()
-    potion.number = 10
-    potion.possessor = Some(this)
-    potion.game = game
-    game.items = potion :: game.items
+    val medKit: MedKit = MedKit()
+    medKit.number = 10
+    medKit.possessor = Some(this)
+    medKit.game = game
+    game.items = medKit :: game.items
     archetype.onSelect(game)
     stats.health = stats.maxHealth
     initialized = true
