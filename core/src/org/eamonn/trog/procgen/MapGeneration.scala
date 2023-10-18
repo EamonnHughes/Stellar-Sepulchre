@@ -235,27 +235,23 @@ case class Connection(rooms: (Room, Room)) {
 
 }
 
-class Level extends Serializable{
+class Level extends Serializable {
   def floorTile: TextureWrapper = Trog.floorTile
   def ladderUpTile: TextureWrapper = Trog.ladderUpTile
   def ladderDownTile: TextureWrapper = Trog.ladderDownTile
-  def wallTile: TextureWrapper = Trog.wallTile
+  def wallSide: TextureWrapper = Trog.wallSide
+  def wallCap: TextureWrapper = Trog.wallCap
   var downLadder: Vec2 = _
   var upLadder: Vec2 = _
   var dimensions = 0
   var walkables: List[Vec2] = List.empty
   def draw(batch: PolygonSpriteBatch): Unit = {
+    var wallLocs: List[Vec2] = List.empty
     walkables.foreach(w => {
       batch.setColor(Color.WHITE)
       w.getAdjacents.foreach(a => {
         if (!walkables.contains(a)) {
-          batch.draw(
-            wallTile,
-            a.x * screenUnit,
-            a.y * screenUnit,
-            screenUnit,
-            screenUnit
-          )
+          wallLocs = a :: wallLocs
         }
       })
       batch.draw(
@@ -266,6 +262,18 @@ class Level extends Serializable{
         screenUnit
       )
     })
+    wallLocs
+      .sortBy(w => -w.y)
+      .foreach(a => {
+        batch.setColor(1, 1, 1, 1)
+        batch.draw(
+          wallSide,
+          a.x * screenUnit,
+          a.y * screenUnit,
+          screenUnit,
+          screenUnit
+        )
+      })
     batch.draw(
       ladderUpTile,
       upLadder.x * screenUnit,
