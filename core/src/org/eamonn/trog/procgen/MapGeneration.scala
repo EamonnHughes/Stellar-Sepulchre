@@ -267,7 +267,7 @@ class Level extends Serializable {
       .foreach(a => {
         batch.setColor(1, 1, 1, 1)
         batch.draw(
-          wallSide,
+          wallCap,
           a.x * screenUnit,
           a.y * screenUnit,
           screenUnit,

@@ -183,9 +183,9 @@ class Game(lvl: Level, plr: Player, wld: World)
 
   override def render(batch: PolygonSpriteBatch): Unit = {
     level.draw(batch)
-    player.draw(batch)
     items.foreach(ite => ite.draw(batch))
     enemies.foreach(e => e.draw(batch))
+    player.draw(batch)
     for (
       x <-
         -Trog.translationX - 5 to (-Trog.translationX + Geometry.ScreenWidth / screenUnit).toInt + 5
