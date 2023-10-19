@@ -16,21 +16,23 @@ class Home(wld: World) extends Scene {
   var gameLoaded = false
   var selecting = false
 
+  var mainColor = new Color(.48f, .69f, .37f, 1)
+  var darkColor = new Color(.28f, .49f, .17f, 1)
+
   override def updateCamera(): Unit = {}
 
   override def init(): InputAdapter = {
     new HomeControl(this)
   }
   override def update(delta: Float): Option[Scene] = {
-    if(selecting) Some(new WorldSelect(this))
+    if (selecting) Some(new WorldSelect(this))
     else if (gameLoaded && game.loadable) Some(game)
     else if (next) Some(new CharCreation(world))
     else None
   }
 
   override def render(batch: PolygonSpriteBatch): Unit = {
-    batch.setColor(Color.WHITE)
-
+    batch.setColor(.8f, .8f, .8f, 1)
     batch.draw(
       Trog.homeBG,
       -Trog.translationX * screenUnit,
@@ -38,36 +40,38 @@ class Home(wld: World) extends Scene {
       Geometry.ScreenWidth,
       Geometry.ScreenHeight
     )
+    batch.setColor(mainColor)
+
     batch.draw(
       Trog.titleIMG,
       -Trog.translationX * screenUnit,
-      -Trog.translationY * screenUnit + Geometry.ScreenHeight - screenUnit * 8,
-      Geometry.ScreenWidth,
-      (Geometry.ScreenWidth/200)*64
+      -Trog.translationY * screenUnit + Geometry.ScreenHeight - screenUnit * 5,
+      Geometry.ScreenWidth * 3 / 4,
+      (Geometry.ScreenWidth / 200) * 64 * 3 / 4
     )
   }
 
   override def renderUI(batch: PolygonSpriteBatch): Unit = {
-    Text.largeFont.setColor(Color.WHITE)
+    Text.largeFont.setColor(mainColor)
     Text.largeFont.draw(
       batch,
       "  Descend: [ENTER]",
       -Trog.translationX * screenUnit,
-      -Trog.translationY * screenUnit + Geometry.ScreenHeight / 2
+      -Trog.translationY * screenUnit + Geometry.ScreenHeight * 3 / 4
     )
-    if (!game.loadable) Text.largeFont.setColor(Color.GRAY)
+    if (!game.loadable) Text.largeFont.setColor(darkColor)
     Text.largeFont.draw(
       batch,
-      "\n\n  Load Last Save: [L]",
+      "\n  Load Last Save: [L]",
       -Trog.translationX * screenUnit,
-      -Trog.translationY * screenUnit + Geometry.ScreenHeight / 2
+      -Trog.translationY * screenUnit + Geometry.ScreenHeight * 3 / 4
     )
-    Text.largeFont.setColor(Color.WHITE)
+    Text.largeFont.setColor(mainColor)
     Text.largeFont.draw(
       batch,
-      "\n\n\n\n  New World: [W]",
+      "\n\n  New World: [W]",
       -Trog.translationX * screenUnit,
-      -Trog.translationY * screenUnit + Geometry.ScreenHeight / 2
+      -Trog.translationY * screenUnit + Geometry.ScreenHeight * 3 / 4
     )
   }
 }
