@@ -5,7 +5,6 @@ import com.badlogic.gdx.Input.Keys
 import com.badlogic.gdx.InputAdapter
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.g2d.PolygonSpriteBatch
-import jdk.javadoc.internal.doclets.formats.html.markup.Navigation
 import org.eamonn.trog.SaveLoad.{loadState, saveState}
 import org.eamonn.trog.Scene
 import org.eamonn.trog.character.Player
