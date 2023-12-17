@@ -179,10 +179,10 @@ case class Player() extends Actor {
           if (!exploring) destination = location.copy()
         }
         if (
-          exploring && destination == location && !game.level.walkables.forall(
+          exploring && destination == location) {
+          if(!game.level.walkables.forall(
             w => game.explored.contains(w)
-          )
-        ) {
+          )){
           var dest =
             game.level.walkables
               .filter(w => !game.explored.contains(w))
@@ -190,7 +190,9 @@ case class Player() extends Actor {
                 Pathfinding.findPath(location, w, game.level).head.list.length
               )
           destination = dest.copy()
-        }
+        } else if (location != game.level.downLadder) {
+            destination = game.level.downLadder.copy()
+          }}
         if (game.level.walkables.forall(w => game.explored.contains(w)))
           exploring = false
         if (
