@@ -7,8 +7,10 @@ import com.badlogic.gdx.backends.lwjgl3.{
 
 // Please note that on macOS your application needs to be started with the -XstartOnFirstThread JVM argument
 object DesktopLauncher extends App {
+  var dm = Lwjgl3ApplicationConfiguration.getDisplayMode()
   val config = new Lwjgl3ApplicationConfiguration
   config.setForegroundFPS(60)
-  config.setWindowedMode(1000, 1000)
+  var size = ((dm.width min dm.height) * .9).toInt
+  config.setWindowedMode(size, size)
   new Lwjgl3Application(new Trog, config)
 }

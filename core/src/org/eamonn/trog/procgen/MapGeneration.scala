@@ -238,8 +238,7 @@ class Level extends Serializable {
   def floorTile: TextureWrapper = Trog.floorTile
   def ladderUpTile: TextureWrapper = Trog.ladderUpTile
   def ladderDownTile: TextureWrapper = Trog.ladderDownTile
-  def wallSide: TextureWrapper = Trog.wallSide
-  def wallCap: TextureWrapper = Trog.wallCap
+  def wall: TextureWrapper = Trog.Wall
   var downLadder: Vec2 = _
   var upLadder: Vec2 = _
   var dimensions = 0
@@ -266,7 +265,7 @@ class Level extends Serializable {
       .foreach(a => {
         batch.setColor(1, 1, 1, 1)
         batch.draw(
-          wallCap,
+          wall,
           a.x * screenUnit,
           a.y * screenUnit,
           screenUnit,

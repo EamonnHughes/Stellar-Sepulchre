@@ -10,9 +10,9 @@ trait Archetype {
   val metaArchName: String
 }
 
-case class RogueArchetype() extends Archetype {
+case class InfiltratorArchetype() extends Archetype {
   val name = "Infiltrator"
-  val metaArchName: String = "Rogue"
+  val metaArchName: String = "Infiltrator"
 
   override def onSelect(game: Game): Unit = {
     game.player.stats.attackMod += .5f
@@ -33,10 +33,10 @@ case class RogueArchetype() extends Archetype {
   }
 }
 
-case class FighterArchetype() extends Archetype {
-  val name: String = "Caedenaut"
+case class CaedanautArchetype() extends Archetype {
+  val name: String = "Caedanaut"
 
-  val metaArchName: String = "Fighter"
+  val metaArchName: String = "Caedanaut"
 
   override def onSelect(game: Game): Unit = {
     game.player.stats.attackMod += 1
