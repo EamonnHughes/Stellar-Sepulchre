@@ -9,7 +9,7 @@ import org.eamonn.trog.scenes.Game
 import java.io.{File, FileInputStream, FileOutputStream, ObjectInputStream, ObjectOutputStream}
 
 object SaveLoad {
-  def mainDir = "sepultus/"
+  def mainDir = "interstellargrave/"
   def SaveDir = s"${mainDir}saves/"
 
   def saveState(game: Game, slot: Int): Unit = {
