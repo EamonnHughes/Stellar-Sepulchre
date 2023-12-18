@@ -10,7 +10,7 @@ object DesktopLauncher extends App {
   var dm = Lwjgl3ApplicationConfiguration.getDisplayMode()
   val config = new Lwjgl3ApplicationConfiguration
   config.setForegroundFPS(60)
-  var size = ((dm.width min dm.height) * .9 /16/64).toInt*16*64
+  var size = ((dm.width min dm.height) /16/64)*16*64
   config.setWindowedMode(size, size)
   new Lwjgl3Application(new Trog, config)
 }
