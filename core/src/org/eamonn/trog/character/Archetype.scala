@@ -19,7 +19,7 @@ case class InfiltratorArchetype() extends Archetype {
     game.player.stats.critChance += 2
     game.player.stats.critMod += .2f
     game.player.stats.skills = throwDagger() :: game.player.stats.skills
-    val weapon = makeCommonWeapon(0, game, 1, 4)
+    val weapon = makeCommonWeapon(0, game, 1, 4, "Player")
     weapon.possessor = Some(game.player)
     weapon.game = game
     game.items = weapon :: game.items
@@ -43,7 +43,7 @@ case class CaedanautArchetype() extends Archetype {
     game.player.stats.damageMod += 1
     game.player.stats.skills =
       Dash() :: shieldBash() :: game.player.stats.skills
-    val weapon = makeCommonWeapon(0, game, 1, 6)
+    val weapon = makeCommonWeapon(0, game, 1, 6, "Player")
     weapon.possessor = Some(game.player)
     weapon.game = game
     game.items = weapon :: game.items

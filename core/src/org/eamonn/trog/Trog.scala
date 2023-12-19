@@ -70,7 +70,7 @@ class Trog extends ApplicationAdapter {
 object Trog {
   implicit val garbage: GarbageCan = new GarbageCan
 
-  var sound: Sound = _
+  lazy val inGameOST: Sound = Trog.loadSound("AmbienceDepths.wav")
   lazy val Square: TextureWrapper = TextureWrapper.load("Square.png")
   lazy val homeBG: TextureWrapper = TextureWrapper.load("sepulctbg.png")
   lazy val loadBG: TextureWrapper = TextureWrapper.load("generate.png")

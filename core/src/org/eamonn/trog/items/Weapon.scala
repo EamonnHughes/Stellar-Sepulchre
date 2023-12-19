@@ -22,7 +22,7 @@ trait Weapon extends Gear {
   var weaponType: String
   def onAttack(attacker: Actor, target: Actor)
 }
-case class makeCommonWeapon(var mod: Int, var game: Game, nODie: Int, die: Int)
+case class makeCommonWeapon(var mod: Int, var game: Game, nODie: Int, die: Int, field: String)
   extends Weapon {
   override def onAttack(attacker: Actor, target: Actor): Unit = {
     if (d(10) + attacker.stats.attackMod + mod > target.stats.ac) {
@@ -42,8 +42,8 @@ case class makeCommonWeapon(var mod: Int, var game: Game, nODie: Int, die: Int)
     game.addMessage("You unequipped " + name)
   }
   var weaponType: String = gearNames
-    .getCINofD(nODie, die)(
-      Random.nextInt(gearNames.getCINofD(nODie, die).length)
+    .getCINofD(nODie, die, field)(
+      Random.nextInt(gearNames.getCINofD(nODie, die, field).length)
     )
     .substring(2)
   override var location: Option[Vec2] = None
@@ -59,16 +59,39 @@ case class makeCommonWeapon(var mod: Int, var game: Game, nODie: Int, die: Int)
 object gearNames {
   val commonItemNames: List[String] =
     List(
-      "12Club",
-      "13Knuckledusters",
       "14Dagger",
-      "15Shortsword",
-      "16Longsword"
+      "16Glaive"
     )
-  def getCINofD(nODie: Int, die: Int): List[String] = {
-    commonItemNames.filter(CIN =>
-      CIN.charAt(0) == nODie.toString.charAt(0) && CIN.charAt(1) == die.toString
-        .charAt(0)
+  val playerItemNames: List[String] =
+    List(
+      "14Dagger",
+      "16Glaive"
     )
+
+  val droneItemNames: List[String] = List(
+    "11Baton",
+    "12Baton",
+    "13Baton",
+    "14Baton",
+    "15Baton",
+    "16Baton"
+  )
+  def getCINofD(nODie: Int, die: Int, field: String): List[String] = {
+    if(field == "Drone") {
+      droneItemNames.filter(CIN =>
+        CIN.charAt(0) == nODie.toString.charAt(0) && CIN.charAt(1) == die.toString
+          .charAt(0)
+      )
+    } else if (field == "Player") {
+      playerItemNames.filter(CIN =>
+        CIN.charAt(0) == nODie.toString.charAt(0) && CIN.charAt(1) == die.toString
+          .charAt(0)
+      )
+    } else{
+      commonItemNames.filter(CIN =>
+        CIN.charAt(0) == nODie.toString.charAt(0) && CIN.charAt(1) == die.toString
+          .charAt(0)
+      )
+    }
   }
 }

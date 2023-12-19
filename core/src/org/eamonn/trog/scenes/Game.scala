@@ -49,6 +49,7 @@ class Game(lvl: Level, plr: Player, wld: World)
     h
   }
   override def init(): InputAdapter = {
+    Trog.inGameOST.loop(.4f)
     player.game = this
     if (!player.initialized) {
       player.initially(this)

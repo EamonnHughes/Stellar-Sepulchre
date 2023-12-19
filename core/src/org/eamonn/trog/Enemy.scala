@@ -73,7 +73,7 @@ case class Servitor() extends Enemy {
     game = gm
     location = loc
     lev = Random.nextInt(game.floor) + 1 + (Random.nextInt(11) / 10)
-    var weapon: Weapon = makeCommonWeapon(0, game, 1, (lev min 5) + 1)
+    var weapon: Weapon = makeCommonWeapon(0, game, 1, (lev min 5) + 1, "Drone")
     weapon.possessor = Some(this)
     weapon.location = None
     game.items = weapon :: game.items
