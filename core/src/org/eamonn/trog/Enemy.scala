@@ -2,11 +2,11 @@ package org.eamonn.trog
 
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.g2d.PolygonSpriteBatch
-import org.eamonn.trog.Trog.{Square, asleep, garbage, targetReticle}
+import org.eamonn.trog.Trog.{Square, asleep, garbage}
 import org.eamonn.trog.character.{Equipment, Stats, makeStats}
 import org.eamonn.trog.items.{MedKit, Weapon, makeCommonWeapon}
 import org.eamonn.trog.scenes.Game
-import org.eamonn.trog.util.TextureWrapper
+import org.eamonn.trog.util.{Animation, TextureWrapper}
 
 import scala.util.Random
 
@@ -19,16 +19,6 @@ trait Enemy extends Actor {
   def update(delta: Float): Unit
   def attack(target: Actor): Unit
   def draw(batch: PolygonSpriteBatch): Unit = {
-    if (selected) {
-      batch.setColor(Color.ORANGE)
-      batch.draw(
-        targetReticle,
-        location.x * screenUnit,
-        location.y * screenUnit,
-        screenUnit,
-        screenUnit
-      )
-    }
     if (statuses.stunned > 0) {
       batch.setColor(Color.YELLOW)
       batch.draw(
@@ -57,6 +47,7 @@ trait Enemy extends Actor {
       screenUnit,
       screenUnit
     )
+
     Text.smallFont.setColor(Color.WHITE)
     Text.smallFont.draw(
       batch,
@@ -64,6 +55,11 @@ trait Enemy extends Actor {
       location.x * screenUnit,
       (location.y + 1) * screenUnit
     )
+
+    if (selected) {
+      batch.setColor(1f, 1f, 0, .75f)
+      Animation.twoFrameAnimation(game, batch, "targetReticle", location.x, location.y)
+    }
   }
 }
 

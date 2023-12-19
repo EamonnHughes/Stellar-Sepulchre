@@ -20,14 +20,16 @@ class GameControl(game: Game) extends InputAdapter {
       inCharacterSheet = false
 
     }
+    if(keycode == Keys.ESCAPE && (inInventory || inCharacterSheet)) {
+      inInventory = false
+      inCharacterSheet = false
+    }
     true
   }
 
   override def mouseMoved(screenX: Int, screenY: Int): Boolean = {
-    game.mouseLocOnGrid.x =
-      (screenX / screenUnit).floor.toInt - Trog.translationX
-    game.mouseLocOnGrid.y =
-      ((Geometry.ScreenHeight - screenY) / screenUnit).floor.toInt - Trog.translationY
+    game.fakeLoc.x = screenX
+    game.fakeLoc.y = screenY
     true
   }
 

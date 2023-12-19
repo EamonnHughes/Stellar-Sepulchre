@@ -2,6 +2,7 @@ package org.eamonn.trog
 
 import com.badlogic.gdx.Application.ApplicationType
 import com.badlogic.gdx.audio.Sound
+import com.badlogic.gdx.graphics.Cursor.SystemCursor
 import com.badlogic.gdx.graphics.g2d.PolygonSpriteBatch
 import com.badlogic.gdx.math.Matrix4
 import com.badlogic.gdx.utils.ScreenUtils
@@ -21,6 +22,7 @@ class Trog extends ApplicationAdapter {
   override def create(): Unit = {
 
     Gdx.input.setCatchKey(Input.Keys.BACK, true)
+    Gdx.graphics.setSystemCursor(SystemCursor.None)
 
     batch = garbage.add(new PolygonSpriteBatch())
 
@@ -77,7 +79,6 @@ object Trog {
   lazy val ladderUpTile: TextureWrapper = TextureWrapper.load("ladderup.png")
   lazy val ladderDownTile: TextureWrapper = TextureWrapper.load("ladderdown.png")
   lazy val Wall: TextureWrapper = TextureWrapper.load("walltile.png")
-  lazy val targetReticle: TextureWrapper = TextureWrapper.load("targetReticle.png")
   lazy val asleep: TextureWrapper = TextureWrapper.load("asleep.png")
 
   var translationX = 0

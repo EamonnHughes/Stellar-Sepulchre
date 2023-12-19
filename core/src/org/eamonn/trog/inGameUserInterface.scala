@@ -3,6 +3,7 @@ package org.eamonn.trog
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.g2d.PolygonSpriteBatch
 import org.eamonn.trog.scenes.Game
+import org.eamonn.trog.util.Animation
 
 object inGameUserInterface {
   var inInventory = false
@@ -159,6 +160,29 @@ object inGameUserInterface {
         (-Trog.translationY * screenUnit) + Geometry.ScreenHeight - (2 * screenUnit)
       )
     }
+
+   if(!inInventory && !inCharacterSheet && !game.player.exploring) drawCursorUI(batch, game)
+
+  }
+
+  def drawCursorUI(batch: PolygonSpriteBatch, game: Game): Unit = {
+    var loc = game.mouseLocOnGrid
+
+
+    var path = Pathfinding.findPath(game.player.location, loc, game.level)
+    if(path.isEmpty){
+      batch.setColor(1f, 0f, 0f, .75f)
+      Animation.twoFrameAnimation(game, batch, "mouseHover", loc.x, loc.y)
+    }
+    path.foreach(p => {
+      batch.setColor(1f, 1f, 1f, .75f)
+      Animation.twoFrameAnimation(game, batch, "mouseHover", loc.x, loc.y)
+      p.list.reverse.tail.foreach(l => {
+        batch.setColor(1f, 1f, 1f, .75f)
+        Animation.twoFrameAnimation(game, batch, "pathTrail", l.x, l.y)
+      })
+    })
+
   }
 
   def drawConsole(batch: PolygonSpriteBatch, game: Game): Unit = {

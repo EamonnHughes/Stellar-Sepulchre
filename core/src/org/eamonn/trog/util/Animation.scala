@@ -7,9 +7,9 @@ import org.eamonn.trog.screenUnit
 
 object Animation {
 
-  def twoFrameAnimation(game: Game, batch: PolygonSpriteBatch, string: String, x: Int, y: Int): Unit = {
+  def twoFrameAnimation(game: Game, batch: PolygonSpriteBatch, string: String, x: Float, y: Float): Unit = {
     var number = if (game.animateTime >= .5f) "2" else "1"
-    val texture = TextureWrapper.load(s"$string$number")
+    val texture = TextureWrapper.load(s"$string$number.png")
     batch.draw(texture, x*screenUnit, y*screenUnit, screenUnit, screenUnit)
   }
 

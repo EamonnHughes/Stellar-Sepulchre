@@ -21,6 +21,7 @@ class Game(lvl: Level, plr: Player, wld: World)
     messages = message :: messages
   }
   var clickedForTargeting = false
+  var fakeLoc = Vec2(0, 0)
   var saveTick = 0f
   var explored: List[Vec2] = List.empty
   var loadable = false
@@ -84,6 +85,10 @@ class Game(lvl: Level, plr: Player, wld: World)
     }
   }
   override def update(delta: Float): Option[Scene] = {
+    mouseLocOnGrid.x =
+      (fakeLoc.x / screenUnit).floor.toInt - Trog.translationX
+    mouseLocOnGrid.y =
+      ((Geometry.ScreenHeight - fakeLoc.y) / screenUnit).floor.toInt - Trog.translationY
     animateTime = animateTime+delta
     while (animateTime >= 1) animateTime-=1
     enemies.foreach(e => e.selected = false)
