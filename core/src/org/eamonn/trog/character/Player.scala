@@ -101,7 +101,7 @@ case class Player() extends Actor {
   def update(delta: Float) = {
     if (!yourTurn) {
       tick += delta
-      if (tick >= speed || resting || exploring) {
+      if (tick >= speed || resting || exploring || destination == game.level.downLadder) {
         yourTurn = true
         tick = 0f
       }
