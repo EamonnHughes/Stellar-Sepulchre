@@ -46,7 +46,7 @@ trait Enemy extends Actor {
         location.x * screenUnit,
         location.y * screenUnit,
         screenUnit * stats.health / stats.maxHealth,
-        screenUnit * .1f
+        screenUnit * .05f
       )
     }
     batch.setColor(Color.WHITE)

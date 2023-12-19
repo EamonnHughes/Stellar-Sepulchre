@@ -7,6 +7,7 @@ import com.badlogic.gdx.graphics.g2d.PolygonSpriteBatch
 import org.eamonn.trog.Scene
 import org.eamonn.trog.Trog.{garbage, homeBG, loadBG}
 import org.eamonn.trog.character.Player
+import org.eamonn.trog.inGameUserInterface.inCharacterSheet
 import org.eamonn.trog.procgen.{GeneratedMap, Level, World}
 import org.eamonn.trog.util.TextureWrapper
 
@@ -47,7 +48,7 @@ class LevelGen(
     gameNew.level = level
     gameNew.keysDown = List.empty
     gameNew.clicked = false
-    gameNew.inCharacterSheet = false
+    inCharacterSheet = false
     gameNew.explored = List.empty
     gameNew.items = gameNew.items.filter(i => i.possessor.nonEmpty && i.possessor.head.isInstanceOf[Player]
     )

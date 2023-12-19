@@ -4,6 +4,7 @@ import com.badlogic.gdx.Input.Keys
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.g2d.PolygonSpriteBatch
 import org.eamonn.trog.Trog.{Square, garbage}
+import org.eamonn.trog.inGameUserInterface.{inCharacterSheet, inInventory}
 import org.eamonn.trog.items.{MedKit, makeCommonWeapon}
 import org.eamonn.trog.scenes.Game
 import org.eamonn.trog.util.TextureWrapper
@@ -85,7 +86,7 @@ case class Player() extends Actor {
         location.x * screenUnit,
         location.y * screenUnit,
         screenUnit * stats.health / stats.maxHealth,
-        screenUnit * .1f
+        screenUnit * .05f
       )
     }
     batch.setColor(Color.WHITE)
@@ -111,10 +112,10 @@ case class Player() extends Actor {
       clickInInv = false
     }
     if (stats.health <= 0) dead = true
-    if (!game.inInventory && !game.inCharacterSheet) gameControl(delta)
-    else if (game.inInventory && !clickInInv)
+    if (!inInventory && !inCharacterSheet) gameControl(delta)
+    else if (inInventory && !clickInInv)
       clickInInv = inventoryControl(delta)
-    else if (game.inCharacterSheet) charSheetControl(delta)
+    else if (inCharacterSheet) charSheetControl(delta)
   }
   def gameControl(delta: Float) = {
     var initLoc = location.copy()
