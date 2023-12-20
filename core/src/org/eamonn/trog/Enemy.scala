@@ -15,7 +15,7 @@ trait Enemy extends Actor {
   var game: Game
   var location: Vec2 = Vec2(0, 0)
   var destination: Vec2 = Vec2(0, 0)
-  def texture: TextureWrapper
+  var texture: String
   def update(delta: Float): Unit
   def attack(target: Actor): Unit
   def draw(batch: PolygonSpriteBatch): Unit = {
@@ -40,13 +40,7 @@ trait Enemy extends Actor {
       )
     }
     batch.setColor(Color.WHITE)
-    batch.draw(
-      texture,
-      location.x * screenUnit,
-      location.y * screenUnit,
-      screenUnit,
-      screenUnit
-    )
+    Animation.twoFrameAnimation(game, batch, texture, location.x,location.y)
 
     Text.smallFont.setColor(Color.WHITE)
     Text.smallFont.draw(
@@ -98,7 +92,7 @@ case class Servitor() extends Enemy {
     )
     game.enemies = this :: game.enemies
   }
-  def texture: TextureWrapper = TextureWrapper.load(s"Servitor${lev min 5}.png")
+  var texture: String = s"Servitor${{lev min 5} + 1}_"
 
   override def update(delta: Float): Unit = {
 
