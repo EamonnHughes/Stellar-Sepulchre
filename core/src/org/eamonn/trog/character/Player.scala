@@ -7,7 +7,7 @@ import org.eamonn.trog.Trog.{Square, garbage}
 import org.eamonn.trog.inGameUserInterface.{inCharacterSheet, inInventory}
 import org.eamonn.trog.items.{MedKit, makeCommonWeapon}
 import org.eamonn.trog.scenes.Game
-import org.eamonn.trog.util.TextureWrapper
+import org.eamonn.trog.util.{Animation, TextureWrapper}
 import org.eamonn.trog.{Actor, Enemy, Pathfinding, Vec2, d, screenUnit}
 
 import scala.util.Random
@@ -54,8 +54,7 @@ case class Player() extends Actor {
     stats.health = stats.maxHealth
     initialized = true
   }
-  def playerIcon: TextureWrapper =
-    TextureWrapper.load(s"Player${archetype.metaArchName}.png")
+  def playerIcon: String =s"Player${archetype.metaArchName}"
   def levelUp(): Unit = {
     game.addMessage("You levelled up")
     stats.exp -= stats.nextExp
@@ -90,13 +89,7 @@ case class Player() extends Actor {
       )
     }
     batch.setColor(Color.WHITE)
-    batch.draw(
-      playerIcon,
-      location.x * screenUnit,
-      location.y * screenUnit,
-      screenUnit,
-      screenUnit
-    )
+    Animation.twoFrameAnimation(game, batch, playerIcon, location.x, location.y)
   }
   def update(delta: Float) = {
     if (!yourTurn) {
