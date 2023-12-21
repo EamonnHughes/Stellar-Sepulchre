@@ -220,7 +220,7 @@ class Game(lvl: Level, plr: Player, wld: World)
           }
         }
         if (dist > player.stats.sightRad) {
-          batch.setColor(0, 0, 0, 1)
+          if(explored.contains(Vec2(x, y)) || Vec2(x, y).getAdjacents.exists(adj => explored.contains(adj))) batch.setColor(0, 0, 0, .825f) else batch.setColor(0, 0, 0, 1)
         } else {
           var lightLevel: Float =
             ((((player.stats.sightRad - dist).toFloat / player.stats.sightRad) + .25f) min 1) max 0
