@@ -66,14 +66,14 @@ case class throwDagger() extends rangedSkill {
   }
 }
 
-case class Dash() extends rangedSkill {
+case class Charge() extends rangedSkill {
   override val coolDown: Int = 5
   override val takesTurn: Boolean = true
-  override var name: String = "Dash"
+  override var name: String = "Charge"
   override var ccd: Int = 0
   override var range: Int = 4
 
-  override def icon: TextureWrapper = TextureWrapper.load("Dash.png")
+  override def icon: TextureWrapper = TextureWrapper.load("Charge.png")
 
   override def onUse(
                       user: Actor,
@@ -94,13 +94,13 @@ case class Dash() extends rangedSkill {
   }
 }
 
-case class shieldBash() extends meleeSkill {
+case class Bash() extends meleeSkill {
   override val coolDown: Int = 4
   override val takesTurn: Boolean = true
-  override var name: String = "Shield Bash"
+  override var name: String = "Bash"
   override var ccd: Int = 0
 
-  override def icon: TextureWrapper = TextureWrapper.load("ShieldBash.png")
+  override def icon: TextureWrapper = TextureWrapper.load("Bash.png")
 
   override def onUse(
                       user: Actor,

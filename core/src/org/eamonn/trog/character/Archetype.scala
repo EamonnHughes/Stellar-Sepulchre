@@ -44,7 +44,7 @@ case class CaedanautArchetype() extends Archetype {
     game.player.stats.attackMod += 1
     game.player.stats.damageMod += 1
     game.player.stats.skills =
-      Dash() :: shieldBash() :: game.player.stats.skills
+      Charge() :: Bash() :: game.player.stats.skills
     val weapon = makeCommonWeapon(0, game, 1, 6, "Player")
     weapon.possessor = Some(game.player)
     weapon.game = game
