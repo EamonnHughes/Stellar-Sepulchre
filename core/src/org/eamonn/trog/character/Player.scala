@@ -272,6 +272,9 @@ case class Player() extends Actor {
     archetype.onLevelUp(game)
     stats.health = stats.maxHealth
     stats.level += 1
+    if(stats.level > 1) {
+      game.lvlUping = true
+    }
   }
 
   def tryToGoDown(): Unit = {

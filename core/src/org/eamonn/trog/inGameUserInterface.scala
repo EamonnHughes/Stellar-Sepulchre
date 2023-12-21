@@ -12,6 +12,14 @@ object inGameUserInterface {
   def renderUI(batch: PolygonSpriteBatch, game: Game): Unit = {
     val player = game.player
     val floor = game.floor
+
+    if(player.stats.health <= (player.stats.maxHealth*.3f)){
+      batch.setColor(1f, 0f, 0f, .2f)
+      batch.draw(Trog.EffectSplash, -Trog.translationX * screenUnit, -Trog.translationY * screenUnit, Geometry.ScreenWidth, Geometry.ScreenHeight)
+    }
+    batch.setColor(1f, .75f, 0f, game.lvlupEffect)
+    batch.draw(Trog.EffectSplash, -Trog.translationX * screenUnit, -Trog.translationY * screenUnit, Geometry.ScreenWidth, Geometry.ScreenHeight)
+
     batch.setColor(Color.WHITE)
     batch.draw(Trog.UICornerLeft, -Trog.translationX * screenUnit, -Trog.translationY * screenUnit, screenUnit * 4, screenUnit * 4)
     batch.draw(Trog.UICornerRight, -Trog.translationX * screenUnit + Geometry.ScreenWidth - (screenUnit * 4), -Trog.translationY * screenUnit, screenUnit * 4, screenUnit * 4)
