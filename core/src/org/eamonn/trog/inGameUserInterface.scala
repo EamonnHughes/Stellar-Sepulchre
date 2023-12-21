@@ -169,19 +169,19 @@ object inGameUserInterface {
 
 
     var path = Pathfinding.findPath(game.player.location, loc, game.level)
-    if(path.isEmpty){
+    if(path.isEmpty || !game.explored.contains(loc)){
       batch.setColor(1f, 0f, 0f, .75f)
       Animation.twoFrameAnimation(game, batch, "mouseHover", loc.x, loc.y)
-    }
-    path.foreach(p => {
-      batch.setColor(1f, 1f, 1f, .75f)
-      Animation.twoFrameAnimation(game, batch, "mouseHover", loc.x, loc.y)
-      p.list.reverse.tail.foreach(l => {
+    } else {
+      path.foreach(p => {
         batch.setColor(1f, 1f, 1f, .75f)
-        Animation.twoFrameAnimation(game, batch, "pathTrail", l.x, l.y)
+        Animation.twoFrameAnimation(game, batch, "mouseHover", loc.x, loc.y)
+        p.list.reverse.tail.foreach(l => {
+          batch.setColor(1f, 1f, 1f, .75f)
+          Animation.twoFrameAnimation(game, batch, "pathTrail", l.x, l.y)
+        })
       })
-    })
-
+    }
   }
 
   def drawConsole(batch: PolygonSpriteBatch, game: Game): Unit = {
