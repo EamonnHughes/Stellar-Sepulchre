@@ -4,7 +4,6 @@ package scenes
 import com.badlogic.gdx.InputAdapter
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.g2d.PolygonSpriteBatch
-import jdk.incubator.vector.VectorOperators.Ternary
 import org.eamonn.trog.Scene
 import org.eamonn.trog.procgen.World
 
@@ -49,7 +48,7 @@ class Home(wld: World) extends Scene {
     Text.hugeFont.draw(
       batch, " Stellar Sepulchre",
       -Trog.translationX * screenUnit,
-      -Trog.translationY * screenUnit + (Geometry.ScreenHeight*.975f)
+      -Trog.translationY * screenUnit + (Geometry.ScreenHeight * .975f)
     )
   }
 

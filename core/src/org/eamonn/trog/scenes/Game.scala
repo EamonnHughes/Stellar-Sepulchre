@@ -85,9 +85,9 @@ class Game(lvl: Level, plr: Player, wld: World)
   }
 
   override def update(delta: Float): Option[Scene] = {
-    if(lvlUping) {
-      lvlupEffect += (delta*2)
-      if(lvlupEffect > .5f) lvlUping = false
+    if (lvlUping) {
+      lvlupEffect += (delta * 2)
+      if (lvlupEffect > .5f) lvlUping = false
     } else {
       if (lvlupEffect > 0) lvlupEffect -= (delta / 4)
       if (lvlupEffect < 0) lvlupEffect = 0
@@ -188,7 +188,7 @@ class Game(lvl: Level, plr: Player, wld: World)
         saveTick = 0f
       }
     }
-    if(player.dead) {
+    if (player.dead) {
       Trog.inGameOST.stop()
       Trog.Tolling.play(4)
     }

@@ -273,7 +273,7 @@ case class Player() extends Actor {
     stats.health = stats.maxHealth
     stats.level += 1
     Trog.Jingle.play(4)
-    if(stats.level > 1) {
+    if (stats.level > 1) {
       game.lvlUping = true
     }
   }

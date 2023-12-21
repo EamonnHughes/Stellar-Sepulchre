@@ -13,7 +13,7 @@ object inGameUserInterface {
     val player = game.player
     val floor = game.floor
 
-    if(player.stats.health <= (player.stats.maxHealth*.3f)){
+    if (player.stats.health <= (player.stats.maxHealth * .3f)) {
       batch.setColor(1f, 0f, 0f, .2f)
       batch.draw(Trog.EffectSplash, -Trog.translationX * screenUnit, -Trog.translationY * screenUnit, Geometry.ScreenWidth, Geometry.ScreenHeight)
     }

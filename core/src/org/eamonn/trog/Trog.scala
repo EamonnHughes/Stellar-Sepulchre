@@ -75,7 +75,6 @@ object Trog {
   lazy val Square: TextureWrapper = TextureWrapper.load("Square.png")
   lazy val homeBG: TextureWrapper = TextureWrapper.load("sepulctbg.png")
   lazy val loadBG: TextureWrapper = TextureWrapper.load("generate.png")
-  lazy val titleIMG: TextureWrapper = TextureWrapper.load("TitleImage.png")
   lazy val floorTile: TextureWrapper = TextureWrapper.load("floortile.png")
   lazy val ladderUpTile: TextureWrapper = TextureWrapper.load("ladderup.png")
   lazy val ladderDownTile: TextureWrapper = TextureWrapper.load("ladderdown.png")
