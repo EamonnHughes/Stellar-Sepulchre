@@ -36,14 +36,14 @@ trait meleeSkill extends Skill {
   }
 }
 
-case class throwDagger() extends rangedSkill {
+case class MicroMissile() extends rangedSkill {
   override val coolDown: Int = 5
   override val takesTurn: Boolean = true
-  override var name: String = "Throw Dagger"
+  override var name: String = "Micromissile"
   override var ccd: Int = 0
   override var range: Int = 5
 
-  override def icon: TextureWrapper = TextureWrapper.load("ThrowDagger.png")
+  override def icon: TextureWrapper = TextureWrapper.load("Micromissile.png")
 
   override def onUse(
                       user: Actor,

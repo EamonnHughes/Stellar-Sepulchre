@@ -20,7 +20,7 @@ case class InfiltratorArchetype() extends Archetype {
     game.player.stats.attackMod += .5f
     game.player.stats.critChance += 2
     game.player.stats.critMod += .2f
-    game.player.stats.skills = throwDagger() :: game.player.stats.skills
+    game.player.stats.skills = MicroMissile() :: game.player.stats.skills
     val weapon = makeCommonWeapon(0, game, 1, 4, "Player")
     weapon.possessor = Some(game.player)
     weapon.game = game
