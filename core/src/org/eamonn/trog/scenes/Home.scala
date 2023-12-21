@@ -42,13 +42,12 @@ class Home(wld: World) extends Scene {
       Geometry.ScreenHeight
     )
     batch.setColor(mainColor)
+    Text.hugeFont.setColor(mainColor)
 
-    batch.draw(
-      Trog.titleIMG,
+    Text.hugeFont.draw(
+      batch, " Stellar Sepulchre",
       -Trog.translationX * screenUnit,
-      -Trog.translationY * screenUnit + Geometry.ScreenHeight - screenUnit * 5,
-      Geometry.ScreenWidth * 3 / 4,
-      (Geometry.ScreenWidth / 200) * 64 * 3 / 4
+      -Trog.translationY * screenUnit + (Geometry.ScreenHeight*.975f)
     )
   }
 
@@ -56,23 +55,16 @@ class Home(wld: World) extends Scene {
     Text.largeFont.setColor(mainColor)
     Text.largeFont.draw(
       batch,
-      "  Descend: [ENTER]",
+      "  Descend",
       -Trog.translationX * screenUnit,
-      -Trog.translationY * screenUnit + Geometry.ScreenHeight * 3 / 4
+      -Trog.translationY * screenUnit + Geometry.ScreenHeight * 4 / 5
     )
     if (!game.loadable) Text.largeFont.setColor(darkColor)
     Text.largeFont.draw(
       batch,
-      "\n  Load Last Save: [L]",
+      "\n  Load Last Save",
       -Trog.translationX * screenUnit,
-      -Trog.translationY * screenUnit + Geometry.ScreenHeight * 3 / 4
-    )
-    Text.largeFont.setColor(mainColor)
-    Text.largeFont.draw(
-      batch,
-      "\n\n  New World: [W]",
-      -Trog.translationX * screenUnit,
-      -Trog.translationY * screenUnit + Geometry.ScreenHeight * 3 / 4
+      -Trog.translationY * screenUnit + Geometry.ScreenHeight * 4 / 5
     )
   }
 }
