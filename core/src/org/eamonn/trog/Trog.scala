@@ -27,8 +27,6 @@ class Trog extends ApplicationAdapter {
 
     batch = garbage.add(new PolygonSpriteBatch())
 
-    //    Trog.sound = Trog.loadSound("triangle.mp3")
-
     Text.loadFonts()
     var home: Home = new Home(World())
     if (SaveLoad.getSaveFile(0).exists()) {

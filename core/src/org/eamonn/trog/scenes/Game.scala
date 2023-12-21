@@ -188,6 +188,7 @@ class Game(lvl: Level, plr: Player, wld: World)
         saveTick = 0f
       }
     }
+    if(player.dead) Trog.inGameOST.stop()
     if (descending) floor += 1
     if (mainMenuing) Some(home)
     else if (descending) Some(new LevelGen(player, Some(this), world))
