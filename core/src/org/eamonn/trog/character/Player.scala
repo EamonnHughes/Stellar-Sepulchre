@@ -92,9 +92,10 @@ case class Player() extends Actor {
     Animation.twoFrameAnimation(game, batch, playerIcon, location.x, location.y)
   }
   def update(delta: Float) = {
+    if(destination == game.level.downLadder && game.level.walkables.forall(w => game.explored.contains(w))) exploring = true
     if (!yourTurn) {
       tick += delta
-      if (tick >= speed || resting || exploring || destination == game.level.downLadder) {
+      if (tick >= speed || resting || exploring) {
         yourTurn = true
         tick = 0f
       }

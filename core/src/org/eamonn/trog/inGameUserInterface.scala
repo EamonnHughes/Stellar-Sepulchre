@@ -12,28 +12,55 @@ object inGameUserInterface {
     val player = game.player
     val floor = game.floor
     batch.setColor(Color.WHITE)
+    batch.draw(Trog.UICornerLeft, -Trog.translationX * screenUnit, -Trog.translationY * screenUnit, screenUnit*4, screenUnit*4)
+    batch.draw(Trog.UICornerRight, -Trog.translationX * screenUnit + Geometry.ScreenWidth - (screenUnit*4), -Trog.translationY * screenUnit, screenUnit*4, screenUnit*4)
+    batch.draw(Trog.UIHotbar, -Trog.translationX * screenUnit + 5*screenUnit, -Trog.translationY * screenUnit, screenUnit*10, screenUnit*4)
+    batch.setColor(Color.FIREBRICK)
+    batch.draw(
+      Trog.Square,
+      -Trog.translationX * screenUnit,
+      -Trog.translationY * screenUnit,
+      screenUnit,
+      screenUnit * 4
+    )
+    batch.setColor(Color.RED)
+    batch.draw(
+      Trog.Square,
+      -Trog.translationX * screenUnit,
+      -Trog.translationY * screenUnit,
+      screenUnit,
+      screenUnit * 4  * player.stats.health / player.stats.maxHealth
+    )
+    batch.setColor(Color.WHITE)
+    batch.draw(Trog.UIHealthBarFrame, -Trog.translationX * screenUnit, -Trog.translationY * screenUnit, screenUnit, screenUnit*4)
+    Text.tinyFont.draw(
+      batch,
+      s"${player.stats.health}/${player.stats.maxHealth}",
+      -Trog.translationX * screenUnit + (.05f * screenUnit),
+      -Trog.translationY * screenUnit + (.3f * screenUnit)
+    )
     player.stats.skills.zipWithIndex.foreach({
       case (s, i) => {
         batch.draw(
           s.icon,
-          -Trog.translationX * screenUnit + (((i * 1.5f) + 6) * screenUnit),
+          -Trog.translationX * screenUnit + (((i * 2f) + 6) * screenUnit),
           -Trog.translationY * screenUnit,
-          screenUnit * 1.5f,
-          screenUnit * 1.5f
+          screenUnit * 2f,
+          screenUnit * 2f
         )
         Text.smallFont.draw(
           batch,
           s"${i + 1}",
-          -Trog.translationX * screenUnit + (((i * 1.5f) + 6) * screenUnit),
-          -Trog.translationY * screenUnit + (screenUnit * 1.83f)
+          -Trog.translationX * screenUnit + (((i * 2f) + 6) * screenUnit),
+          -Trog.translationY * screenUnit
         )
         if (s.ccd > 0) {
           Text.hugeFont.setColor(1f, 1f, 1f, 0.5f)
           Text.hugeFont.draw(
             batch,
             s"${s.ccd.toString}",
-            -Trog.translationX * screenUnit + (((i * 1.5f) + 6) * screenUnit),
-            -Trog.translationY * screenUnit + (screenUnit * 1.5f)
+            -Trog.translationX * screenUnit + (((i * 2f) + 6) * screenUnit),
+            -Trog.translationY * screenUnit + (screenUnit * 2f)
           )
         }
       }
@@ -59,29 +86,6 @@ object inGameUserInterface {
       -Trog.translationY * screenUnit + Geometry.ScreenHeight - (screenUnit),
       screenUnit * 4 * player.stats.exp / player.stats.nextExp,
       screenUnit / 8
-    )
-    batch.setColor(Color.FIREBRICK)
-    batch.draw(
-      Trog.Square,
-      -Trog.translationX * screenUnit,
-      -Trog.translationY * screenUnit + Geometry.ScreenHeight - (screenUnit * 3 / 2),
-      screenUnit * 4,
-      screenUnit / 2
-    )
-    batch.setColor(Color.RED)
-    batch.draw(
-      Trog.Square,
-      -Trog.translationX * screenUnit,
-      -Trog.translationY * screenUnit + Geometry.ScreenHeight - (screenUnit * 3 / 2),
-      screenUnit * 4 * player.stats.health / player.stats.maxHealth,
-      screenUnit / 2
-    )
-    batch.setColor(Color.WHITE)
-    Text.mediumFont.draw(
-      batch,
-      s"${player.stats.health}/${player.stats.maxHealth}",
-      -Trog.translationX * screenUnit,
-      -Trog.translationY * screenUnit + Geometry.ScreenHeight - screenUnit
     )
     drawConsole(batch, game)
     if (inCharacterSheet) {

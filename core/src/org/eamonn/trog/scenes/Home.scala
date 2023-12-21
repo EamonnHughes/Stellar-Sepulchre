@@ -46,8 +46,8 @@ class Home(wld: World) extends Scene {
 
     batch.draw(
       Trog.titleIMG,
-      -Trog.translationX * textUnit,
-      -Trog.translationY * textUnit + Geometry.ScreenHeight - textUnit * 5,
+      -Trog.translationX * screenUnit,
+      -Trog.translationY * screenUnit + Geometry.ScreenHeight - screenUnit * 5,
       Geometry.ScreenWidth * 3 / 4,
       (Geometry.ScreenWidth / 200) * 64 * 3 / 4
     )

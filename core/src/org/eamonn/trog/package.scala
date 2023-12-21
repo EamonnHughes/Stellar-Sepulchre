@@ -46,8 +46,7 @@ package object trog {
   }
 
   // 16 should match desktop launcher
-  def screenUnit: Float = (Geometry.ScreenWidth min Geometry.ScreenHeight) / 16
-  def textUnit: Float = (Geometry.ScreenWidth min Geometry.ScreenHeight) / 20
+  def screenUnit: Float = (Geometry.ScreenWidth min Geometry.ScreenHeight) / 20
 
   def compassAvailable: Boolean =
     input.isPeripheralAvailable(Peripheral.Compass)

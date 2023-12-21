@@ -18,15 +18,15 @@ object Text {
     )
     val parameter = new FreeTypeFontGenerator.FreeTypeFontParameter
     parameter.characters = FreeTypeFontGenerator.DEFAULT_CHARS + CharExtras
-    parameter.size = (textUnit * 1.5).toInt
+    parameter.size = (screenUnit * 1.5).toInt
     hugeFont = garbage.add(generator.generateFont(parameter))
-    parameter.size = (textUnit).toInt
+    parameter.size = (screenUnit).toInt
     largeFont = garbage.add(generator.generateFont(parameter))
-    parameter.size = (textUnit / 2).toInt
+    parameter.size = (screenUnit / 2).toInt
     mediumFont = garbage.add(generator.generateFont(parameter))
-    parameter.size = (textUnit / 3).toInt
+    parameter.size = (screenUnit / 3).toInt
     smallFont = garbage.add(generator.generateFont(parameter))
-    parameter.size = (textUnit / 4).toInt
+    parameter.size = (screenUnit / 4).toInt
     tinyFont = garbage.add(generator.generateFont(parameter))
     generator.dispose()
   }

@@ -80,6 +80,10 @@ object Trog {
   lazy val ladderDownTile: TextureWrapper = TextureWrapper.load("ladderdown.png")
   lazy val Wall: TextureWrapper = TextureWrapper.load("walltile.png")
   lazy val asleep: TextureWrapper = TextureWrapper.load("asleep.png")
+  lazy val UICornerLeft: TextureWrapper = TextureWrapper.load("UICornerLeft.png")
+  lazy val UICornerRight: TextureWrapper = TextureWrapper.load("UICornerRight.png")
+  lazy val UIHotbar: TextureWrapper = TextureWrapper.load("UIHotbar.png")
+  lazy val UIHealthBarFrame: TextureWrapper = TextureWrapper.load("UIHealthBarFrame.png")
 
   var translationX = 0
   var translationY = 0
