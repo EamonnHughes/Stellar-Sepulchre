@@ -6,25 +6,19 @@ import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.g2d.PolygonSpriteBatch
 import org.eamonn.trog.character.Player
 import org.eamonn.trog.procgen.{Level, World}
-import org.eamonn.trog.{
-  Geometry,
-  SaveLoad,
-  Scene,
-  Text,
-  Trog,
-  screenUnit
-}
+import org.eamonn.trog.{Geometry, SaveLoad, Scene, Text, Trog, screenUnit}
 
 class WorldSelect(home: Home) extends Scene {
   var done = false
   var world: World = SaveLoad.loadState(0).world
+
   override def init(): InputAdapter = {
     home.selecting = false
     new WorldSelectControl(this)
   }
 
   override def update(delta: Float): Option[Scene] = {
-    if(done) {
+    if (done) {
       home.world = world
       home.game = SaveLoad.loadState(0)
     }
@@ -45,13 +39,14 @@ class WorldSelect(home: Home) extends Scene {
 
   override def updateCamera(): Unit = {}
 }
+
 class WorldSelectControl(select: WorldSelect) extends InputAdapter {
   override def keyDown(keycode: Int): Boolean = {
     if (keycode == Keys.Y) {
       SaveLoad.saveState(new Game(new Level, new Player, new World), 0)
       select.world = SaveLoad.loadState(0).world
       select.done = true
-    } else if(keycode == Keys.N) {
+    } else if (keycode == Keys.N) {
       select.done = true
     }
     true

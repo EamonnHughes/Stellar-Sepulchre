@@ -7,9 +7,7 @@ import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.g2d.PolygonSpriteBatch
 import org.eamonn.trog.Scene
 import org.eamonn.trog.character.{Archetype, Player}
-import org.eamonn.trog.procgen.{GeneratedMap, Level, World}
-
-import java.awt.RenderingHints.Key
+import org.eamonn.trog.procgen.World
 
 class CharCreation(world: World) extends Scene {
   var arches: List[Archetype] = world.archetypeList
@@ -17,9 +15,11 @@ class CharCreation(world: World) extends Scene {
   var name = ""
   var selectedArch = 0
   var entered = false
+
   override def init(): InputAdapter = {
     new CharCreationControl(this)
   }
+
   override def update(delta: Float): Option[Scene] = {
     if (entered && (player.archetype eq null)) {
       player.archetype = arches(selectedArch)
@@ -73,11 +73,11 @@ class CharCreation(world: World) extends Scene {
 
 class CharCreationControl(creation: CharCreation) extends InputAdapter {
   override def touchDown(
-      screenX: Int,
-      screenY: Int,
-      pointer: Int,
-      button: Int
-  ): Boolean = {
+                          screenX: Int,
+                          screenY: Int,
+                          pointer: Int,
+                          button: Int
+                        ): Boolean = {
     true
   }
 
@@ -90,7 +90,7 @@ class CharCreationControl(creation: CharCreation) extends InputAdapter {
     if (keycode == Keys.ENTER) {
       creation.entered = true
     }
-    if(!(creation.player.name eq null)) {
+    if (!(creation.player.name eq null)) {
       if (keycode == Keys.BACKSPACE) {
         creation.name = creation.name.dropRight(1)
       } else if (keycode == Keys.SPACE && creation.name.length < 20) {

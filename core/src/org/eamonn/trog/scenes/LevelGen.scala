@@ -5,19 +5,16 @@ import com.badlogic.gdx.InputAdapter
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.g2d.PolygonSpriteBatch
 import org.eamonn.trog.Scene
-import org.eamonn.trog.Trog.{garbage, homeBG, loadBG}
+import org.eamonn.trog.Trog.loadBG
 import org.eamonn.trog.character.Player
 import org.eamonn.trog.inGameUserInterface.inCharacterSheet
 import org.eamonn.trog.procgen.{GeneratedMap, Level, World}
-import org.eamonn.trog.util.TextureWrapper
-
-import scala.util.Random
 
 class LevelGen(
-    player: Player,
-    game: Option[Game],
-    world: World
-) extends Scene {
+                player: Player,
+                game: Option[Game],
+                world: World
+              ) extends Scene {
   var cameraLocation: Vec2 = Vec2(0, 0)
   var genMap = GeneratedMap(30, 4, 6, .2f)
   var doneGenerating = false
@@ -26,6 +23,7 @@ class LevelGen(
   override def init(): InputAdapter = {
     new LevelGenControl(this)
   }
+
   override def update(delta: Float): Option[Scene] = {
     while (!doneGenerating) doneGenerating = genMap.generate()
 
@@ -82,4 +80,5 @@ class LevelGen(
 
   override def updateCamera(): Unit = {}
 }
+
 class LevelGenControl(gen: LevelGen) extends InputAdapter {}

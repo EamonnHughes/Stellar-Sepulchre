@@ -5,9 +5,11 @@ import org.eamonn.trog.scenes.Game
 
 trait Archetype {
   val name: String
-  def onSelect(game: Game): Unit
-  def onLevelUp(game: Game): Unit
   val metaArchName: String
+
+  def onSelect(game: Game): Unit
+
+  def onLevelUp(game: Game): Unit
 }
 
 case class InfiltratorArchetype() extends Archetype {

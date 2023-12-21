@@ -5,9 +5,7 @@ import com.badlogic.gdx.InputAdapter
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.g2d.PolygonSpriteBatch
 import org.eamonn.trog.Scene
-import org.eamonn.trog.Trog.garbage
-import org.eamonn.trog.procgen.{GeneratedMap, Level, World}
-import org.eamonn.trog.util.TextureWrapper
+import org.eamonn.trog.procgen.World
 
 class Home(wld: World) extends Scene {
   var world: World = wld
@@ -26,6 +24,7 @@ class Home(wld: World) extends Scene {
     Trog.translationY = 0
     new HomeControl(this)
   }
+
   override def update(delta: Float): Option[Scene] = {
     if (selecting) Some(new WorldSelect(this))
     else if (gameLoaded && game.loadable) Some(game)

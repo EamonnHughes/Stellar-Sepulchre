@@ -11,7 +11,9 @@ trait Actor extends Serializable {
   var stats: Stats
   var equipment: Equipment
   var name: String
+
   def attack(target: Actor): Unit
+
   def equip(equ: Item): Unit = {
     equ match {
       case weapon: Weapon => {

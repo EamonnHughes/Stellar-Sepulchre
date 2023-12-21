@@ -2,12 +2,9 @@ package org.eamonn.trog.procgen
 
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.g2d.PolygonSpriteBatch
-import org.eamonn.trog.Trog.garbage
-import org.eamonn.trog.procgen.MapGeneration.fullyWalkableLevel
 import org.eamonn.trog.util.TextureWrapper
-import org.eamonn.trog.{Path, Pathfinding, Trog, Vec2, screenUnit}
+import org.eamonn.trog.{Pathfinding, Trog, Vec2, screenUnit}
 
-import scala.collection.mutable
 import scala.util.Random
 
 object MapGeneration {
@@ -24,56 +21,14 @@ object MapGeneration {
 }
 
 case class GeneratedMap(
-    dimensions: Int,
-    roomMin: Int,
-    roomMax: Int,
-    roomDensity: Float
-) {
+                         dimensions: Int,
+                         roomMin: Int,
+                         roomMax: Int,
+                         roomDensity: Float
+                       ) {
 
   var rooms: List[Room] = List.empty
   var mainRooms: List[Room] = List.empty
-
-  def setAdjacentsAsConnected(): Unit = {
-    rooms.foreach(r => {
-      rooms
-        .filterNot(r2 => { (r2 eq r) || r2.connected.contains(r) })
-        .foreach(r2 => {
-          if (
-            r.getAllTiles.exists(t =>
-              t.getAdjacents.exists(a => {
-                (r2.getAllTiles.exists(t2 =>
-                  t2.getAdjacents.exists(a2 => {
-                    t == t2 || t == a2 || t2 == a
-                  })
-                )
-                )
-              })
-            )
-          ) {
-            r.connected = r2 :: r.connected
-            r2.connected = r :: r2.connected
-          }
-
-        })
-    })
-  }
-  def connectConnections(): Boolean = {
-    var change = false
-    rooms.foreach(r => {
-      r.connected.foreach(r2 => {
-        r2.connected
-          .filterNot(r3 =>
-            r.connected.contains(r3) || r3.connected.contains(r) || r3 == r
-          )
-          .foreach(r3 => {
-            r.connected = r3 :: r.connected
-            r3.connected = r :: r3.connected
-            change = true
-          })
-      })
-    })
-    change
-  }
 
   def generate(): Boolean = {
     var done = true
@@ -144,6 +99,51 @@ case class GeneratedMap(
     done
   }
 
+  def setAdjacentsAsConnected(): Unit = {
+    rooms.foreach(r => {
+      rooms
+        .filterNot(r2 => {
+          (r2 eq r) || r2.connected.contains(r)
+        })
+        .foreach(r2 => {
+          if (
+            r.getAllTiles.exists(t =>
+              t.getAdjacents.exists(a => {
+                (r2.getAllTiles.exists(t2 =>
+                  t2.getAdjacents.exists(a2 => {
+                    t == t2 || t == a2 || t2 == a
+                  })
+                )
+                  )
+              })
+            )
+          ) {
+            r.connected = r2 :: r.connected
+            r2.connected = r :: r2.connected
+          }
+
+        })
+    })
+  }
+
+  def connectConnections(): Boolean = {
+    var change = false
+    rooms.foreach(r => {
+      r.connected.foreach(r2 => {
+        r2.connected
+          .filterNot(r3 =>
+            r.connected.contains(r3) || r3.connected.contains(r) || r3 == r
+          )
+          .foreach(r3 => {
+            r.connected = r3 :: r.connected
+            r3.connected = r :: r3.connected
+            change = true
+          })
+      })
+    })
+    change
+  }
+
   def draw(batch: PolygonSpriteBatch): Unit = {
     rooms.foreach(r => {
       batch.setColor(Color.BLUE)
@@ -164,6 +164,7 @@ case class GeneratedMap(
       )
     })
   }
+
   def doExport(): Level = {
     var level = new Level
     rooms.foreach(r => {
@@ -188,6 +189,16 @@ case class GeneratedMap(
 case class Room(location: Vec2, size: Vec2) {
   val id = Room.nextGid()
   var connected = List.empty[Room]
+
+  def getAllOnBorder: List[Vec2] = {
+    var tiles = List.empty[Vec2]
+    getAllTiles.foreach(t => {
+      if (t.getHalfAdjacents.exists(a => !getAllTiles.contains(a)))
+        tiles = t :: tiles
+    })
+    tiles
+  }
+
   def getAllTiles: List[Vec2] = {
     var tiles = List.empty[Vec2]
     for (x <- location.x until location.x + size.x) {
@@ -195,14 +206,6 @@ case class Room(location: Vec2, size: Vec2) {
         tiles = Vec2(x, y) :: tiles
       }
     }
-    tiles
-  }
-  def getAllOnBorder: List[Vec2] = {
-    var tiles = List.empty[Vec2]
-    getAllTiles.foreach(t => {
-      if (t.getHalfAdjacents.exists(a => !getAllTiles.contains(a)))
-        tiles = t :: tiles
-    })
     tiles
   }
 
@@ -213,6 +216,7 @@ case class Room(location: Vec2, size: Vec2) {
 
 object Room {
   private var gid = 0
+
   private def nextGid(): Int = {
     val id = gid
     gid = gid + 1
@@ -235,14 +239,11 @@ case class Connection(rooms: (Room, Room)) {
 }
 
 class Level extends Serializable {
-  def floorTile: TextureWrapper = Trog.floorTile
-  def ladderUpTile: TextureWrapper = Trog.ladderUpTile
-  def ladderDownTile: TextureWrapper = Trog.ladderDownTile
-  def wall: TextureWrapper = Trog.Wall
   var downLadder: Vec2 = _
   var upLadder: Vec2 = _
   var dimensions = 0
   var walkables: List[Vec2] = List.empty
+
   def draw(batch: PolygonSpriteBatch): Unit = {
     var wallLocs: List[Vec2] = List.empty
     walkables.foreach(w => {
@@ -288,4 +289,12 @@ class Level extends Serializable {
     )
 
   }
+
+  def floorTile: TextureWrapper = Trog.floorTile
+
+  def ladderUpTile: TextureWrapper = Trog.ladderUpTile
+
+  def ladderDownTile: TextureWrapper = Trog.ladderDownTile
+
+  def wall: TextureWrapper = Trog.Wall
 }

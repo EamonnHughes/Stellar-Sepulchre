@@ -3,18 +3,23 @@ package org.eamonn.trog.items
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.g2d.PolygonSpriteBatch
 import org.eamonn.trog.scenes.Game
-import org.eamonn.trog.{Actor, Vec2, screenUnit}
 import org.eamonn.trog.util.TextureWrapper
+import org.eamonn.trog.{Actor, Vec2, screenUnit}
 
 trait Item {
   var game: Game
-  def name: String
-  def groundTexture: TextureWrapper
   var location: Option[Vec2]
-  def use(actor: Actor): Unit
   var possessor: Option[Actor] = None
   var number: Int = 1
+
+  def name: String
+
+  def groundTexture: TextureWrapper
+
+  def use(actor: Actor): Unit
+
   def tNum: Int
+
   def pickUp(actor: Actor): Unit = {
     var l =
       game.items.filter(i => i.possessor.nonEmpty && i.possessor.head == actor)
@@ -32,6 +37,7 @@ trait Item {
       possessor = Some(actor)
     }
   }
+
   def draw(batch: PolygonSpriteBatch): Unit = {
     location.foreach(l => {
       batch.setColor(Color.WHITE)
@@ -51,7 +57,9 @@ trait Usable extends Item {
 
 trait Gear extends Item {
   def onEquip(equipper: Actor)
+
   def onUnequip(equipper: Actor)
+
   override def tNum: Int = {
     var n = number
     if (possessor.forall(p => p.equipment.weapon.contains(this))) {

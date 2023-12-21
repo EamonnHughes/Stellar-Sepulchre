@@ -6,6 +6,7 @@ import scala.collection.mutable
 
 class GarbageCan extends Disposable {
   private val trash = mutable.ListBuffer.empty[Disposable]
+
   def add[A <: Disposable](a: A): A = {
     trash.append(a)
     a

@@ -3,23 +3,18 @@ package scenes
 
 import com.badlogic.gdx.Input.Keys
 import com.badlogic.gdx.InputAdapter
-import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.g2d.PolygonSpriteBatch
 import org.eamonn.trog.SaveLoad.{loadState, saveState}
 import org.eamonn.trog.Scene
 import org.eamonn.trog.character.Player
 import org.eamonn.trog.items.Item
-import org.eamonn.trog.procgen.{GeneratedMap, Level, World}
+import org.eamonn.trog.procgen.{Level, World}
 
 import scala.util.Random
 
 class Game(lvl: Level, plr: Player, wld: World)
-    extends Scene
+  extends Scene
     with Serializable {
-  override def renderUI(batch: PolygonSpriteBatch): Unit = inGameUserInterface.renderUI(batch, this)
-  def addMessage(message: String): Unit = {
-    messages = message :: messages
-  }
   var clickedForTargeting = false
   var fakeLoc = Vec2(0, 0)
   var saveTick = 0f
@@ -41,13 +36,14 @@ class Game(lvl: Level, plr: Player, wld: World)
   var mouseLocOnGrid: Vec2 = Vec2(0, 0)
   var enemies: List[Enemy] = List.empty
   var items: List[Item] = List.empty
-
   var animateTime = 0f
-  def home: Home = {
-    var h = new Home(world)
-    h.game = loadState(0)
-    h
+
+  override def renderUI(batch: PolygonSpriteBatch): Unit = inGameUserInterface.renderUI(batch, this)
+
+  def addMessage(message: String): Unit = {
+    messages = message :: messages
   }
+
   override def init(): InputAdapter = {
     Trog.inGameOST.loop(.4f)
     player.game = this
@@ -85,13 +81,14 @@ class Game(lvl: Level, plr: Player, wld: World)
       }
     }
   }
+
   override def update(delta: Float): Option[Scene] = {
     mouseLocOnGrid.x =
       (fakeLoc.x / screenUnit).floor.toInt - Trog.translationX
     mouseLocOnGrid.y =
       ((Geometry.ScreenHeight - fakeLoc.y) / screenUnit).floor.toInt - Trog.translationY
-    animateTime = animateTime+delta
-    while (animateTime >= 1) animateTime-=1
+    animateTime = animateTime + delta
+    while (animateTime >= 1) animateTime -= 1
     enemies.foreach(e => e.selected = false)
     items.foreach(ite => {
       if (ite.number < 1) items = items.filterNot(item => item eq ite)
@@ -189,10 +186,15 @@ class Game(lvl: Level, plr: Player, wld: World)
     else None
   }
 
+  def home: Home = {
+    var h = new Home(world)
+    h.game = loadState(0)
+    h
+  }
+
   override def render(batch: PolygonSpriteBatch): Unit = {
     level.draw(batch)
     items.foreach(ite => ite.draw(batch))
-    enemies.foreach(e => e.draw(batch))
     player.draw(batch)
     for (
       x <-
@@ -219,9 +221,10 @@ class Game(lvl: Level, plr: Player, wld: World)
             })
           }
         }
-        if (dist > player.stats.sightRad) {
-          if(explored.contains(Vec2(x, y)) || Vec2(x, y).getAdjacents.exists(adj => explored.contains(adj))) batch.setColor(0, 0, 0, .825f) else batch.setColor(0, 0, 0, 1)
+        if (dist >= player.stats.sightRad) {
+          if (explored.contains(Vec2(x, y)) || Vec2(x, y).getAdjacents.exists(adj => explored.contains(adj))) batch.setColor(0, 0, 0, .825f) else batch.setColor(0, 0, 0, 1)
         } else {
+          enemies.filter(e => e.location == Vec2(x, y)).foreach(e => e.draw(batch))
           var lightLevel: Float =
             ((((player.stats.sightRad - dist).toFloat / player.stats.sightRad) + .25f) min 1) max 0
           batch.setColor(

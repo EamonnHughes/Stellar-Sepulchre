@@ -8,13 +8,14 @@ import org.eamonn.trog.util.Animation
 object inGameUserInterface {
   var inInventory = false
   var inCharacterSheet = false
+
   def renderUI(batch: PolygonSpriteBatch, game: Game): Unit = {
     val player = game.player
     val floor = game.floor
     batch.setColor(Color.WHITE)
-    batch.draw(Trog.UICornerLeft, -Trog.translationX * screenUnit, -Trog.translationY * screenUnit, screenUnit*4, screenUnit*4)
-    batch.draw(Trog.UICornerRight, -Trog.translationX * screenUnit + Geometry.ScreenWidth - (screenUnit*4), -Trog.translationY * screenUnit, screenUnit*4, screenUnit*4)
-    batch.draw(Trog.UIHotbar, -Trog.translationX * screenUnit + 5*screenUnit, -Trog.translationY * screenUnit, screenUnit*10, screenUnit*4)
+    batch.draw(Trog.UICornerLeft, -Trog.translationX * screenUnit, -Trog.translationY * screenUnit, screenUnit * 4, screenUnit * 4)
+    batch.draw(Trog.UICornerRight, -Trog.translationX * screenUnit + Geometry.ScreenWidth - (screenUnit * 4), -Trog.translationY * screenUnit, screenUnit * 4, screenUnit * 4)
+    batch.draw(Trog.UIHotbar, -Trog.translationX * screenUnit + 5 * screenUnit, -Trog.translationY * screenUnit, screenUnit * 10, screenUnit * 4)
     batch.setColor(Color.FIREBRICK)
     batch.draw(
       Trog.Square,
@@ -28,33 +29,33 @@ object inGameUserInterface {
       Trog.Square,
       -Trog.translationX * screenUnit,
       -Trog.translationY * screenUnit,
-      screenUnit * 4  * player.stats.health / player.stats.maxHealth,
+      screenUnit * 4 * player.stats.health / player.stats.maxHealth,
       screenUnit / 2
     )
     batch.setColor(Color.YELLOW)
     batch.draw(
       Trog.Square,
       -Trog.translationX * screenUnit,
-      -Trog.translationY * screenUnit + screenUnit/2,
-      screenUnit *4,
-      screenUnit /4
+      -Trog.translationY * screenUnit + screenUnit / 2,
+      screenUnit * 4,
+      screenUnit / 4
     )
     batch.setColor(Color.ORANGE)
     batch.draw(
       Trog.Square,
       -Trog.translationX * screenUnit,
-      -Trog.translationY * screenUnit + screenUnit/2,
+      -Trog.translationY * screenUnit + screenUnit / 2,
       screenUnit * 4 * player.stats.exp / player.stats.nextExp,
-        screenUnit/4,
+      screenUnit / 4,
     )
     batch.setColor(Color.WHITE)
-    batch.draw(Trog.UIXPBarFrame, -Trog.translationX * screenUnit, -Trog.translationY*screenUnit + screenUnit/2, screenUnit*4, screenUnit/4)
-    batch.draw(Trog.UIHealthBarFrame, -Trog.translationX * screenUnit, -Trog.translationY * screenUnit, screenUnit*4, screenUnit/2)
+    batch.draw(Trog.UIXPBarFrame, -Trog.translationX * screenUnit, -Trog.translationY * screenUnit + screenUnit / 2, screenUnit * 4, screenUnit / 4)
+    batch.draw(Trog.UIHealthBarFrame, -Trog.translationX * screenUnit, -Trog.translationY * screenUnit, screenUnit * 4, screenUnit / 2)
     Text.tinyFont.draw(
       batch,
       s"${player.stats.health}/${player.stats.maxHealth}",
       -Trog.translationX * screenUnit + (.1f * screenUnit),
-      -Trog.translationY * screenUnit + (.3f * screenUnit)
+      -Trog.translationY * screenUnit + (.35f * screenUnit)
     )
     player.stats.skills.zipWithIndex.foreach({
       case (s, i) => {
@@ -160,7 +161,7 @@ object inGameUserInterface {
       )
     }
 
-   if(!inInventory && !inCharacterSheet && !game.player.exploring) drawCursorUI(batch, game)
+    if (!inInventory && !inCharacterSheet && !game.player.exploring) drawCursorUI(batch, game)
 
   }
 
@@ -169,7 +170,7 @@ object inGameUserInterface {
 
 
     var path = Pathfinding.findPath(game.player.location, loc, game.level)
-    if(path.isEmpty || !game.explored.contains(loc)){
+    if (path.isEmpty || !game.explored.contains(loc)) {
       batch.setColor(1f, 0f, 0f, .75f)
       Animation.twoFrameAnimation(game, batch, "mouseHover", loc.x, loc.y)
     } else {

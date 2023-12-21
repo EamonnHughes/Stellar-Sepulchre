@@ -6,10 +6,11 @@ import org.eamonn.trog.character.Player
 import org.eamonn.trog.procgen.{Level, World}
 import org.eamonn.trog.scenes.Game
 
-import java.io.{File, FileInputStream, FileOutputStream, ObjectInputStream, ObjectOutputStream}
+import java.io._
 
 object SaveLoad {
   def mainDir = "interstellargrave/"
+
   def SaveDir = s"${mainDir}saves/"
 
   def saveState(game: Game, slot: Int): Unit = {
@@ -22,6 +23,7 @@ object SaveLoad {
     oos.writeObject(game)
     oos.close()
   }
+
   def loadState(slot: Int): Game = {
     val saveFile: FileHandle = getSaveFile(slot)
     var game: Game = new Game(new Level, new Player, new World)

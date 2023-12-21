@@ -13,6 +13,7 @@ import org.eamonn.trog.scenes.{Game, Home}
 import org.eamonn.trog.util.{GarbageCan, TextureWrapper}
 
 class Trog extends ApplicationAdapter {
+
   import Trog.garbage
 
   private val idMatrix = new Matrix4()
@@ -30,13 +31,18 @@ class Trog extends ApplicationAdapter {
 
     Text.loadFonts()
     var home: Home = new Home(World())
-     if(SaveLoad.getSaveFile(0).exists()){
+    if (SaveLoad.getSaveFile(0).exists()) {
       home.world = SaveLoad.loadState(0).world
     } else {
       SaveLoad.saveState(new Game(new Level, new Player, home.world), 0)
     }
     home.game = SaveLoad.loadState(0)
     setScene(home)
+  }
+
+  private def setScene(newScene: Scene): Unit = {
+    scene = newScene
+    Gdx.input.setInputProcessor(scene.init())
   }
 
   override def render(): Unit = {
@@ -58,11 +64,6 @@ class Trog extends ApplicationAdapter {
 
   override def dispose(): Unit = {
     garbage.dispose()
-  }
-
-  private def setScene(newScene: Scene): Unit = {
-    scene = newScene
-    Gdx.input.setInputProcessor(scene.init())
   }
 
 }

@@ -1,8 +1,9 @@
 package org.eamonn.trog
 
-import org.eamonn.trog.procgen.{Connection, GeneratedMap, Level}
+import org.eamonn.trog.procgen.Level
 
 import scala.collection.mutable
+
 object Pathfinding {
   def findHalfPath(start: Vec2, end: Vec2, level: Level): Option[Path] = {
     val visitedCells = mutable.Set.empty[Vec2]
@@ -49,10 +50,12 @@ case class Path(list: List[Vec2]) {
     for {
       loc <- list.head.getHalfAdjacents
       if (visCells.add(loc))
-      if(level.walkables.exists(l => l.x == loc.x && l.y == loc.y))
+      if (level.walkables.exists(l => l.x == loc.x && l.y == loc.y))
     } yield add(loc)
 
   }
+
+  def add(loc: Vec2): Path = Path(loc :: list)
 
   def extendPath(visCells: mutable.Set[Vec2], level: Level): List[Path] = {
     for {
@@ -62,7 +65,5 @@ case class Path(list: List[Vec2]) {
     } yield add(loc)
 
   }
-
-  def add(loc: Vec2): Path = Path(loc :: list)
 
 }

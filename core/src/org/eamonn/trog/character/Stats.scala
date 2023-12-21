@@ -17,6 +17,7 @@ trait Stats {
 }
 
 case class basePlayerStats() extends Stats {
+  override var skills: List[Skill] = List.empty
   var ac = 5
   var exp = 0
   var nextExp = 50
@@ -28,22 +29,22 @@ case class basePlayerStats() extends Stats {
   var attackMod = 0f
   var critChance = 5
   var critMod = 2f
-  override var skills: List[Skill] = List.empty
 }
 
 case class makeStats(
-    mAc: Int,
-    mExp: Int,
-    mNExp: Int,
-    mMHeal: Int,
-    mHeal: Int,
-    mSrad: Int,
-    mLev: Int,
-    mDmg: Int,
-    mAtk: Float,
-    mCrc: Int,
-    mCrm: Float
-) extends Stats {
+                      mAc: Int,
+                      mExp: Int,
+                      mNExp: Int,
+                      mMHeal: Int,
+                      mHeal: Int,
+                      mSrad: Int,
+                      mLev: Int,
+                      mDmg: Int,
+                      mAtk: Float,
+                      mCrc: Int,
+                      mCrm: Float
+                    ) extends Stats {
+  override var skills: List[Skill] = List.empty
   var ac: Int = mAc
   var exp: Int = mExp
   var nextExp: Int = mNExp
@@ -55,5 +56,4 @@ case class makeStats(
   var attackMod: Float = mAtk
   var critChance: Int = mCrc
   var critMod: Float = mCrm
-  override var skills: List[Skill] = List.empty
 }

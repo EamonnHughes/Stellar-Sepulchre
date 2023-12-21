@@ -8,11 +8,11 @@ import com.badlogic.gdx.graphics.g2d.PolygonSpriteBatch
 import org.eamonn.trog.character.Player
 import org.eamonn.trog.procgen.{Level, World}
 import org.eamonn.trog.{Geometry, Scene, Text, Trog}
-import org.eamonn.trog.scenes.Home
 
 class GameOver(world: World, enemy: String) extends Scene {
   var done = false
   var home = new Home(world)
+
   override def init(): InputAdapter = {
     SaveLoad.saveState(new Game(new Level, new Player, world), 0)
     home.game = SaveLoad.loadState(0)
@@ -38,6 +38,7 @@ class GameOver(world: World, enemy: String) extends Scene {
     )
   }
 }
+
 class GameOverInput(over: GameOver) extends InputAdapter {
   override def keyDown(keycode: Int): Boolean = {
     if (keycode == Keys.ENTER) over.done = true

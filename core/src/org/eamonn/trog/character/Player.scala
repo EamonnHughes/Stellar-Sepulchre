@@ -3,14 +3,12 @@ package org.eamonn.trog.character
 import com.badlogic.gdx.Input.Keys
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.g2d.PolygonSpriteBatch
-import org.eamonn.trog.Trog.{Square, garbage}
+import org.eamonn.trog.Trog.Square
 import org.eamonn.trog.inGameUserInterface.{inCharacterSheet, inInventory}
-import org.eamonn.trog.items.{MedKit, makeCommonWeapon}
+import org.eamonn.trog.items.MedKit
 import org.eamonn.trog.scenes.Game
-import org.eamonn.trog.util.{Animation, TextureWrapper}
-import org.eamonn.trog.{Actor, Enemy, Pathfinding, Vec2, d, screenUnit}
-
-import scala.util.Random
+import org.eamonn.trog.util.Animation
+import org.eamonn.trog.{Actor, Pathfinding, Vec2, d, screenUnit}
 
 case class Player() extends Actor {
   var inventoryItemSelected: Int = 0
@@ -29,12 +27,6 @@ case class Player() extends Actor {
   var rangedSkillUsing: Option[rangedSkill] = None
   var rangedSkillTargetables: List[Actor] = List.empty
   var rangedSkillOption = 0
-  def clearRangedStuff(): Unit = {
-    rangedSkillUsing = None
-    rangedSkillTargetables = List.empty
-    rangedSkillOption = 0
-    game.clickedForTargeting = false
-  }
   var game: Game = _
   var location: Vec2 = Vec2(0, 0)
   var destination: Vec2 = Vec2(0, 0)
@@ -43,6 +35,15 @@ case class Player() extends Actor {
   var speed = .25f
   var clickInInv = false
   var clickTick = 0f
+  var getVisible: List[Vec2] = List.empty
+
+  def clearRangedStuff(): Unit = {
+    rangedSkillUsing = None
+    rangedSkillTargetables = List.empty
+    rangedSkillOption = 0
+    game.clickedForTargeting = false
+  }
+
   def initially(gme: Game): Unit = {
     game = gme
     val medKit: MedKit = MedKit()
@@ -54,28 +55,7 @@ case class Player() extends Actor {
     stats.health = stats.maxHealth
     initialized = true
   }
-  def playerIcon: String =s"Player${archetype.metaArchName}"
-  def levelUp(): Unit = {
-    game.addMessage("You levelled up")
-    stats.exp -= stats.nextExp
-    stats.nextExp *= 2
-    stats.maxHealth += d(2, 5)
-    archetype.onLevelUp(game)
-    stats.health = stats.maxHealth
-    stats.level += 1
-  }
-  def tryToGoDown(): Unit = {
-    if (location == game.level.downLadder) game.descending = true
-  }
-  def attack(target: Actor): Unit = {
-    if (equipment.weapon.nonEmpty) {
-      equipment.weapon.foreach(w => w.onAttack(this, target))
-    } else {
-      if (d(10) > target.stats.ac) {
-        target.stats.health -= 1
-      }
-    }
-  }
+
   def draw(batch: PolygonSpriteBatch) = {
 
     if (stats.health > 0) {
@@ -91,8 +71,11 @@ case class Player() extends Actor {
     batch.setColor(Color.WHITE)
     Animation.twoFrameAnimation(game, batch, playerIcon, location.x, location.y)
   }
+
+  def playerIcon: String = s"Player${archetype.metaArchName}"
+
   def update(delta: Float) = {
-    if(destination == game.level.downLadder && game.level.walkables.forall(w => game.explored.contains(w))) exploring = true
+    if (destination == game.level.downLadder && game.level.walkables.forall(w => game.explored.contains(w))) exploring = true
     if (!yourTurn) {
       tick += delta
       if (tick >= speed || resting || exploring) {
@@ -111,6 +94,7 @@ case class Player() extends Actor {
       clickInInv = inventoryControl(delta)
     else if (inCharacterSheet) charSheetControl(delta)
   }
+
   def gameControl(delta: Float) = {
     var initLoc = location.copy()
     if (inCombat) {
@@ -175,19 +159,20 @@ case class Player() extends Actor {
         }
         if (
           exploring && destination == location) {
-          if(!game.level.walkables.forall(
+          if (!game.level.walkables.forall(
             w => game.explored.contains(w)
-          )){
-          var dest =
-            game.level.walkables
-              .filter(w => !game.explored.contains(w))
-              .minBy(w =>
-                Pathfinding.findPath(location, w, game.level).head.list.length
-              )
-          destination = dest.copy()
-        } else if (location != game.level.downLadder) {
+          )) {
+            var dest =
+              game.level.walkables
+                .filter(w => !game.explored.contains(w))
+                .minBy(w =>
+                  Pathfinding.findPath(location, w, game.level).head.list.length
+                )
+            destination = dest.copy()
+          } else if (location != game.level.downLadder) {
             destination = game.level.downLadder.copy()
-          }}
+          }
+        }
         if (game.level.walkables.forall(w => game.explored.contains(w)))
           exploring = false
         if (
@@ -278,7 +263,31 @@ case class Player() extends Actor {
       }
     }
   }
-  var getVisible: List[Vec2] = List.empty
+
+  def levelUp(): Unit = {
+    game.addMessage("You levelled up")
+    stats.exp -= stats.nextExp
+    stats.nextExp *= 2
+    stats.maxHealth += d(2, 5)
+    archetype.onLevelUp(game)
+    stats.health = stats.maxHealth
+    stats.level += 1
+  }
+
+  def tryToGoDown(): Unit = {
+    if (location == game.level.downLadder) game.descending = true
+  }
+
+  def attack(target: Actor): Unit = {
+    if (equipment.weapon.nonEmpty) {
+      equipment.weapon.foreach(w => w.onAttack(this, target))
+    } else {
+      if (d(10) > target.stats.ac) {
+        target.stats.health -= 1
+      }
+    }
+  }
+
   def inventoryControl(delta: Float): Boolean = {
     var clicked = false
     var inventory = game.items
@@ -314,5 +323,6 @@ case class Player() extends Actor {
     }
     clicked
   }
+
   def charSheetControl(delta: Float) = {}
 }

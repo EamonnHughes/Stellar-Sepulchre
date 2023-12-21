@@ -1,14 +1,17 @@
 package org.eamonn.trog.items
 
 import org.eamonn.trog.Trog.garbage
-import org.eamonn.trog.{Actor, Vec2, d}
 import org.eamonn.trog.scenes.Game
 import org.eamonn.trog.util.TextureWrapper
+import org.eamonn.trog.{Actor, Vec2, d}
 
 import scala.util.Random
 
 
 trait Weapon extends Gear {
+  var mod: Int
+  var weaponType: String
+
   def name: String = {
     if (mod > 0) {
       s"${weaponType} (+$mod)"
@@ -18,12 +21,19 @@ trait Weapon extends Gear {
       s"${weaponType}"
     }
   }
-  var mod: Int
-  var weaponType: String
+
   def onAttack(attacker: Actor, target: Actor)
 }
+
 case class makeCommonWeapon(var mod: Int, var game: Game, nODie: Int, die: Int, field: String)
   extends Weapon {
+  override var location: Option[Vec2] = None
+  var weaponType: String = gearNames
+    .getCINofD(nODie, die, field)(
+      Random.nextInt(gearNames.getCINofD(nODie, die, field).length)
+    )
+    .substring(2)
+
   override def onAttack(attacker: Actor, target: Actor): Unit = {
     if (d(10) + attacker.stats.attackMod + mod > target.stats.ac) {
       var damage = (d(nODie, die) + attacker.stats.damageMod + mod)
@@ -41,12 +51,6 @@ case class makeCommonWeapon(var mod: Int, var game: Game, nODie: Int, die: Int, 
   override def onUnequip(equipper: Actor): Unit = {
     game.addMessage("You unequipped " + name)
   }
-  var weaponType: String = gearNames
-    .getCINofD(nODie, die, field)(
-      Random.nextInt(gearNames.getCINofD(nODie, die, field).length)
-    )
-    .substring(2)
-  override var location: Option[Vec2] = None
 
   override def groundTexture: TextureWrapper =
     TextureWrapper.load(s"$weaponType.png")
@@ -76,8 +80,9 @@ object gearNames {
     "15Baton",
     "16Baton"
   )
+
   def getCINofD(nODie: Int, die: Int, field: String): List[String] = {
-    if(field == "Drone") {
+    if (field == "Drone") {
       droneItemNames.filter(CIN =>
         CIN.charAt(0) == nODie.toString.charAt(0) && CIN.charAt(1) == die.toString
           .charAt(0)
@@ -87,7 +92,7 @@ object gearNames {
         CIN.charAt(0) == nODie.toString.charAt(0) && CIN.charAt(1) == die.toString
           .charAt(0)
       )
-    } else{
+    } else {
       commonItemNames.filter(CIN =>
         CIN.charAt(0) == nODie.toString.charAt(0) && CIN.charAt(1) == die.toString
           .charAt(0)

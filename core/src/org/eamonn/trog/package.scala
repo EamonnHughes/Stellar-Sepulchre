@@ -10,39 +10,17 @@ import scala.util.Random
 
 // Things kinda stolen from scaloi
 package object trog {
+
+  val CenterAlign = 1
+
   def d(die: Int): Int = Random.nextInt(die) + 1
+
   def d(nOd: Int, die: Int): Int = {
     var amt = 0
-    for (i <- 0 until (nOd)) { amt += Random.nextInt(die) + 1 }
-    amt
-  }
-
-  case class Vec2(var x: Int, var y: Int){
-      def getHalfAdjacents: List[Vec2] = {
-        List(
-          Vec2(x, y - 1),
-          Vec2(x, y + 1),
-          Vec2(x - 1, y),
-          Vec2(x + 1, y),
-       //   Vec2(x - 1, y - 1),
-      //    Vec2(x - 1, y + 1),
-     //     Vec2(x + 1, y - 1),
-    //      Vec2(x + 1, y + 1)
-        )
-      }
-
-    def getAdjacents: List[Vec2] = {
-      List(
-        Vec2(x, y - 1),
-        Vec2(x, y + 1),
-        Vec2(x - 1, y),
-        Vec2(x + 1, y),
-        Vec2(x - 1, y - 1),
-        Vec2(x - 1, y + 1),
-        Vec2(x + 1, y - 1),
-        Vec2(x + 1, y + 1)
-      )
+    for (i <- 0 until (nOd)) {
+      amt += Random.nextInt(die) + 1
     }
+    amt
   }
 
   // 16 should match desktop launcher
@@ -77,16 +55,11 @@ package object trog {
 
   implicit class BooleanOps(val self: Boolean) extends AnyVal {
     def option[A](a: => A): Option[A] = if (self) Some(a) else None
+
     def fold[A](ifTrue: => A, ifFalse: => A): A = if (self) ifTrue else ifFalse
   }
 
   implicit class FiniteDurationOps(val self: FiniteDuration) extends AnyVal {
-    def toFiniteDuration(tu: TimeUnit): FiniteDuration =
-      FiniteDuration(self.toUnit(tu).toLong, tu)
-
-    protected def largestUnit: Option[TimeUnit] =
-      TimeUnit.values.findLast(u => self.toUnit(u) >= 1.0)
-
     def toHumanString: String = {
       largestUnit.fold("no time at all") { u =>
         val scaled = toFiniteDuration(u)
@@ -100,22 +73,54 @@ package object trog {
           scaled.toString
       }
     }
+
+    def toFiniteDuration(tu: TimeUnit): FiniteDuration =
+      FiniteDuration(self.toUnit(tu).toLong, tu)
+
+    protected def largestUnit: Option[TimeUnit] =
+      TimeUnit.values.findLast(u => self.toUnit(u) >= 1.0)
   }
 
   implicit class OptionOps[A](val self: Option[A]) extends AnyVal {
     def isTrue(implicit Booleate: Booleate[A]): Boolean =
       self.fold(false)(Booleate.value)
+
     def isFalse(implicit Booleate: Booleate[A]): Boolean =
       self.fold(false)(Booleate.unvalue)
   }
 
   private trait Booleate[A] {
     def value(a: A): Boolean
+
     final def unvalue(a: A): Boolean = !value(a)
   }
 
-  private object Booleate {
-    implicit def booleate: Booleate[Boolean] = b => b
+  case class Vec2(var x: Int, var y: Int) {
+    def getHalfAdjacents: List[Vec2] = {
+      List(
+        Vec2(x, y - 1),
+        Vec2(x, y + 1),
+        Vec2(x - 1, y),
+        Vec2(x + 1, y),
+        //   Vec2(x - 1, y - 1),
+        //    Vec2(x - 1, y + 1),
+        //     Vec2(x + 1, y - 1),
+        //      Vec2(x + 1, y + 1)
+      )
+    }
+
+    def getAdjacents: List[Vec2] = {
+      List(
+        Vec2(x, y - 1),
+        Vec2(x, y + 1),
+        Vec2(x - 1, y),
+        Vec2(x + 1, y),
+        Vec2(x - 1, y - 1),
+        Vec2(x - 1, y + 1),
+        Vec2(x + 1, y - 1),
+        Vec2(x + 1, y + 1)
+      )
+    }
   }
 
   implicit class ColorOps(val self: Color) extends AnyVal {
@@ -133,5 +138,7 @@ package object trog {
       new Color(self.r, self.g, self.b, self.a * alpha * alpha)
   }
 
-  val CenterAlign = 1
+  private object Booleate {
+    implicit def booleate: Booleate[Boolean] = b => b
+  }
 }

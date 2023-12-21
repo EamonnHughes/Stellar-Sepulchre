@@ -4,7 +4,7 @@ import org.eamonn.trog.character.{Archetype, CaedanautArchetype, InfiltratorArch
 
 import scala.util.Random
 
-case class World () {
+case class World() {
   var name: String = "world" + Random.nextInt(100).toString
   var archetypeList: List[Archetype] = List(InfiltratorArchetype(), CaedanautArchetype())
 }

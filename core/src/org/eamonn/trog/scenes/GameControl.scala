@@ -3,13 +3,13 @@ package org.eamonn.trog.scenes
 import com.badlogic.gdx.Input.Keys
 import com.badlogic.gdx.InputAdapter
 import org.eamonn.trog.inGameUserInterface.{inCharacterSheet, inInventory}
-import org.eamonn.trog.{Geometry, Trog, screenUnit}
 
 class GameControl(game: Game) extends InputAdapter {
   override def keyDown(keycode: Int): Boolean = {
     game.keysDown = keycode :: game.keysDown
     true
   }
+
   override def keyUp(keycode: Int): Boolean = {
     game.keysDown = game.keysDown.filterNot(f => f == keycode)
     if (keycode == Keys.C) {
@@ -20,7 +20,7 @@ class GameControl(game: Game) extends InputAdapter {
       inCharacterSheet = false
 
     }
-    if(keycode == Keys.ESCAPE && (inInventory || inCharacterSheet)) {
+    if (keycode == Keys.ESCAPE && (inInventory || inCharacterSheet)) {
       inInventory = false
       inCharacterSheet = false
     }

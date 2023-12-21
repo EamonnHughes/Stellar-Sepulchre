@@ -6,11 +6,11 @@ import com.badlogic.gdx.InputAdapter
 
 class HomeControl(home: Home) extends InputAdapter {
   override def touchDown(
-      screenX: Int,
-      screenY: Int,
-      pointer: Int,
-      button: Int
-  ): Boolean = {
+                          screenX: Int,
+                          screenY: Int,
+                          pointer: Int,
+                          button: Int
+                        ): Boolean = {
     true
   }
 

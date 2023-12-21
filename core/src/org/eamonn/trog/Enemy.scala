@@ -2,22 +2,26 @@ package org.eamonn.trog
 
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.g2d.PolygonSpriteBatch
-import org.eamonn.trog.Trog.{Square, asleep, garbage}
+import org.eamonn.trog.Trog.{Square, asleep}
 import org.eamonn.trog.character.{Equipment, Stats, makeStats}
 import org.eamonn.trog.items.{MedKit, Weapon, makeCommonWeapon}
 import org.eamonn.trog.scenes.Game
-import org.eamonn.trog.util.{Animation, TextureWrapper}
+import org.eamonn.trog.util.Animation
 
 import scala.util.Random
 
 trait Enemy extends Actor {
-  def initialize(gm: Game, loc: Vec2): Unit
   var game: Game
   var location: Vec2 = Vec2(0, 0)
   var destination: Vec2 = Vec2(0, 0)
   var texture: String
+
+  def initialize(gm: Game, loc: Vec2): Unit
+
   def update(delta: Float): Unit
+
   def attack(target: Actor): Unit
+
   def draw(batch: PolygonSpriteBatch): Unit = {
     if (statuses.stunned > 0) {
       batch.setColor(Color.YELLOW)
@@ -40,7 +44,7 @@ trait Enemy extends Actor {
       )
     }
     batch.setColor(Color.WHITE)
-    Animation.twoFrameAnimation(game, batch, texture, location.x,location.y)
+    Animation.twoFrameAnimation(game, batch, texture, location.x, location.y)
 
     Text.smallFont.setColor(Color.WHITE)
     Text.smallFont.draw(
@@ -63,6 +67,12 @@ case class Servitor() extends Enemy {
   var lev: Int = _
   var name: String = _
   var stats: Stats = _
+  var texture: String = s"Servitor${
+    {
+      lev min 5
+    } + 1
+  }_"
+
   def initialize(gm: Game, loc: Vec2): Unit = {
     game = gm
     location = loc
@@ -86,13 +96,12 @@ case class Servitor() extends Enemy {
       mSrad = 7,
       mLev = lev,
       mDmg = 0,
-      mAtk = .35f * lev,
+      mAtk =.35f * lev,
       mCrc = 3 + (lev min 10),
       mCrm = 1.9f + (lev * .1f)
     )
     game.enemies = this :: game.enemies
   }
-  var texture: String = s"Servitor${{lev min 5} + 1}_"
 
   override def update(delta: Float): Unit = {
 
@@ -144,6 +153,7 @@ object enemyNames {
     "4Hemisynapt",
     "5Synapt"
   )
+
   def getServitorName(lev: Int): List[String] = {
     Servo.filter(c => c.charAt(0) == (lev min 5).toString.charAt(0))
   }
