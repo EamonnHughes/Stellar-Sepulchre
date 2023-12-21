@@ -70,6 +70,8 @@ object Trog {
   implicit val garbage: GarbageCan = new GarbageCan
 
   lazy val inGameOST: Sound = Trog.loadSound("AmbienceDepths.wav")
+  lazy val Tolling: Sound = Trog.loadSound("Toll.wav")
+  lazy val Jingle: Sound = Trog.loadSound("jingle.wav")
   lazy val Square: TextureWrapper = TextureWrapper.load("Square.png")
   lazy val homeBG: TextureWrapper = TextureWrapper.load("sepulctbg.png")
   lazy val loadBG: TextureWrapper = TextureWrapper.load("generate.png")

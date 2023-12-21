@@ -8,7 +8,7 @@ import org.eamonn.trog.inGameUserInterface.{inCharacterSheet, inInventory}
 import org.eamonn.trog.items.MedKit
 import org.eamonn.trog.scenes.Game
 import org.eamonn.trog.util.Animation
-import org.eamonn.trog.{Actor, Pathfinding, Vec2, d, screenUnit}
+import org.eamonn.trog.{Actor, Pathfinding, Trog, Vec2, d, screenUnit}
 
 case class Player() extends Actor {
   var inventoryItemSelected: Int = 0
@@ -272,6 +272,7 @@ case class Player() extends Actor {
     archetype.onLevelUp(game)
     stats.health = stats.maxHealth
     stats.level += 1
+    Trog.Jingle.play(4)
     if(stats.level > 1) {
       game.lvlUping = true
     }
