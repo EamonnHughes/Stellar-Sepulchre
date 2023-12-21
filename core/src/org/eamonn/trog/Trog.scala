@@ -84,6 +84,7 @@ object Trog {
   lazy val UICornerRight: TextureWrapper = TextureWrapper.load("UICornerRight.png")
   lazy val UIHotbar: TextureWrapper = TextureWrapper.load("UIHotbar.png")
   lazy val UIHealthBarFrame: TextureWrapper = TextureWrapper.load("UIHealthBarFrame.png")
+  lazy val UIXPBarFrame: TextureWrapper = TextureWrapper.load("UIXPBarFrame.png")
 
   var translationX = 0
   var translationY = 0

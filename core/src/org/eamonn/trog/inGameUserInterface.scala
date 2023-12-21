@@ -31,12 +31,29 @@ object inGameUserInterface {
       screenUnit,
       screenUnit * 4  * player.stats.health / player.stats.maxHealth
     )
+    batch.setColor(Color.YELLOW)
+    batch.draw(
+      Trog.Square,
+      -Trog.translationX * screenUnit + screenUnit,
+      -Trog.translationY * screenUnit,
+      screenUnit /2,
+      screenUnit * 4
+    )
+    batch.setColor(Color.ORANGE)
+    batch.draw(
+      Trog.Square,
+      -Trog.translationX * screenUnit + screenUnit,
+      -Trog.translationY * screenUnit,
+      screenUnit/2,
+      screenUnit * 4 * player.stats.exp / player.stats.nextExp
+    )
     batch.setColor(Color.WHITE)
+    batch.draw(Trog.UIXPBarFrame, -Trog.translationX * screenUnit + screenUnit, -Trog.translationY*screenUnit, screenUnit/2, screenUnit * 4)
     batch.draw(Trog.UIHealthBarFrame, -Trog.translationX * screenUnit, -Trog.translationY * screenUnit, screenUnit, screenUnit*4)
     Text.tinyFont.draw(
       batch,
       s"${player.stats.health}/${player.stats.maxHealth}",
-      -Trog.translationX * screenUnit + (.05f * screenUnit),
+      -Trog.translationX * screenUnit + (.1f * screenUnit),
       -Trog.translationY * screenUnit + (.3f * screenUnit)
     )
     player.stats.skills.zipWithIndex.foreach({
@@ -65,28 +82,6 @@ object inGameUserInterface {
         }
       }
     })
-    Text.mediumFont.draw(
-      batch,
-      s"${player.name}, the level ${player.stats.level} ${player.archetype.name} on floor ${floor}",
-      -Trog.translationX * screenUnit,
-      -Trog.translationY * screenUnit + Geometry.ScreenHeight
-    )
-    batch.setColor(Color.YELLOW)
-    batch.draw(
-      Trog.Square,
-      -Trog.translationX * screenUnit,
-      -Trog.translationY * screenUnit + Geometry.ScreenHeight - (screenUnit),
-      screenUnit * 4,
-      screenUnit / 8
-    )
-    batch.setColor(Color.ORANGE)
-    batch.draw(
-      Trog.Square,
-      -Trog.translationX * screenUnit,
-      -Trog.translationY * screenUnit + Geometry.ScreenHeight - (screenUnit),
-      screenUnit * 4 * player.stats.exp / player.stats.nextExp,
-      screenUnit / 8
-    )
     drawConsole(batch, game)
     if (inCharacterSheet) {
       batch.setColor(0f, 0f, 0f, .5f)
@@ -201,7 +196,7 @@ object inGameUserInterface {
       batch,
       log,
       (-Trog.translationX * screenUnit),
-      ((-Trog.translationY + 2) * screenUnit)
+      ((-Trog.translationY + 6) * screenUnit)
     )
 
   }
