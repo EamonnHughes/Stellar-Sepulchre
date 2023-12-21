@@ -4,6 +4,7 @@ package scenes
 import com.badlogic.gdx.InputAdapter
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.g2d.PolygonSpriteBatch
+import jdk.incubator.vector.VectorOperators.Ternary
 import org.eamonn.trog.Scene
 import org.eamonn.trog.procgen.World
 
@@ -12,7 +13,8 @@ class Home(wld: World) extends Scene {
   var next = false
   var game: Game = _
   var gameLoaded = false
-  var selecting = false
+  var selected = 0
+  var itemNums = 3
 
   var mainColor = new Color(.48f, .69f, .37f, 1)
   var darkColor = new Color(.28f, .49f, .17f, 1)
@@ -26,8 +28,8 @@ class Home(wld: World) extends Scene {
   }
 
   override def update(delta: Float): Option[Scene] = {
-    if (selecting) Some(new WorldSelect(this))
-    else if (gameLoaded && game.loadable) Some(game)
+
+    if (gameLoaded && game.loadable) Some(game)
     else if (next) Some(new CharCreation(world))
     else None
   }
@@ -52,17 +54,24 @@ class Home(wld: World) extends Scene {
   }
 
   override def renderUI(batch: PolygonSpriteBatch): Unit = {
-    Text.largeFont.setColor(mainColor)
+    if (selected == 0) Text.largeFont.setColor(mainColor) else Text.largeFont.setColor(darkColor)
     Text.largeFont.draw(
       batch,
       "  Descend",
       -Trog.translationX * screenUnit,
       -Trog.translationY * screenUnit + Geometry.ScreenHeight * 4 / 5
     )
-    if (!game.loadable) Text.largeFont.setColor(darkColor)
+    if (selected == 1) Text.largeFont.setColor(mainColor) else if (game.loadable) Text.largeFont.setColor(darkColor) else Text.largeFont.setColor(Color.GRAY)
     Text.largeFont.draw(
       batch,
       "\n  Load Last Save",
+      -Trog.translationX * screenUnit,
+      -Trog.translationY * screenUnit + Geometry.ScreenHeight * 4 / 5
+    )
+    if (selected == 2) Text.largeFont.setColor(mainColor) else Text.largeFont.setColor(darkColor)
+    Text.largeFont.draw(
+      batch,
+      "\n\n  Quit",
       -Trog.translationX * screenUnit,
       -Trog.translationY * screenUnit + Geometry.ScreenHeight * 4 / 5
     )

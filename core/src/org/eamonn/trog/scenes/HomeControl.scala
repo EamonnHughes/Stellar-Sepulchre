@@ -21,13 +21,16 @@ class HomeControl(home: Home) extends InputAdapter {
 
   override def keyDown(keycode: Int): Boolean = {
     if (keycode == Keys.ENTER) {
-      home.next = true
+      if(home.selected == 0) home.next = true
+      if(home.selected == 1) home.gameLoaded = true
+      if(home.selected == 2) System.exit(0)
     }
-    if (keycode == Keys.L) {
-      home.gameLoaded = true
+    if (keycode == Keys.UP) {
+      if(home.selected == 2 && !home.game.loadable) home.selected = 0 else if (home.selected == 0) home.selected = home.itemNums - 1 else home.selected -= 1
     }
-    if (keycode == Keys.Q) System.exit(0)
-    if (keycode == Keys.W) home.selecting = true
+    if (keycode == Keys.DOWN) {
+      if(home.selected == 0 && !home.game.loadable) home.selected = 2 else if (home.selected == home.itemNums - 1) home.selected = 0 else home.selected += 1
+    }
 
     true
   }
