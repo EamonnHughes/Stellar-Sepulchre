@@ -20,36 +20,36 @@ object inGameUserInterface {
       Trog.Square,
       -Trog.translationX * screenUnit,
       -Trog.translationY * screenUnit,
-      screenUnit,
-      screenUnit * 4
+      screenUnit * 4,
+      screenUnit / 2
     )
     batch.setColor(Color.RED)
     batch.draw(
       Trog.Square,
       -Trog.translationX * screenUnit,
       -Trog.translationY * screenUnit,
-      screenUnit,
-      screenUnit * 4  * player.stats.health / player.stats.maxHealth
+      screenUnit * 4  * player.stats.health / player.stats.maxHealth,
+      screenUnit / 2
     )
     batch.setColor(Color.YELLOW)
     batch.draw(
       Trog.Square,
-      -Trog.translationX * screenUnit + screenUnit,
-      -Trog.translationY * screenUnit,
-      screenUnit /2,
-      screenUnit * 4
+      -Trog.translationX * screenUnit,
+      -Trog.translationY * screenUnit + screenUnit/2,
+      screenUnit *4,
+      screenUnit /4
     )
     batch.setColor(Color.ORANGE)
     batch.draw(
       Trog.Square,
-      -Trog.translationX * screenUnit + screenUnit,
-      -Trog.translationY * screenUnit,
-      screenUnit/2,
-      screenUnit * 4 * player.stats.exp / player.stats.nextExp
+      -Trog.translationX * screenUnit,
+      -Trog.translationY * screenUnit + screenUnit/2,
+      screenUnit * 4 * player.stats.exp / player.stats.nextExp,
+        screenUnit/4,
     )
     batch.setColor(Color.WHITE)
-    batch.draw(Trog.UIXPBarFrame, -Trog.translationX * screenUnit + screenUnit, -Trog.translationY*screenUnit, screenUnit/2, screenUnit * 4)
-    batch.draw(Trog.UIHealthBarFrame, -Trog.translationX * screenUnit, -Trog.translationY * screenUnit, screenUnit, screenUnit*4)
+    batch.draw(Trog.UIXPBarFrame, -Trog.translationX * screenUnit, -Trog.translationY*screenUnit + screenUnit/2, screenUnit*4, screenUnit/4)
+    batch.draw(Trog.UIHealthBarFrame, -Trog.translationX * screenUnit, -Trog.translationY * screenUnit, screenUnit*4, screenUnit/2)
     Text.tinyFont.draw(
       batch,
       s"${player.stats.health}/${player.stats.maxHealth}",
