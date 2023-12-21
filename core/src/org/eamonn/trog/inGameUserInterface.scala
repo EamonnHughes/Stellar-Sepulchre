@@ -12,7 +12,7 @@ object inGameUserInterface {
   def renderUI(batch: PolygonSpriteBatch, game: Game): Unit = {
     val player = game.player
     val floor = game.floor
-
+    if (!inInventory && !inCharacterSheet && !game.player.exploring) drawCursorUI(batch, game)
     if (player.stats.health <= (player.stats.maxHealth * .3f)) {
       batch.setColor(1f, 0f, 0f, .2f)
       batch.draw(Trog.EffectSplash, -Trog.translationX * screenUnit, -Trog.translationY * screenUnit, Geometry.ScreenWidth, Geometry.ScreenHeight)
@@ -169,7 +169,6 @@ object inGameUserInterface {
       )
     }
 
-    if (!inInventory && !inCharacterSheet && !game.player.exploring) drawCursorUI(batch, game)
 
   }
 
