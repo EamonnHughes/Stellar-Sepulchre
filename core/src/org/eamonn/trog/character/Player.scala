@@ -69,7 +69,7 @@ case class Player() extends Actor {
       )
     }
     batch.setColor(Color.WHITE)
-    Animation.twoFrameAnimation(game, batch, playerIcon, location.x, location.y)
+    Animation.fourFrameAnimation(game, batch, playerIcon, location.x, location.y)
   }
 
   def playerIcon: String = s"Player${archetype.metaArchName}"
