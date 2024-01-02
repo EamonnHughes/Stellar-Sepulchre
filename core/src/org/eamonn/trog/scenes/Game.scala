@@ -8,7 +8,7 @@ import org.eamonn.trog.SaveLoad.{loadState, saveState}
 import org.eamonn.trog.Scene
 import org.eamonn.trog.character.Player
 import org.eamonn.trog.items.Item
-import org.eamonn.trog.procgen.{Level, World}
+import org.eamonn.trog.procgen.{Emptiness, Level, World}
 
 import scala.util.Random
 
@@ -113,13 +113,11 @@ class Game(lvl: Level, plr: Player, wld: World)
     if (!allSpawned) {
       for (i <- 0 until (floor * 10).toInt) {
         var loc = level.terrains.zipWithIndex.filterNot({ case (w, i) =>
-          player.location == getVec2fromI(i, level) || enemies.exists(e => e.location == getVec2fromI(i, level))
+          player.location == getVec2fromI(i, level) || enemies.exists(e => e.location == getVec2fromI(i, level)) || !(w.walkable && !w.isInstanceOf[Emptiness])
         })(
           Random.nextInt(
-            level.terrains.zipWithIndex
-              .filterNot({
-                case (w, i) =>
-                player.location == getVec2fromI(i, level) || enemies.exists(e => e.location == getVec2fromI(i, level))
+            level.terrains.zipWithIndex.filterNot({ case (w, i) =>
+                player.location == getVec2fromI(i, level) || enemies.exists(e => e.location == getVec2fromI(i, level)) || !(w.walkable && !w.isInstanceOf[Emptiness])
               })
               .length
           )

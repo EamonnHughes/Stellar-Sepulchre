@@ -163,7 +163,7 @@ case class Player() extends Actor {
         if (
           exploring && destination == location) {
           if (game.level.terrains.zipWithIndex.exists({
-            case (w, i) => game.explored.contains(getVec2fromI(i, game.level)) && w.isInstanceOf[Floor]
+            case (w, i) => !game.explored.contains(getVec2fromI(i, game.level)) && w.isInstanceOf[Floor]
           })) {
             var dest =
               game.level.terrains.zipWithIndex
@@ -249,7 +249,7 @@ case class Player() extends Actor {
             .filter({ case (w, i) =>
               Pathfinding
                 .findPath(location, getVec2fromI(i, game.level), game.level)
-                .forall(p => p.list.length < stats.sightRad)
+                .forall(p => p.list.length < stats.sightRad) && w.walkable
             }).map(t => getVec2fromI(t._2, game.level)).toList
         }
 

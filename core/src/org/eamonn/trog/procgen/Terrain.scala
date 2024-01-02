@@ -49,5 +49,5 @@ case class Emptiness() extends Terrain {
     batch.setColor(Color.BLACK)
     batch.draw(Trog.Square, location.x * screenUnit, location.y * screenUnit, screenUnit, screenUnit)
   }
-  val walkable = true
+  val walkable = false
 }

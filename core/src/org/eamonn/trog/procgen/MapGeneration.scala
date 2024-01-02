@@ -170,7 +170,7 @@ case class GeneratedMap(
     })
     level.terrains.zipWithIndex.collect({
       case (nothing: Emptiness, i: Int) => {
-        if(level.adjs(i).exists(level.terrains(_).isInstanceOf[Floor])) level.terrains(i) = Wall()
+        if(level.adjs(i).exists(l => level.terrains(l).walkable && !level.terrains(l).isInstanceOf[Emptiness])) level.terrains(i) = Wall()
       }
     })
     val floorIndices = level.terrains.zipWithIndex.collect({
