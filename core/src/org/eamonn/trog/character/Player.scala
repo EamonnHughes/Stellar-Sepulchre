@@ -6,9 +6,10 @@ import com.badlogic.gdx.graphics.g2d.PolygonSpriteBatch
 import org.eamonn.trog.Trog.Square
 import org.eamonn.trog.inGameUserInterface.{inCharacterSheet, inInventory}
 import org.eamonn.trog.items.MedKit
+import org.eamonn.trog.procgen.Floor
 import org.eamonn.trog.scenes.Game
 import org.eamonn.trog.util.Animation
-import org.eamonn.trog.{Actor, Pathfinding, Trog, Vec2, d, screenUnit}
+import org.eamonn.trog.{Actor, Pathfinding, Trog, Vec2, d, getVec2fromI, screenUnit}
 
 case class Player() extends Actor {
   var inventoryItemSelected: Int = 0
@@ -75,7 +76,9 @@ case class Player() extends Actor {
   def playerIcon: String = s"Player${archetype.metaArchName}"
 
   def update(delta: Float) = {
-    if (destination == game.level.downLadder && game.level.walkables.forall(w => game.explored.contains(w))) exploring = true
+    if (destination == game.level.downLadder && game.level.terrains.zipWithIndex.forall({
+      case(w, i) =>  !w.isInstanceOf[Floor] || game.explored.contains(getVec2fromI(i, game.level))
+    })) exploring = true
     if (!yourTurn) {
       tick += delta
       if (tick >= speed || resting || exploring) {
@@ -159,21 +162,21 @@ case class Player() extends Actor {
         }
         if (
           exploring && destination == location) {
-          if (!game.level.walkables.forall(
-            w => game.explored.contains(w)
-          )) {
+          if (game.level.terrains.zipWithIndex.exists({
+            case (w, i) => game.explored.contains(getVec2fromI(i, game.level)) && w.isInstanceOf[Floor]
+          })) {
             var dest =
-              game.level.walkables
-                .filter(w => !game.explored.contains(w))
-                .minBy(w =>
-                  Pathfinding.findPath(location, w, game.level).head.list.length
-                )
-            destination = dest.copy()
+              game.level.terrains.zipWithIndex
+                .filter({case (w, i) => !game.explored.contains(getVec2fromI(i, game.level)) && w.isInstanceOf[Floor]})
+                .minBy({ case (w, i) =>
+                  Pathfinding.findPath(location, getVec2fromI(i, game.level), game.level).head.list.length
+                })
+            destination = getVec2fromI(dest._2, game.level)
           } else if (location != game.level.downLadder) {
             destination = game.level.downLadder.copy()
           }
         }
-        if (game.level.walkables.forall(w => game.explored.contains(w)))
+        if (game.level.terrains.zipWithIndex.forall({case(w, i) => !w.isInstanceOf[Floor] || game.explored.contains(getVec2fromI(i, game.level))}))
           exploring = false
         if (
           game.keysDown.contains(Keys.S) || game.keysDown.contains(Keys.DOWN)
@@ -242,12 +245,12 @@ case class Player() extends Actor {
         if (stats.health < stats.maxHealth) healing += healingFactor
         yourTurn = false
         if (initLoc != location) {
-          getVisible = game.level.walkables
-            .filter(w =>
+          getVisible = game.level.terrains.zipWithIndex
+            .filter({ case (w, i) =>
               Pathfinding
-                .findPath(location, w, game.level)
+                .findPath(location, getVec2fromI(i, game.level), game.level)
                 .forall(p => p.list.length < stats.sightRad)
-            )
+            }).map(t => getVec2fromI(t._2, game.level)).toList
         }
 
         getVisible

@@ -3,6 +3,7 @@ package org.eamonn
 import com.badlogic.gdx.Gdx.input
 import com.badlogic.gdx.Input.Peripheral
 import com.badlogic.gdx.graphics.Color
+import org.eamonn.trog.procgen.Level
 
 import java.util.concurrent.TimeUnit
 import scala.concurrent.duration.FiniteDuration
@@ -14,6 +15,8 @@ package object trog {
   val CenterAlign = 1
 
   def d(die: Int): Int = Random.nextInt(die) + 1
+
+  def getVec2fromI(i: Int, level: Level): Vec2 = Vec2(i % level.dimensions, (i - (i % level.dimensions)) / level.dimensions)
 
   def d(nOd: Int, die: Int): Int = {
     var amt = 0

@@ -3,7 +3,7 @@ package org.eamonn.trog.procgen
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.g2d.PolygonSpriteBatch
 import org.eamonn.trog.util.TextureWrapper
-import org.eamonn.trog.{Pathfinding, Trog, Vec2, screenUnit}
+import org.eamonn.trog.{Pathfinding, Trog, Vec2, getVec2fromI, screenUnit}
 
 import scala.util.Random
 
@@ -11,11 +11,7 @@ object MapGeneration {
   def fullyWalkableLevel(dim: Int): Level = {
     var l = new Level
     l.dimensions = dim
-    for (x <- 0 until dim) {
-      for (y <- 0 until dim) {
-        l.walkables = Vec2(x, y) :: l.walkables
-      }
-    }
+    l.terrains = Array.fill(dim*dim)(Floor())
     l
   }
 }
@@ -167,20 +163,30 @@ case class GeneratedMap(
 
   def doExport(): Level = {
     var level = new Level
-    rooms.foreach(r => {
-      r.getAllTiles.foreach(t => level.walkables = t :: level.walkables)
-    })
-    level.upLadder =
-      level.walkables(Random.nextInt(level.walkables.length)).copy()
-    level.downLadder = level.walkables
-      .filterNot(w => w == level.upLadder)(
-        Random.nextInt(
-          level.walkables.filterNot(w => w == level.upLadder).length
-        )
-      )
-      .copy()
-
     level.dimensions = dimensions
+    level.terrains = Array.fill(dimensions*dimensions)(Emptiness())
+    rooms.foreach(r => {
+      r.getAllTiles.foreach(t => level.terrains((t.y*dimensions)+t.x) = Floor())
+    })
+    level.terrains.zipWithIndex.collect({
+      case (nothing: Emptiness, i: Int) => {
+        if(level.adjs(i).exists(level.terrains(_).isInstanceOf[Floor])) level.terrains(i) = Wall()
+      }
+    })
+    val floorIndices = level.terrains.zipWithIndex.collect({
+      case (floor: Floor, index) => index
+    })
+    val randomFloors = Random.shuffle(floorIndices)
+    level.terrains(randomFloors(0)) = LadderDown()
+    level.terrains(randomFloors(1)) = LadderUp()
+
+
+    level.upLadder = level.terrains.zipWithIndex.collect({
+      case(t: LadderUp, i) => getVec2fromI(i, level)
+    }).head
+    level.downLadder = level.terrains.zipWithIndex.collect({
+      case(t: LadderDown, i) => getVec2fromI(i, level)
+    }).head
     level
   }
 
@@ -242,59 +248,17 @@ class Level extends Serializable {
   var downLadder: Vec2 = _
   var upLadder: Vec2 = _
   var dimensions = 0
-  var walkables: List[Vec2] = List.empty
-
+  var terrains: Array[Terrain] = Array.empty
+  def adjs(i: Int): List[Int] = List[Int](
+    (i-dimensions-1), (i-dimensions), (i-dimensions+1), (i-1), (i+1),
+    (i+dimensions-1), (i+dimensions), (i+dimensions+1)).filter(i => i > 0 && i < dimensions*dimensions)
   def draw(batch: PolygonSpriteBatch): Unit = {
-    var wallLocs: List[Vec2] = List.empty
-    walkables.foreach(w => {
+    terrains.zipWithIndex.foreach({case (t, i) => {
       batch.setColor(Color.WHITE)
-      w.getAdjacents.foreach(a => {
-        if (!walkables.contains(a)) {
-          wallLocs = a :: wallLocs
-        }
-      })
-      batch.draw(
-        floorTile,
-        w.x * screenUnit,
-        w.y * screenUnit,
-        screenUnit,
-        screenUnit
-      )
-    })
-    wallLocs
-      .sortBy(w => -w.y)
-      .foreach(a => {
-        batch.setColor(1, 1, 1, 1)
-        batch.draw(
-          wall,
-          a.x * screenUnit,
-          a.y * screenUnit,
-          screenUnit,
-          screenUnit
-        )
-      })
-    batch.draw(
-      ladderUpTile,
-      upLadder.x * screenUnit,
-      upLadder.y * screenUnit,
-      screenUnit,
-      screenUnit
-    )
-    batch.draw(
-      ladderDownTile,
-      downLadder.x * screenUnit,
-      downLadder.y * screenUnit,
-      screenUnit,
-      screenUnit
-    )
-
+      t.draw(batch, getVec2fromI(i, this))
+    }})
   }
-
-  def floorTile: TextureWrapper = Trog.floorTile
-
   def ladderUpTile: TextureWrapper = Trog.ladderUpTile
 
   def ladderDownTile: TextureWrapper = Trog.ladderDownTile
-
-  def wall: TextureWrapper = Trog.Wall
 }

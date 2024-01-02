@@ -112,19 +112,20 @@ class Game(lvl: Level, plr: Player, wld: World)
     }
     if (!allSpawned) {
       for (i <- 0 until (floor * 10).toInt) {
-        var loc = level.walkables.filterNot(w =>
-          player.location == w || enemies.exists(e => e.location == w)
-        )(
+        var loc = level.terrains.zipWithIndex.filterNot({ case (w, i) =>
+          player.location == getVec2fromI(i, level) || enemies.exists(e => e.location == getVec2fromI(i, level))
+        })(
           Random.nextInt(
-            level.walkables
-              .filterNot(w =>
-                player.location == w || enemies.exists(e => e.location == w)
-              )
+            level.terrains.zipWithIndex
+              .filterNot({
+                case (w, i) =>
+                player.location == getVec2fromI(i, level) || enemies.exists(e => e.location == getVec2fromI(i, level))
+              })
               .length
           )
         )
         var enemy = Servitor()
-        enemy.initialize(this, loc)
+        enemy.initialize(this, getVec2fromI(loc._2, level))
       }
       allSpawned = true
     }

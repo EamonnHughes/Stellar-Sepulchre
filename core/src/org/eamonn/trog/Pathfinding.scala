@@ -50,7 +50,8 @@ case class Path(list: List[Vec2]) {
     for {
       loc <- list.head.getHalfAdjacents
       if (visCells.add(loc))
-      if (level.walkables.exists(l => l.x == loc.x && l.y == loc.y))
+      if (loc.x >= 0 && loc.y >= 0 && loc.x < level.dimensions && loc.y < level.dimensions)
+      if (level.terrains(loc.x + (loc.y*level.dimensions)).walkable)
     } yield add(loc)
 
   }
@@ -61,7 +62,8 @@ case class Path(list: List[Vec2]) {
     for {
       loc <- list.head.getAdjacents
       if (visCells.add(loc))
-      if (level.walkables.exists(l => l.x == loc.x && l.y == loc.y))
+      if (loc.x >= 0 && loc.y >= 0 && loc.x < level.dimensions && loc.y < level.dimensions)
+      if (level.terrains(loc.x + (loc.y*level.dimensions)).walkable)
     } yield add(loc)
 
   }

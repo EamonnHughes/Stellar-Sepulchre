@@ -8,7 +8,7 @@ import org.eamonn.trog.Scene
 import org.eamonn.trog.Trog.loadBG
 import org.eamonn.trog.character.Player
 import org.eamonn.trog.inGameUserInterface.inCharacterSheet
-import org.eamonn.trog.procgen.{GeneratedMap, Level, World}
+import org.eamonn.trog.procgen.{Emptiness, GeneratedMap, Level, World}
 
 class LevelGen(
                 player: Player,
@@ -27,7 +27,7 @@ class LevelGen(
   override def update(delta: Float): Option[Scene] = {
     while (!doneGenerating) doneGenerating = genMap.generate()
 
-    if (level.walkables.isEmpty) {
+    if (level.terrains.forall(_.isInstanceOf[Emptiness])) {
       level = genMap.doExport()
       player.location = level.upLadder.copy()
       player.destination = level.upLadder.copy()
@@ -51,7 +51,7 @@ class LevelGen(
     gameNew.items = gameNew.items.filter(i => i.possessor.nonEmpty && i.possessor.head.isInstanceOf[Player]
     )
 
-    if (doneGenerating && level.walkables.nonEmpty) {
+    if (doneGenerating && level.terrains.exists(!_.isInstanceOf[Emptiness])) {
       Some(gameNew)
     } else None
   }
