@@ -8,7 +8,7 @@ import com.badlogic.gdx.math.Matrix4
 import com.badlogic.gdx.utils.ScreenUtils
 import com.badlogic.gdx.{ApplicationAdapter, Gdx, Input}
 import org.eamonn.trog.character.Player
-import org.eamonn.trog.procgen.{Level, World}
+import org.eamonn.trog.procgen.{Level, Theme, World}
 import org.eamonn.trog.scenes.{Game, Home}
 import org.eamonn.trog.util.{GarbageCan, TextureWrapper}
 
@@ -75,7 +75,6 @@ object Trog {
   lazy val Square: TextureWrapper = TextureWrapper.load("Square.png")
   lazy val homeBG: TextureWrapper = TextureWrapper.load("sepulctbg.png")
   lazy val loadBG: TextureWrapper = TextureWrapper.load("generate.png")
-  lazy val floorTile: TextureWrapper = TextureWrapper.load("floortile.png")
   lazy val ladderUpTile: TextureWrapper = TextureWrapper.load("ladderup.png")
   lazy val ladderDownTile: TextureWrapper = TextureWrapper.load("ladderdown.png")
   lazy val Wall: TextureWrapper = TextureWrapper.load("walltile.png")
@@ -86,7 +85,11 @@ object Trog {
   lazy val UIHealthBarFrame: TextureWrapper = TextureWrapper.load("UIHealthBarFrame.png")
   lazy val UIXPBarFrame: TextureWrapper = TextureWrapper.load("UIXPBarFrame.png")
   lazy val EffectSplash: TextureWrapper = TextureWrapper.load("EffectSplash.png")
-
+  def mkTileImage(kind: String, theme: Theme, number: Number) = TextureWrapper.load(kind+theme.stringName+number+".png")
+  def pickTileNum: Int = {
+    var n = Math.random()
+    if(n < .92) 1 else if (n < .94) 2 else if (n < .96) 3 else if (n < .98) 4 else 5
+  }
   var translationX = 0
   var translationY = 0
 

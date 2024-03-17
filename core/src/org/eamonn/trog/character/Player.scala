@@ -246,7 +246,7 @@ case class Player() extends Actor {
         yourTurn = false
         if (initLoc != location) {
           getVisible = game.level.terrains.zipWithIndex
-            .filter({ case (w, i) =>
+            .filter({ case ((w,n), i) =>
               Pathfinding
                 .findPath(location, getVec2fromI(i, game.level), game.level)
                 .forall(p => p.list.length < stats.sightRad) && w.walkable

@@ -11,7 +11,7 @@ object MapGeneration {
   def fullyWalkableLevel(dim: Int): Level = {
     var l = new Level
     l.dimensions = dim
-    l.terrains = Array.fill(dim*dim)(Floor())
+    l.terrains = Array.fill(dim*dim)(Floor(), 0)
     l
   }
 }
@@ -164,28 +164,28 @@ case class GeneratedMap(
   def doExport(): Level = {
     var level = new Level
     level.dimensions = dimensions
-    level.terrains = Array.fill(dimensions*dimensions)(Emptiness())
+    level.terrains = Array.fill(dimensions*dimensions)((Emptiness(), Trog.pickTileNum))
     rooms.foreach(r => {
-      r.getAllTiles.foreach(t => level.terrains((t.y*dimensions)+t.x) = Floor())
+      r.getAllTiles.foreach(t => level.terrains((t.y*dimensions)+t.x) = (Floor(), Trog.pickTileNum))
     })
     level.terrains.zipWithIndex.collect({
-      case (nothing: Emptiness, i: Int) => {
-        if(level.adjs(i).exists(l => level.terrains(l).walkable && !level.terrains(l).isInstanceOf[Emptiness])) level.terrains(i) = Wall()
+      case ((nothing: Emptiness, n: Int), i: Int) => {
+        if(level.adjs(i).exists(l => level.terrains(l)._1.walkable && !level.terrains(l)._1.isInstanceOf[Emptiness])) level.terrains(i) = (Wall(), Trog.pickTileNum)
       }
     })
     val floorIndices = level.terrains.zipWithIndex.collect({
-      case (floor: Floor, index) => index
+      case ((floor: Floor, n), index) => index
     })
     val randomFloors = Random.shuffle(floorIndices)
-    level.terrains(randomFloors(0)) = LadderDown()
-    level.terrains(randomFloors(1)) = LadderUp()
+    level.terrains.update(randomFloors(0), (LadderDown(), Trog.pickTileNum))
+    level.terrains.update(randomFloors(1), (LadderUp(), Trog.pickTileNum))
 
 
     level.upLadder = level.terrains.zipWithIndex.collect({
-      case(t: LadderUp, i) => getVec2fromI(i, level)
+      case((t: LadderUp, n: Int), i) => getVec2fromI(i, level)
     }).head
     level.downLadder = level.terrains.zipWithIndex.collect({
-      case(t: LadderDown, i) => getVec2fromI(i, level)
+      case((t: LadderDown, n: Int), i) => getVec2fromI(i, level)
     }).head
     level
   }
@@ -245,17 +245,18 @@ case class Connection(rooms: (Room, Room)) {
 }
 
 class Level extends Serializable {
+  var theme = Lab()
   var downLadder: Vec2 = _
   var upLadder: Vec2 = _
   var dimensions = 0
-  var terrains: Array[Terrain] = Array.empty
+  var terrains: Array[(Terrain, Int)] = Array.empty
   def adjs(i: Int): List[Int] = List[Int](
     (i-dimensions-1), (i-dimensions), (i-dimensions+1), (i-1), (i+1),
     (i+dimensions-1), (i+dimensions), (i+dimensions+1)).filter(i => i > 0 && i < dimensions*dimensions)
   def draw(batch: PolygonSpriteBatch): Unit = {
     terrains.zipWithIndex.foreach({case (t, i) => {
       batch.setColor(Color.WHITE)
-      t.draw(batch, getVec2fromI(i, this))
+      t._1.draw(batch, getVec2fromI(i, this), theme, t._2)
     }})
   }
   def ladderUpTile: TextureWrapper = Trog.ladderUpTile
