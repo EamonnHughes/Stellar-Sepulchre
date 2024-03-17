@@ -75,9 +75,6 @@ object Trog {
   lazy val Square: TextureWrapper = TextureWrapper.load("Square.png")
   lazy val homeBG: TextureWrapper = TextureWrapper.load("sepulctbg.png")
   lazy val loadBG: TextureWrapper = TextureWrapper.load("generate.png")
-  lazy val ladderUpTile: TextureWrapper = TextureWrapper.load("ladderup.png")
-  lazy val ladderDownTile: TextureWrapper = TextureWrapper.load("ladderdown.png")
-  lazy val Wall: TextureWrapper = TextureWrapper.load("walltile.png")
   lazy val asleep: TextureWrapper = TextureWrapper.load("asleep.png")
   lazy val UICornerLeft: TextureWrapper = TextureWrapper.load("UICornerLeft.png")
   lazy val UICornerRight: TextureWrapper = TextureWrapper.load("UICornerRight.png")
@@ -85,10 +82,9 @@ object Trog {
   lazy val UIHealthBarFrame: TextureWrapper = TextureWrapper.load("UIHealthBarFrame.png")
   lazy val UIXPBarFrame: TextureWrapper = TextureWrapper.load("UIXPBarFrame.png")
   lazy val EffectSplash: TextureWrapper = TextureWrapper.load("EffectSplash.png")
-  def mkTileImage(kind: String, theme: Theme, number: Number) = TextureWrapper.load(kind+theme.stringName+number+".png")
+  def mkTileImage(kind: String, theme: Theme, number: Number): TextureWrapper = TextureWrapper.load(kind+theme.stringName+number+".png")
   def pickTileNum: Int = {
-    var n = Math.random()
-    if(n < .92) 1 else if (n < .94) 2 else if (n < .96) 3 else if (n < .98) 4 else 5
+    if(Math.random() < .8) 1 else if (Math.random() < .5) 2 else if (Math.random() < .75) 3 else if (Math.random() < .5) 4 else 5
   }
   var translationX = 0
   var translationY = 0

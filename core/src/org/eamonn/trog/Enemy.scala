@@ -44,7 +44,7 @@ trait Enemy extends Actor {
       )
     }
     batch.setColor(Color.WHITE)
-    Animation.twoFrameAnimation(game, batch, texture, location.x, location.y)
+    Animation.twoFrameAnimation(game, batch, texture, location.x.toFloat, location.y.toFloat)
 
     Text.smallFont.setColor(Color.WHITE)
     Text.smallFont.draw(
@@ -56,7 +56,7 @@ trait Enemy extends Actor {
 
     if (selected) {
       batch.setColor(1f, 1f, 0, .75f)
-      Animation.twoFrameAnimation(game, batch, "targetReticle", location.x, location.y)
+      Animation.twoFrameAnimation(game, batch, "targetReticle", location.x.toFloat, location.y.toFloat)
     }
   }
 }

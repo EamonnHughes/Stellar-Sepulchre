@@ -32,7 +32,7 @@ object SaveLoad {
       game = ois.readObject().asInstanceOf[Game]
       ois.close()
     } catch {
-      case _ => {
+      case _: Throwable => {
         saveFile.delete()
         SaveLoad.saveState(game, slot)
       }

@@ -22,7 +22,7 @@ trait Weapon extends Gear {
     }
   }
 
-  def onAttack(attacker: Actor, target: Actor)
+  def onAttack(attacker: Actor, target: Actor): Unit
 }
 
 case class makeCommonWeapon(var mod: Int, var game: Game, nODie: Int, die: Int, field: String)
@@ -38,7 +38,7 @@ case class makeCommonWeapon(var mod: Int, var game: Game, nODie: Int, die: Int, 
     if (d(10) + attacker.stats.attackMod + mod > target.stats.ac) {
       var damage = (d(nODie, die) + attacker.stats.damageMod + mod)
       if (Random.nextInt(100) <= attacker.stats.critChance)
-        damage = (attacker.stats.critMod * damage).toInt
+        damage = (attacker.stats.critMod * damage).toInt.toFloat
       target.stats.health -= damage.toInt
       if (target == game.player) game.player.lastStrike = s"a ${attacker.name}"
     }

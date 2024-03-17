@@ -46,8 +46,8 @@ case class GeneratedMap(
             scale + Random.nextInt((roomMax - roomMin) / 2)
           )
           location = Vec2(
-            Random.nextInt(dimensions - size.x),
-            Random.nextInt(dimensions - size.y)
+            Random.nextInt(dimensions - size.x)+1,
+            Random.nextInt(dimensions - size.y)+1
           )
           tick += 1
         }
@@ -259,7 +259,4 @@ class Level extends Serializable {
       t._1.draw(batch, getVec2fromI(i, this), theme, t._2)
     }})
   }
-  def ladderUpTile: TextureWrapper = Trog.ladderUpTile
-
-  def ladderDownTile: TextureWrapper = Trog.ladderDownTile
 }

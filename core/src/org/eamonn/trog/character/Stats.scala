@@ -52,7 +52,7 @@ case class makeStats(
   var health: Int = mHeal
   var sightRad: Int = mSrad
   var level: Int = mLev
-  var damageMod: Float = mDmg
+  var damageMod: Float = mDmg.toFloat
   var attackMod: Float = mAtk
   var critChance: Int = mCrc
   var critMod: Float = mCrm

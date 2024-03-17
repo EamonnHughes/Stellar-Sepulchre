@@ -70,14 +70,14 @@ case class Player() extends Actor {
       )
     }
     batch.setColor(Color.WHITE)
-    Animation.fourFrameAnimation(game, batch, playerIcon, location.x, location.y)
+    Animation.fourFrameAnimation(game, batch, playerIcon, location.x.toFloat, location.y.toFloat)
   }
 
   def playerIcon: String = s"Player${archetype.metaArchName}"
 
-  def update(delta: Float) = {
+  def update(delta: Float): Unit = {
     if (destination == game.level.downLadder && game.level.terrains.zipWithIndex.forall({
-      case(w, i) =>  !w.isInstanceOf[Floor] || game.explored.contains(getVec2fromI(i, game.level))
+      case(w, i) =>  !w._1.isInstanceOf[Floor] || game.explored.contains(getVec2fromI(i, game.level))
     })) exploring = true
     if (!yourTurn) {
       tick += delta
@@ -163,11 +163,11 @@ case class Player() extends Actor {
         if (
           exploring && destination == location) {
           if (game.level.terrains.zipWithIndex.exists({
-            case (w, i) => !game.explored.contains(getVec2fromI(i, game.level)) && w.isInstanceOf[Floor]
+            case (w, i) => !game.explored.contains(getVec2fromI(i, game.level)) && w._1.isInstanceOf[Floor]
           })) {
             var dest =
               game.level.terrains.zipWithIndex
-                .filter({case (w, i) => !game.explored.contains(getVec2fromI(i, game.level)) && w.isInstanceOf[Floor]})
+                .filter({case (w, i) => !game.explored.contains(getVec2fromI(i, game.level)) && w._1.isInstanceOf[Floor]})
                 .minBy({ case (w, i) =>
                   Pathfinding.findPath(location, getVec2fromI(i, game.level), game.level).head.list.length
                 })
@@ -176,7 +176,7 @@ case class Player() extends Actor {
             destination = game.level.downLadder.copy()
           }
         }
-        if (game.level.terrains.zipWithIndex.forall({case(w, i) => !w.isInstanceOf[Floor] || game.explored.contains(getVec2fromI(i, game.level))}))
+        if (game.level.terrains.zipWithIndex.forall({case(w, i) => !w._1.isInstanceOf[Floor] || game.explored.contains(getVec2fromI(i, game.level))}))
           exploring = false
         if (
           game.keysDown.contains(Keys.S) || game.keysDown.contains(Keys.DOWN)

@@ -56,9 +56,9 @@ trait Usable extends Item {
 }
 
 trait Gear extends Item {
-  def onEquip(equipper: Actor)
+  def onEquip(equipper: Actor): Unit
 
-  def onUnequip(equipper: Actor)
+  def onUnequip(equipper: Actor): Unit
 
   override def tNum: Int = {
     var n = number

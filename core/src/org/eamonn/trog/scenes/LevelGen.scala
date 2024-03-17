@@ -27,7 +27,7 @@ class LevelGen(
   override def update(delta: Float): Option[Scene] = {
     while (!doneGenerating) doneGenerating = genMap.generate()
 
-    if (level.terrains.forall(_.isInstanceOf[Emptiness])) {
+    if (level.terrains.forall(_._1.isInstanceOf[Emptiness])) {
       level = genMap.doExport()
       player.location = level.upLadder.copy()
       player.destination = level.upLadder.copy()
@@ -51,7 +51,7 @@ class LevelGen(
     gameNew.items = gameNew.items.filter(i => i.possessor.nonEmpty && i.possessor.head.isInstanceOf[Player]
     )
 
-    if (doneGenerating && level.terrains.exists(!_.isInstanceOf[Emptiness])) {
+    if (doneGenerating && level.terrains.exists(!_._1.isInstanceOf[Emptiness])) {
       Some(gameNew)
     } else None
   }
