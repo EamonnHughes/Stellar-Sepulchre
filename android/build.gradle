@@ -5,6 +5,7 @@ if (keystorePropertiesFile.exists()) {
 }
 
 android {
+    namespace "org.emaonn.trog"
     signingConfigs {
         release {
             keyAlias keystoreProperties['keyAlias']
@@ -47,6 +48,10 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
             // signingConfig signingConfigs.release
         }
+    }
+    buildFeatures {
+        renderScript true
+        aidl true
     }
 }
 
