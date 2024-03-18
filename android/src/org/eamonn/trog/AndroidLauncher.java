@@ -1,4 +1,4 @@
-package org.eamonn.trog;
+package org.eamonnh.trog;
 
 import android.content.Context;
 import android.os.Bundle;
