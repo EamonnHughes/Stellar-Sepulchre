@@ -11,4 +11,8 @@ A traditional-roguelike written in [libgdx](https://libgdx.com/) using the Scala
   java -jar ./desktop/builds/libs/desktop-x.y.jar
   # macOS
   java -XstartOnFirstThread -jar ./desktop/build/libs/desktop-x.y.jar
+  
+  to use jpackage: 
+  jpackage -i ./desktop/build/libs -n "Stellar Sepulchre" --main-class org.eamonnh.trog.DesktopLauncher --main-jar desktop-x.y.jar
+
 ```
