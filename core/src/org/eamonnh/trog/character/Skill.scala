@@ -3,7 +3,7 @@ package org.eamonnh.trog.character
 import org.eamonnh.trog.Trog.garbage
 import org.eamonnh.trog.scenes.Game
 import org.eamonnh.trog.util.TextureWrapper
-import org.eamonnh.trog.{Actor, Pathfinding, d}
+import org.eamonnh.trog.{Actor, Pathfinding, Trog, d}
 
 trait Skill {
   val coolDown: Int
@@ -55,6 +55,7 @@ case class MicroMissile() extends rangedSkill {
       .findPath(user.location, target.location, game.level)
       .filter(p => p.list.length <= range)
       .foreach(p => {
+        Trog.Crunch.play(.5f, 1 + ((Math.random()/4)-.125).toFloat, 0)
         game.enemies.foreach(e => {
           if (p.list.contains(e.location) && !ended) {
             e.stats.health -= d(3)
@@ -85,6 +86,7 @@ case class Charge() extends rangedSkill {
       .filter(p => p.list.length <= range)
       .foreach(p => {
         if (!game.enemies.exists(e => e.location == p.list(1))) {
+          Trog.Crunch.play(.5f, 1 + ((Math.random()/4)-.125).toFloat, 0)
           user.location = p.list(1).copy()
           user.destination = p.list(1).copy()
           user.attack(target)
@@ -109,6 +111,6 @@ case class Bash() extends meleeSkill {
                     ): Unit = {
     user.attack(target)
     target.statuses.stunned = 2
-
+    Trog.Crunch.play(.5f, 1 + ((Math.random()/4)-.125).toFloat, 0)
   }
 }

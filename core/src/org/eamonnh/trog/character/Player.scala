@@ -236,7 +236,7 @@ case class Player() extends Actor {
               attack(enemy.head)
               destination = location.copy()
             }
-            if (!exploring) Trog.Crunch.play(1)
+            if (!exploring && destination != game.level.downLadder) Trog.Crunch.play(.5f, 1 + ((Math.random()/4)-.125).toFloat, 0)
           })
         } else {
           destination = location.copy()
@@ -276,7 +276,7 @@ case class Player() extends Actor {
     archetype.onLevelUp(game)
     stats.health = stats.maxHealth
     stats.level += 1
-    Trog.Jingle.play(4)
+    Trog.Jingle.play(.4f)
     if (stats.level > 1) {
       game.lvlUping = true
     }
