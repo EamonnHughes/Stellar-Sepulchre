@@ -236,6 +236,7 @@ case class Player() extends Actor {
               attack(enemy.head)
               destination = location.copy()
             }
+            if (!exploring) Trog.Crunch.play(1)
           })
         } else {
           destination = location.copy()

@@ -72,6 +72,7 @@ object Trog {
   lazy val inGameOST: Sound = Trog.loadSound("AmbienceDepths.mp3")
   lazy val Tolling: Sound = Trog.loadSound("Toll.mp3")
   lazy val Jingle: Sound = Trog.loadSound("jingle.mp3")
+  lazy val Crunch: Sound = Trog.loadSound("crunch.mp3")
   lazy val Square: TextureWrapper = TextureWrapper.load("Square.png")
   lazy val homeBG: TextureWrapper = TextureWrapper.load("sepulctbg.png")
   lazy val loadBG: TextureWrapper = TextureWrapper.load("generate.png")
