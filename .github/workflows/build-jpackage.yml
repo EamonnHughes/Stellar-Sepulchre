@@ -63,7 +63,7 @@ jobs:
         name: Build distribution
         run: |
           ./gradlew desktop:dist
-          zip ./desktop/build/libs/desktop-0.1.jar -d META-INF/SIGNINGC.SF
+          #zip ./desktop/build/libs/desktop-0.1.jar -d META-INF/SIGNINGC.SF
           jpackage --verbose "@jpackage.cfg" "@jpackage-windows.cfg"
 
       # SAVE INSTALLER
