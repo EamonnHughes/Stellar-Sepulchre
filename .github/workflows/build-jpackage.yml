@@ -71,7 +71,7 @@ jobs:
         name: Upload installer
         uses: actions/upload-artifact@v3
         with:
-          path: ./desktop/build/distributions/desktop-0.1.msi
+          path: ./desktop/build/distributions/StellarSepulchre-0.1.msi
           name: windows-installer
           retention-days: 1
 
