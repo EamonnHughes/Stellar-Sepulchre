@@ -51,3 +51,19 @@ case class Emptiness() extends Terrain {
   }
   val walkable = false
 }
+
+case class ClosedDoor() extends Terrain {
+  override def draw(batch: PolygonSpriteBatch, location: Vec2, theme: Theme, number: Number): Unit = {
+    batch.draw(mkTileImage("ft", theme, number), location.x * screenUnit, location.y * screenUnit, screenUnit, screenUnit)
+    batch.draw(mkTileImage("dc", theme, number), location.x * screenUnit, location.y * screenUnit, screenUnit, screenUnit)
+  }
+  val walkable = false
+}
+
+case class OpenDoor() extends Terrain {
+  override def draw(batch: PolygonSpriteBatch, location: Vec2, theme: Theme, number: Number): Unit = {
+    batch.draw(mkTileImage("ft", theme, number), location.x * screenUnit, location.y * screenUnit, screenUnit, screenUnit)
+    batch.draw(mkTileImage("do", theme, number), location.x * screenUnit, location.y * screenUnit, screenUnit, screenUnit)
+  }
+  val walkable = true
+}

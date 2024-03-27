@@ -5,6 +5,7 @@ import com.badlogic.gdx.graphics.g2d.PolygonSpriteBatch
 import org.eamonnh.trog.util.TextureWrapper
 import org.eamonnh.trog.{Pathfinding, Trog, Vec2, getVec2fromI, screenUnit}
 
+import scala.collection.mutable
 import scala.util.Random
 
 object MapGeneration {
@@ -25,6 +26,7 @@ case class GeneratedMap(
 
   var rooms: List[Room] = List.empty
   var mainRooms: List[Room] = List.empty
+  var locPurpose: mutable.Map[Vec2, PlacePurpose] = mutable.Map.empty
 
   def generate(): Boolean = {
     var done = true
@@ -46,8 +48,8 @@ case class GeneratedMap(
             scale + Random.nextInt((roomMax - roomMin) / 2)
           )
           location = Vec2(
-            Random.nextInt(dimensions - size.x)+1,
-            Random.nextInt(dimensions - size.y)+1
+            Random.nextInt((dimensions-1) - size.x)+1,
+            Random.nextInt((dimensions-1) - size.y)+1
           )
           tick += 1
         }
@@ -89,7 +91,10 @@ case class GeneratedMap(
         MapGeneration.fullyWalkableLevel(dimensions)
       )
       p.foreach(l => {
+        locPurpose.addOne((l.list.findLast(locut => !rooms.exists(r => r.getAllTiles.contains(locut))).head, Transition()))
+        locPurpose.addOne((l.list.find(locut => !rooms.exists(r => r.getAllTiles.contains(locut))).head, Transition()))
         l.list.foreach(loc => rooms = Room(loc, Vec2(1, 1)) :: rooms)
+
       })
     }
     done
@@ -166,7 +171,13 @@ case class GeneratedMap(
     level.dimensions = dimensions
     level.terrains = Array.fill(dimensions*dimensions)((Emptiness(), Trog.pickTileNum))
     rooms.foreach(r => {
-      r.getAllTiles.foreach(t => level.terrains((t.y*dimensions)+t.x) = (Floor(), Trog.pickTileNum))
+      r.getAllTiles.foreach(t => {
+        if(locPurpose.contains(Vec2(t.x, t.y)) && locPurpose(Vec2(t.x, t.y)).isInstanceOf[Transition]){
+          if(Math.random() > .5f) {
+            level.terrains((t.y*dimensions)+t.x) = (OpenDoor(), Trog.pickTileNum)
+          } else level.terrains((t.y*dimensions)+t.x) = (Floor(), Trog.pickTileNum)
+        } else level.terrains((t.y*dimensions)+t.x) = (Floor(), Trog.pickTileNum)
+      })
     })
     level.terrains.zipWithIndex.collect({
       case ((nothing: Emptiness, n: Int), i: Int) => {
