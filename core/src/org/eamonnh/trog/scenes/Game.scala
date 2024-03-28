@@ -13,7 +13,7 @@ import org.eamonnh.trog.procgen.{Emptiness, Level, World}
 import scala.util.Random
 
 class Game(lvl: Level, plr: Player, wld: World)
-  extends Scene
+    extends Scene
     with Serializable {
   var clickedForTargeting = false
   var fakeLoc = Vec2(0, 0)
@@ -40,7 +40,8 @@ class Game(lvl: Level, plr: Player, wld: World)
   var lvlupEffect = 0f
   var lvlUping = false
 
-  override def renderUI(batch: PolygonSpriteBatch): Unit = inGameUserInterface.renderUI(batch, this)
+  override def renderUI(batch: PolygonSpriteBatch): Unit =
+    inGameUserInterface.renderUI(batch, this)
 
   def addMessage(message: String): Unit = {
     messages = message :: messages
@@ -92,8 +93,7 @@ class Game(lvl: Level, plr: Player, wld: World)
       if (lvlupEffect > 0) lvlupEffect -= (delta / 4)
       if (lvlupEffect < 0) lvlupEffect = 0
     }
-    mouseLocOnGrid.x =
-      (fakeLoc.x / screenUnit).floor.toInt - Trog.translationX
+    mouseLocOnGrid.x = (fakeLoc.x / screenUnit).floor.toInt - Trog.translationX
     mouseLocOnGrid.y =
       ((Geometry.ScreenHeight - fakeLoc.y) / screenUnit).floor.toInt - Trog.translationY
     animateTime = animateTime + delta
@@ -113,11 +113,16 @@ class Game(lvl: Level, plr: Player, wld: World)
     if (!allSpawned) {
       for (i <- 0 until (floor * 10).toInt) {
         var loc = level.terrains.zipWithIndex.filterNot({ case ((w, n), i) =>
-          player.location == getVec2fromI(i, level) || enemies.exists(e => e.location == getVec2fromI(i, level)) || !(w.walkable && !w.isInstanceOf[Emptiness])
+          player.location == getVec2fromI(i, level) || enemies.exists(e =>
+            e.location == getVec2fromI(i, level)
+          ) || !(w.walkable && !w.isInstanceOf[Emptiness])
         })(
           Random.nextInt(
-            level.terrains.zipWithIndex.filterNot({ case ((w, n), i) =>
-                player.location == getVec2fromI(i, level) || enemies.exists(e => e.location == getVec2fromI(i, level)) || !(w.walkable && !w.isInstanceOf[Emptiness])
+            level.terrains.zipWithIndex
+              .filterNot({ case ((w, n), i) =>
+                player.location == getVec2fromI(i, level) || enemies.exists(e =>
+                  e.location == getVec2fromI(i, level)
+                ) || !(w.walkable && !w.isInstanceOf[Emptiness])
               })
               .length
           )
@@ -234,9 +239,16 @@ class Game(lvl: Level, plr: Player, wld: World)
           }
         }
         if (dist >= player.stats.sightRad) {
-          if (explored.contains(Vec2(x, y)) || Vec2(x, y).getAdjacents.exists(adj => explored.contains(adj))) batch.setColor(0, 0, 0, .825f) else batch.setColor(0, 0, 0, 1)
+          if (
+            explored.contains(Vec2(x, y)) || Vec2(x, y).getAdjacents.exists(
+              adj => explored.contains(adj)
+            )
+          ) batch.setColor(0, 0, 0, .825f)
+          else batch.setColor(0, 0, 0, 1)
         } else {
-          enemies.filter(e => e.location == Vec2(x, y)).foreach(e => e.draw(batch))
+          enemies
+            .filter(e => e.location == Vec2(x, y))
+            .foreach(e => e.draw(batch))
           var lightLevel: Float =
             ((((player.stats.sightRad - dist).toFloat / player.stats.sightRad) + .25f) min 1) max 0
           batch.setColor(

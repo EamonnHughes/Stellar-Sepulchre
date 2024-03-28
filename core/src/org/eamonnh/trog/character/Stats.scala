@@ -32,18 +32,18 @@ case class basePlayerStats() extends Stats {
 }
 
 case class makeStats(
-                      mAc: Int,
-                      mExp: Int,
-                      mNExp: Int,
-                      mMHeal: Int,
-                      mHeal: Int,
-                      mSrad: Int,
-                      mLev: Int,
-                      mDmg: Int,
-                      mAtk: Float,
-                      mCrc: Int,
-                      mCrm: Float
-                    ) extends Stats {
+    mAc: Int,
+    mExp: Int,
+    mNExp: Int,
+    mMHeal: Int,
+    mHeal: Int,
+    mSrad: Int,
+    mLev: Int,
+    mDmg: Int,
+    mAtk: Float,
+    mCrc: Int,
+    mCrm: Float
+) extends Stats {
   override var skills: List[Skill] = List.empty
   var ac: Int = mAc
   var exp: Int = mExp

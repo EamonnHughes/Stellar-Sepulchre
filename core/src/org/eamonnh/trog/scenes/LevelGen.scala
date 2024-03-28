@@ -11,10 +11,10 @@ import org.eamonnh.trog.inGameUserInterface.inCharacterSheet
 import org.eamonnh.trog.procgen.{Emptiness, GeneratedMap, Level, World}
 
 class LevelGen(
-                player: Player,
-                game: Option[Game],
-                world: World
-              ) extends Scene {
+    player: Player,
+    game: Option[Game],
+    world: World
+) extends Scene {
   var cameraLocation: Vec2 = Vec2(0, 0)
   var genMap = GeneratedMap(30, 4, 6, .2f)
   var doneGenerating = false
@@ -48,10 +48,13 @@ class LevelGen(
     gameNew.clicked = false
     inCharacterSheet = false
     gameNew.explored = List.empty
-    gameNew.items = gameNew.items.filter(i => i.possessor.nonEmpty && i.possessor.head.isInstanceOf[Player]
+    gameNew.items = gameNew.items.filter(i =>
+      i.possessor.nonEmpty && i.possessor.head.isInstanceOf[Player]
     )
 
-    if (doneGenerating && level.terrains.exists(!_._1.isInstanceOf[Emptiness])) {
+    if (
+      doneGenerating && level.terrains.exists(!_._1.isInstanceOf[Emptiness])
+    ) {
       Some(gameNew)
     } else None
   }

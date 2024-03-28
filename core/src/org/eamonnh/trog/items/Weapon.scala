@@ -7,7 +7,6 @@ import org.eamonnh.trog.{Actor, Vec2, d}
 
 import scala.util.Random
 
-
 trait Weapon extends Gear {
   var mod: Int
   var weaponType: String
@@ -25,8 +24,13 @@ trait Weapon extends Gear {
   def onAttack(attacker: Actor, target: Actor): Unit
 }
 
-case class makeCommonWeapon(var mod: Int, var game: Game, nODie: Int, die: Int, field: String)
-  extends Weapon {
+case class makeCommonWeapon(
+    var mod: Int,
+    var game: Game,
+    nODie: Int,
+    die: Int,
+    field: String
+) extends Weapon {
   override var location: Option[Vec2] = None
   var weaponType: String = gearNames
     .getCINofD(nODie, die, field)(
@@ -84,17 +88,23 @@ object gearNames {
   def getCINofD(nODie: Int, die: Int, field: String): List[String] = {
     if (field == "Drone") {
       droneItemNames.filter(CIN =>
-        CIN.charAt(0) == nODie.toString.charAt(0) && CIN.charAt(1) == die.toString
+        CIN.charAt(0) == nODie.toString.charAt(0) && CIN.charAt(
+          1
+        ) == die.toString
           .charAt(0)
       )
     } else if (field == "Player") {
       playerItemNames.filter(CIN =>
-        CIN.charAt(0) == nODie.toString.charAt(0) && CIN.charAt(1) == die.toString
+        CIN.charAt(0) == nODie.toString.charAt(0) && CIN.charAt(
+          1
+        ) == die.toString
           .charAt(0)
       )
     } else {
       commonItemNames.filter(CIN =>
-        CIN.charAt(0) == nODie.toString.charAt(0) && CIN.charAt(1) == die.toString
+        CIN.charAt(0) == nODie.toString.charAt(0) && CIN.charAt(
+          1
+        ) == die.toString
           .charAt(0)
       )
     }

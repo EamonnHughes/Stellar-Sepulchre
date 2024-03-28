@@ -34,23 +34,22 @@ class GameControl(game: Game) extends InputAdapter {
   }
 
   override def touchDown(
-                          screenX: Int,
-                          screenY: Int,
-                          pointer: Int,
-                          button: Int
-                        ): Boolean = {
+      screenX: Int,
+      screenY: Int,
+      pointer: Int,
+      button: Int
+  ): Boolean = {
     game.clicked = true
     true
   }
 
   override def touchUp(
-                        screenX: Int,
-                        screenY: Int,
-                        pointer: Int,
-                        button: Int
-                      ): Boolean = {
+      screenX: Int,
+      screenY: Int,
+      pointer: Int,
+      button: Int
+  ): Boolean = {
     game.clicked = false
     true
   }
 }
-

@@ -21,14 +21,20 @@ object Pathfinding {
   def findPathUpto(start: Vec2, end: Vec2, level: Level): Option[Path] = {
     val visitedCells = mutable.Set.empty[Vec2]
     var paths = List(Path(List(start)))
-    while (!paths.exists(lInt => lInt.list.head.getAdjacents.contains(end) || lInt.list.head == end) && paths.nonEmpty) {
+    while (
+      !paths.exists(lInt =>
+        lInt.list.head.getAdjacents.contains(end) || lInt.list.head == end
+      ) && paths.nonEmpty
+    ) {
       paths = for {
         path <- paths
         newPath <- path.extendHalfPath(visitedCells, level)
       } yield newPath
 
     }
-    paths.find(path => path.list.head == end || path.list.head.getAdjacents.contains(end))
+    paths.find(path =>
+      path.list.head == end || path.list.head.getAdjacents.contains(end)
+    )
   }
 
   def findPath(start: Vec2, end: Vec2, level: Level): Option[Path] = {
@@ -51,7 +57,7 @@ case class Path(list: List[Vec2]) {
       loc <- list.head.getHalfAdjacents
       if (visCells.add(loc))
       if (loc.x >= 0 && loc.y >= 0 && loc.x < level.dimensions && loc.y < level.dimensions)
-      if (level.terrains(loc.x + (loc.y*level.dimensions))._1.walkable)
+      if (level.terrains(loc.x + (loc.y * level.dimensions))._1.walkable)
     } yield add(loc)
 
   }
@@ -63,7 +69,7 @@ case class Path(list: List[Vec2]) {
       loc <- list.head.getAdjacents
       if (visCells.add(loc))
       if (loc.x >= 0 && loc.y >= 0 && loc.x < level.dimensions && loc.y < level.dimensions)
-      if (level.terrains(loc.x + (loc.y*level.dimensions))._1.walkable)
+      if (level.terrains(loc.x + (loc.y * level.dimensions))._1.walkable)
     } yield add(loc)
 
   }

@@ -43,8 +43,7 @@ case class CaedanautArchetype() extends Archetype {
   override def onSelect(game: Game): Unit = {
     game.player.stats.attackMod += 1
     game.player.stats.damageMod += 1
-    game.player.stats.skills =
-      Charge() :: Bash() :: game.player.stats.skills
+    game.player.stats.skills = Charge() :: Bash() :: game.player.stats.skills
     val weapon = makeCommonWeapon(0, game, 1, 6, "Player")
     weapon.possessor = Some(game.player)
     weapon.game = game

@@ -12,18 +12,49 @@ object inGameUserInterface {
   def renderUI(batch: PolygonSpriteBatch, game: Game): Unit = {
     val player = game.player
     val floor = game.floor
-    if (!inInventory && !inCharacterSheet && !game.player.exploring) drawCursorUI(batch, game)
+    if (!inInventory && !inCharacterSheet && !game.player.exploring)
+      drawCursorUI(batch, game)
     if (player.stats.health <= (player.stats.maxHealth * .3f)) {
       batch.setColor(1f, 0f, 0f, .2f)
-      batch.draw(Trog.EffectSplash, -Trog.translationX * screenUnit, -Trog.translationY * screenUnit, Geometry.ScreenWidth, Geometry.ScreenHeight)
+      batch.draw(
+        Trog.EffectSplash,
+        -Trog.translationX * screenUnit,
+        -Trog.translationY * screenUnit,
+        Geometry.ScreenWidth,
+        Geometry.ScreenHeight
+      )
     }
     batch.setColor(1f, .75f, 0f, game.lvlupEffect)
-    batch.draw(Trog.EffectSplash, -Trog.translationX * screenUnit, -Trog.translationY * screenUnit, Geometry.ScreenWidth, Geometry.ScreenHeight)
+    batch.draw(
+      Trog.EffectSplash,
+      -Trog.translationX * screenUnit,
+      -Trog.translationY * screenUnit,
+      Geometry.ScreenWidth,
+      Geometry.ScreenHeight
+    )
 
     batch.setColor(Color.WHITE)
-    batch.draw(Trog.UICornerLeft, -Trog.translationX * screenUnit, -Trog.translationY * screenUnit, screenUnit * 4, screenUnit * 4)
-    batch.draw(Trog.UICornerRight, -Trog.translationX * screenUnit + Geometry.ScreenWidth - (screenUnit * 4), -Trog.translationY * screenUnit, screenUnit * 4, screenUnit * 4)
-    batch.draw(Trog.UIHotbar, -Trog.translationX * screenUnit + 5 * screenUnit, -Trog.translationY * screenUnit, screenUnit * 10, screenUnit * 4)
+    batch.draw(
+      Trog.UICornerLeft,
+      -Trog.translationX * screenUnit,
+      -Trog.translationY * screenUnit,
+      screenUnit * 4,
+      screenUnit * 4
+    )
+    batch.draw(
+      Trog.UICornerRight,
+      -Trog.translationX * screenUnit + Geometry.ScreenWidth - (screenUnit * 4),
+      -Trog.translationY * screenUnit,
+      screenUnit * 4,
+      screenUnit * 4
+    )
+    batch.draw(
+      Trog.UIHotbar,
+      -Trog.translationX * screenUnit + 5 * screenUnit,
+      -Trog.translationY * screenUnit,
+      screenUnit * 10,
+      screenUnit * 4
+    )
     batch.setColor(Color.FIREBRICK)
     batch.draw(
       Trog.Square,
@@ -54,11 +85,23 @@ object inGameUserInterface {
       -Trog.translationX * screenUnit,
       -Trog.translationY * screenUnit + screenUnit / 2,
       screenUnit * 4 * player.stats.exp / player.stats.nextExp,
-      screenUnit / 4,
+      screenUnit / 4
     )
     batch.setColor(Color.WHITE)
-    batch.draw(Trog.UIXPBarFrame, -Trog.translationX * screenUnit, -Trog.translationY * screenUnit + screenUnit / 2, screenUnit * 4, screenUnit / 4)
-    batch.draw(Trog.UIHealthBarFrame, -Trog.translationX * screenUnit, -Trog.translationY * screenUnit, screenUnit * 4, screenUnit / 2)
+    batch.draw(
+      Trog.UIXPBarFrame,
+      -Trog.translationX * screenUnit,
+      -Trog.translationY * screenUnit + screenUnit / 2,
+      screenUnit * 4,
+      screenUnit / 4
+    )
+    batch.draw(
+      Trog.UIHealthBarFrame,
+      -Trog.translationX * screenUnit,
+      -Trog.translationY * screenUnit,
+      screenUnit * 4,
+      screenUnit / 2
+    )
     Text.tinyFont.draw(
       batch,
       s"${player.stats.health}/${player.stats.maxHealth}",
@@ -169,24 +212,40 @@ object inGameUserInterface {
       )
     }
 
-
   }
 
   def drawCursorUI(batch: PolygonSpriteBatch, game: Game): Unit = {
     var loc = game.mouseLocOnGrid
 
-
     var path = Pathfinding.findPath(game.player.location, loc, game.level)
     if (path.isEmpty || !game.explored.contains(loc)) {
       batch.setColor(1f, 0f, 0f, .75f)
-      Animation.twoFrameAnimation(game, batch, "mouseHover", loc.x.toFloat, loc.y.toFloat)
+      Animation.twoFrameAnimation(
+        game,
+        batch,
+        "mouseHover",
+        loc.x.toFloat,
+        loc.y.toFloat
+      )
     } else {
       path.foreach(p => {
         batch.setColor(1f, 1f, 1f, .75f)
-        Animation.twoFrameAnimation(game, batch, "mouseHover", loc.x.toFloat, loc.y.toFloat)
+        Animation.twoFrameAnimation(
+          game,
+          batch,
+          "mouseHover",
+          loc.x.toFloat,
+          loc.y.toFloat
+        )
         p.list.reverse.tail.foreach(l => {
           batch.setColor(1f, 1f, 1f, .75f)
-          Animation.twoFrameAnimation(game, batch, "pathTrail", l.x.toFloat, l.y.toFloat)
+          Animation.twoFrameAnimation(
+            game,
+            batch,
+            "pathTrail",
+            l.x.toFloat,
+            l.y.toFloat
+          )
         })
       })
     }

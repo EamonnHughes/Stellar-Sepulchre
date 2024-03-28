@@ -70,15 +70,25 @@ case class Player() extends Actor {
       )
     }
     batch.setColor(Color.WHITE)
-    Animation.fourFrameAnimation(game, batch, playerIcon, location.x.toFloat, location.y.toFloat)
+    Animation.fourFrameAnimation(
+      game,
+      batch,
+      playerIcon,
+      location.x.toFloat,
+      location.y.toFloat
+    )
   }
 
   def playerIcon: String = s"Player${archetype.metaArchName}"
 
   def update(delta: Float): Unit = {
-    if (destination == game.level.downLadder && game.level.terrains.zipWithIndex.forall({
-      case(w, i) =>  !w._1.isInstanceOf[Floor] || game.explored.contains(getVec2fromI(i, game.level))
-    })) exploring = true
+    if (
+      destination == game.level.downLadder && game.level.terrains.zipWithIndex
+        .forall({ case (w, i) =>
+          !w._1.isInstanceOf[Floor] || game.explored
+            .contains(getVec2fromI(i, game.level))
+        })
+    ) exploring = true
     if (!yourTurn) {
       tick += delta
       if (tick >= speed || resting || exploring) {
@@ -160,23 +170,37 @@ case class Player() extends Actor {
           exploring = !exploring
           if (!exploring) destination = location.copy()
         }
-        if (
-          exploring && destination == location) {
-          if (game.level.terrains.zipWithIndex.exists({
-            case (w, i) => !game.explored.contains(getVec2fromI(i, game.level)) && w._1.isInstanceOf[Floor]
-          })) {
+        if (exploring && destination == location) {
+          if (
+            game.level.terrains.zipWithIndex.exists({ case (w, i) =>
+              !game.explored.contains(getVec2fromI(i, game.level)) && w._1
+                .isInstanceOf[Floor]
+            })
+          ) {
             var dest =
               game.level.terrains.zipWithIndex
-                .filter({case (w, i) => !game.explored.contains(getVec2fromI(i, game.level)) && w._1.isInstanceOf[Floor]})
+                .filter({ case (w, i) =>
+                  !game.explored.contains(getVec2fromI(i, game.level)) && w._1
+                    .isInstanceOf[Floor]
+                })
                 .minBy({ case (w, i) =>
-                  Pathfinding.findPath(location, getVec2fromI(i, game.level), game.level).head.list.length
+                  Pathfinding
+                    .findPath(location, getVec2fromI(i, game.level), game.level)
+                    .head
+                    .list
+                    .length
                 })
             destination = getVec2fromI(dest._2, game.level)
           } else if (location != game.level.downLadder) {
             destination = game.level.downLadder.copy()
           }
         }
-        if (game.level.terrains.zipWithIndex.forall({case(w, i) => !w._1.isInstanceOf[Floor] || game.explored.contains(getVec2fromI(i, game.level))}))
+        if (
+          game.level.terrains.zipWithIndex.forall({ case (w, i) =>
+            !w._1.isInstanceOf[Floor] || game.explored
+              .contains(getVec2fromI(i, game.level))
+          })
+        )
           exploring = false
         if (
           game.keysDown.contains(Keys.S) || game.keysDown.contains(Keys.DOWN)
@@ -236,7 +260,8 @@ case class Player() extends Actor {
               attack(enemy.head)
               destination = location.copy()
             }
-            if (!exploring && destination != game.level.downLadder) Trog.Crunch.play(.5f, 1 + ((Math.random()/4)-.125).toFloat, 0)
+            if (!exploring && destination != game.level.downLadder)
+              Trog.Crunch.play(.5f, 1 + ((Math.random() / 4) - .125).toFloat, 0)
           })
         } else {
           destination = location.copy()
@@ -247,11 +272,13 @@ case class Player() extends Actor {
         yourTurn = false
         if (initLoc != location) {
           getVisible = game.level.terrains.zipWithIndex
-            .filter({ case ((w,n), i) =>
+            .filter({ case ((w, n), i) =>
               Pathfinding
                 .findPath(location, getVec2fromI(i, game.level), game.level)
                 .forall(p => p.list.length < stats.sightRad) && w.walkable
-            }).map(t => getVec2fromI(t._2, game.level)).toList
+            })
+            .map(t => getVec2fromI(t._2, game.level))
+            .toList
         }
 
         getVisible

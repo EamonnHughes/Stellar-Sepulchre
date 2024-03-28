@@ -18,18 +18,18 @@ trait rangedSkill extends Skill {
   var range: Int
 
   def onUse(
-             user: Actor,
-             target: Actor,
-             game: Game
-           ): Unit
+      user: Actor,
+      target: Actor,
+      game: Game
+  ): Unit
 }
 
 trait meleeSkill extends Skill {
   def onUse(
-             user: Actor,
-             target: Actor,
-             game: Game
-           ): Unit
+      user: Actor,
+      target: Actor,
+      game: Game
+  ): Unit
 
   def selectTarget(game: Game, user: Actor): Option[Actor] = {
     game.enemies.find(e => user.location.getAdjacents.contains(e.location))
@@ -46,16 +46,16 @@ case class MicroMissile() extends rangedSkill {
   override def icon: TextureWrapper = TextureWrapper.load("Micromissile.png")
 
   override def onUse(
-                      user: Actor,
-                      target: Actor,
-                      game: Game
-                    ): Unit = {
+      user: Actor,
+      target: Actor,
+      game: Game
+  ): Unit = {
     var ended = false
     Pathfinding
       .findPath(user.location, target.location, game.level)
       .filter(p => p.list.length <= range)
       .foreach(p => {
-        Trog.Crunch.play(.5f, 1 + ((Math.random()/4)-.125).toFloat, 0)
+        Trog.Crunch.play(.5f, 1 + ((Math.random() / 4) - .125).toFloat, 0)
         game.enemies.foreach(e => {
           if (p.list.contains(e.location) && !ended) {
             e.stats.health -= d(3)
@@ -77,16 +77,16 @@ case class Charge() extends rangedSkill {
   override def icon: TextureWrapper = TextureWrapper.load("Charge.png")
 
   override def onUse(
-                      user: Actor,
-                      target: Actor,
-                      game: Game
-                    ): Unit = {
+      user: Actor,
+      target: Actor,
+      game: Game
+  ): Unit = {
     Pathfinding
       .findPath(user.location, target.location, game.level)
       .filter(p => p.list.length <= range)
       .foreach(p => {
         if (!game.enemies.exists(e => e.location == p.list(1))) {
-          Trog.Crunch.play(.5f, 1 + ((Math.random()/4)-.125).toFloat, 0)
+          Trog.Crunch.play(.5f, 1 + ((Math.random() / 4) - .125).toFloat, 0)
           user.location = p.list(1).copy()
           user.destination = p.list(1).copy()
           user.attack(target)
@@ -105,12 +105,12 @@ case class Bash() extends meleeSkill {
   override def icon: TextureWrapper = TextureWrapper.load("Bash.png")
 
   override def onUse(
-                      user: Actor,
-                      target: Actor,
-                      game: Game
-                    ): Unit = {
+      user: Actor,
+      target: Actor,
+      game: Game
+  ): Unit = {
     user.attack(target)
     target.statuses.stunned = 2
-    Trog.Crunch.play(.5f, 1 + ((Math.random()/4)-.125).toFloat, 0)
+    Trog.Crunch.play(.5f, 1 + ((Math.random() / 4) - .125).toFloat, 0)
   }
 }

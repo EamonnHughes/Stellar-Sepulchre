@@ -44,7 +44,13 @@ trait Enemy extends Actor {
       )
     }
     batch.setColor(Color.WHITE)
-    Animation.twoFrameAnimation(game, batch, texture, location.x.toFloat, location.y.toFloat)
+    Animation.twoFrameAnimation(
+      game,
+      batch,
+      texture,
+      location.x.toFloat,
+      location.y.toFloat
+    )
 
     Text.smallFont.setColor(Color.WHITE)
     Text.smallFont.draw(
@@ -56,7 +62,13 @@ trait Enemy extends Actor {
 
     if (selected) {
       batch.setColor(1f, 1f, 0, .75f)
-      Animation.twoFrameAnimation(game, batch, "targetReticle", location.x.toFloat, location.y.toFloat)
+      Animation.twoFrameAnimation(
+        game,
+        batch,
+        "targetReticle",
+        location.x.toFloat,
+        location.y.toFloat
+      )
     }
   }
 }
@@ -67,11 +79,9 @@ case class Servitor() extends Enemy {
   var lev: Int = _
   var name: String = _
   var stats: Stats = _
-  var texture: String = s"Servitor${
-    {
-      lev min 5
-    } + 1
-  }_"
+  var texture: String = s"Servitor${{
+    lev min 5
+  } + 1}_"
 
   def initialize(gm: Game, loc: Vec2): Unit = {
     game = gm
@@ -96,7 +106,7 @@ case class Servitor() extends Enemy {
       mSrad = 7,
       mLev = lev,
       mDmg = 0,
-      mAtk =.35f * lev,
+      mAtk = .35f * lev,
       mCrc = 3 + (lev min 10),
       mCrm = 1.9f + (lev * .1f)
     )

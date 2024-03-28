@@ -52,8 +52,7 @@ trait Item {
   }
 }
 
-trait Usable extends Item {
-}
+trait Usable extends Item {}
 
 trait Gear extends Item {
   def onEquip(equipper: Actor): Unit
@@ -69,4 +68,3 @@ trait Gear extends Item {
     n
   }
 }
-

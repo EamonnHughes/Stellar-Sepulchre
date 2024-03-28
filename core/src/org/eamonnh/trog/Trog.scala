@@ -77,15 +77,25 @@ object Trog {
   lazy val homeBG: TextureWrapper = TextureWrapper.load("sepulctbg.png")
   lazy val loadBG: TextureWrapper = TextureWrapper.load("generate.png")
   lazy val asleep: TextureWrapper = TextureWrapper.load("asleep.png")
-  lazy val UICornerLeft: TextureWrapper = TextureWrapper.load("UICornerLeft.png")
-  lazy val UICornerRight: TextureWrapper = TextureWrapper.load("UICornerRight.png")
+  lazy val UICornerLeft: TextureWrapper =
+    TextureWrapper.load("UICornerLeft.png")
+  lazy val UICornerRight: TextureWrapper =
+    TextureWrapper.load("UICornerRight.png")
   lazy val UIHotbar: TextureWrapper = TextureWrapper.load("UIHotbar.png")
-  lazy val UIHealthBarFrame: TextureWrapper = TextureWrapper.load("UIHealthBarFrame.png")
-  lazy val UIXPBarFrame: TextureWrapper = TextureWrapper.load("UIXPBarFrame.png")
-  lazy val EffectSplash: TextureWrapper = TextureWrapper.load("EffectSplash.png")
-  def mkTileImage(kind: String, theme: Theme, number: Number): TextureWrapper = TextureWrapper.load(kind+theme.stringName+number+".png")
+  lazy val UIHealthBarFrame: TextureWrapper =
+    TextureWrapper.load("UIHealthBarFrame.png")
+  lazy val UIXPBarFrame: TextureWrapper =
+    TextureWrapper.load("UIXPBarFrame.png")
+  lazy val EffectSplash: TextureWrapper =
+    TextureWrapper.load("EffectSplash.png")
+  def mkTileImage(kind: String, theme: Theme, number: Number): TextureWrapper =
+    TextureWrapper.load(kind + theme.stringName + number + ".png")
   def pickTileNum: Int = {
-    if(Math.random() < .8) 1 else if (Math.random() < .5) 2 else if (Math.random() < .75) 3 else if (Math.random() < .5) 4 else 5
+    if (Math.random() < .8) 1
+    else if (Math.random() < .5) 2
+    else if (Math.random() < .75) 3
+    else if (Math.random() < .5) 4
+    else 5
   }
   var translationX = 0
   var translationY = 0

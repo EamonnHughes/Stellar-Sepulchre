@@ -46,28 +46,33 @@ class Home(wld: World) extends Scene {
     Text.hugeFont.setColor(mainColor)
 
     Text.hugeFont.draw(
-      batch, " Stellar Sepulchre",
+      batch,
+      " Stellar Sepulchre",
       -Trog.translationX * screenUnit,
       -Trog.translationY * screenUnit + (Geometry.ScreenHeight * .975f)
     )
   }
 
   override def renderUI(batch: PolygonSpriteBatch): Unit = {
-    if (selected == 0) Text.largeFont.setColor(mainColor) else Text.largeFont.setColor(darkColor)
+    if (selected == 0) Text.largeFont.setColor(mainColor)
+    else Text.largeFont.setColor(darkColor)
     Text.largeFont.draw(
       batch,
       "  Descend",
       -Trog.translationX * screenUnit,
       -Trog.translationY * screenUnit + Geometry.ScreenHeight * 4 / 5
     )
-    if (selected == 1) Text.largeFont.setColor(mainColor) else if (game.loadable) Text.largeFont.setColor(darkColor) else Text.largeFont.setColor(Color.GRAY)
+    if (selected == 1) Text.largeFont.setColor(mainColor)
+    else if (game.loadable) Text.largeFont.setColor(darkColor)
+    else Text.largeFont.setColor(Color.GRAY)
     Text.largeFont.draw(
       batch,
       "\n  Load Last Save",
       -Trog.translationX * screenUnit,
       -Trog.translationY * screenUnit + Geometry.ScreenHeight * 4 / 5
     )
-    if (selected == 2) Text.largeFont.setColor(mainColor) else Text.largeFont.setColor(darkColor)
+    if (selected == 2) Text.largeFont.setColor(mainColor)
+    else Text.largeFont.setColor(darkColor)
     Text.largeFont.draw(
       batch,
       "\n\n  Quit",

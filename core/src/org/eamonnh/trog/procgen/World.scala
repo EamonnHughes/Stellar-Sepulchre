@@ -6,7 +6,8 @@ import scala.util.Random
 
 case class World() {
   var name: String = "world" + Random.nextInt(100).toString
-  var archetypeList: List[Archetype] = List(InfiltratorArchetype(), CaedanautArchetype())
+  var archetypeList: List[Archetype] =
+    List(InfiltratorArchetype(), CaedanautArchetype())
 }
 
 case class WorldList(l: List[String]) {

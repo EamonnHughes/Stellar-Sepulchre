@@ -16,7 +16,8 @@ package object trog {
 
   def d(die: Int): Int = Random.nextInt(die) + 1
 
-  def getVec2fromI(i: Int, level: Level): Vec2 = Vec2(i % level.dimensions, (i - (i % level.dimensions)) / level.dimensions)
+  def getVec2fromI(i: Int, level: Level): Vec2 =
+    Vec2(i % level.dimensions, (i - (i % level.dimensions)) / level.dimensions)
 
   def d(nOd: Int, die: Int): Int = {
     var amt = 0
@@ -104,7 +105,7 @@ package object trog {
         Vec2(x, y - 1),
         Vec2(x, y + 1),
         Vec2(x - 1, y),
-        Vec2(x + 1, y),
+        Vec2(x + 1, y)
         //   Vec2(x - 1, y - 1),
         //    Vec2(x - 1, y + 1),
         //     Vec2(x + 1, y - 1),

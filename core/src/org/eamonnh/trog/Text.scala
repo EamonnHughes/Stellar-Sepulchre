@@ -34,25 +34,25 @@ object Text {
   }
 
   def draw(
-            batch: PolygonSpriteBatch,
-            font: BitmapFont,
-            color: Color,
-            text: String,
-            x: Float = 0f,
-            y: Float,
-            width: Float = Geometry.ScreenWidth
-          ): Unit = {
+      batch: PolygonSpriteBatch,
+      font: BitmapFont,
+      color: Color,
+      text: String,
+      x: Float = 0f,
+      y: Float,
+      width: Float = Geometry.ScreenWidth
+  ): Unit = {
     font.setColor(color)
     font.draw(batch, text, x, y, width, CenterAlign, false)
   }
 
   def draw(
-            batch: PolygonSpriteBatch,
-            font: BitmapFont,
-            color: Color,
-            text: String,
-            position: GlyphLayout => (Float, Float)
-          ): Unit = {
+      batch: PolygonSpriteBatch,
+      font: BitmapFont,
+      color: Color,
+      text: String,
+      position: GlyphLayout => (Float, Float)
+  ): Unit = {
     font.setColor(color)
     val layout = new GlyphLayout(font, text)
     val (x, y) = position(layout)

@@ -2,7 +2,6 @@ package org.eamonnh.trog.procgen
 
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.g2d.PolygonSpriteBatch
-import org.eamonnh.trog.util.TextureWrapper
 import org.eamonnh.trog.{Pathfinding, Trog, Vec2, getVec2fromI, screenUnit}
 
 import scala.collection.mutable
@@ -12,17 +11,17 @@ object MapGeneration {
   def fullyWalkableLevel(dim: Int): Level = {
     var l = new Level
     l.dimensions = dim
-    l.terrains = Array.fill(dim*dim)(Floor(), 0)
+    l.terrains = Array.fill(dim * dim)(Floor(), 0)
     l
   }
 }
 
 case class GeneratedMap(
-                         dimensions: Int,
-                         roomMin: Int,
-                         roomMax: Int,
-                         roomDensity: Float
-                       ) {
+    dimensions: Int,
+    roomMin: Int,
+    roomMax: Int,
+    roomDensity: Float
+) {
 
   var rooms: List[Room] = List.empty
   var mainRooms: List[Room] = List.empty
@@ -48,8 +47,8 @@ case class GeneratedMap(
             scale + Random.nextInt((roomMax - roomMin) / 2)
           )
           location = Vec2(
-            Random.nextInt((dimensions-1) - size.x)+1,
-            Random.nextInt((dimensions-1) - size.y)+1
+            Random.nextInt((dimensions - 1) - size.x) + 1,
+            Random.nextInt((dimensions - 1) - size.y) + 1
           )
           tick += 1
         }
@@ -92,22 +91,40 @@ case class GeneratedMap(
       )
       p.foreach(l => {
 
-        var place1 = l.list.findLast(locut => !rooms.exists(r => r.getAllTiles.contains(locut))).head
-        var place2 = l.list.find(locut => !rooms.exists(r => r.getAllTiles.contains(locut))).head
-          if(!rooms.exists(r => {
-            r.getAllTiles.contains(Vec2(place1.x, place1.y + 1)) && !rooms.exists(r2 => r2.getAllTiles.contains(Vec2(place1.x, place1.y - 1)))
+        var place1 = l.list
+          .findLast(locut => !rooms.exists(r => r.getAllTiles.contains(locut)))
+          .head
+        var place2 = l.list
+          .find(locut => !rooms.exists(r => r.getAllTiles.contains(locut)))
+          .head
+        if (
+          !rooms.exists(r => {
+            r.getAllTiles.contains(Vec2(place1.x, place1.y + 1)) && !rooms
+              .exists(r2 =>
+                r2.getAllTiles.contains(Vec2(place1.x, place1.y - 1))
+              )
           }) ||
           !rooms.exists(r => {
-            r.getAllTiles.contains(Vec2(place1.x + 1, place1.y)) && !rooms.exists(r2 => r2.getAllTiles.contains(Vec2(place1.x - 1, place1.y)))
+            r.getAllTiles.contains(Vec2(place1.x + 1, place1.y)) && !rooms
+              .exists(r2 =>
+                r2.getAllTiles.contains(Vec2(place1.x - 1, place1.y))
+              )
           })
-      ) {
+        ) {
           locPurpose.addOne((place1, Transition()))
         }
-        if(!rooms.exists(r => {
-          r.getAllTiles.contains(Vec2(place2.x, place2.y + 1)) && !rooms.exists(r2 => r2.getAllTiles.contains(Vec2(place2.x, place2.y - 1)))
-        }) ||
+        if (
           !rooms.exists(r => {
-            r.getAllTiles.contains(Vec2(place2.x + 1, place2.y)) && !rooms.exists(r2 => r2.getAllTiles.contains(Vec2(place2.x - 1, place2.y)))
+            r.getAllTiles.contains(Vec2(place2.x, place2.y + 1)) && !rooms
+              .exists(r2 =>
+                r2.getAllTiles.contains(Vec2(place2.x, place2.y - 1))
+              )
+          }) ||
+          !rooms.exists(r => {
+            r.getAllTiles.contains(Vec2(place2.x + 1, place2.y)) && !rooms
+              .exists(r2 =>
+                r2.getAllTiles.contains(Vec2(place2.x - 1, place2.y))
+              )
           })
         ) {
           locPurpose.addOne((place2, Transition()))
@@ -134,7 +151,7 @@ case class GeneratedMap(
                     t == t2 || t == a2 || t2 == a
                   })
                 )
-                  )
+                )
               })
             )
           ) {
@@ -188,19 +205,36 @@ case class GeneratedMap(
   def doExport(): Level = {
     var level = new Level
     level.dimensions = dimensions
-    level.terrains = Array.fill(dimensions*dimensions)((Emptiness(), Trog.pickTileNum))
+    level.terrains =
+      Array.fill(dimensions * dimensions)((Emptiness(), Trog.pickTileNum))
     rooms.foreach(r => {
       r.getAllTiles.foreach(t => {
-        if(locPurpose.contains(Vec2(t.x, t.y)) && locPurpose(Vec2(t.x, t.y)).isInstanceOf[Transition]){
-          if(Math.random() > .5f) {
-            level.terrains((t.y*dimensions)+t.x) = (OpenDoor(), Trog.pickTileNum)
-          } else level.terrains((t.y*dimensions)+t.x) = (Floor(), Trog.pickTileNum)
-        } else level.terrains((t.y*dimensions)+t.x) = (Floor(), Trog.pickTileNum)
+        if (
+          locPurpose.contains(Vec2(t.x, t.y)) && locPurpose(Vec2(t.x, t.y))
+            .isInstanceOf[Transition]
+        ) {
+          if (Math.random() > .5f) {
+            level.terrains((t.y * dimensions) + t.x) =
+              (OpenDoor(), Trog.pickTileNum)
+          } else
+            level.terrains((t.y * dimensions) + t.x) =
+              (Floor(), Trog.pickTileNum)
+        } else
+          level.terrains((t.y * dimensions) + t.x) = (Floor(), Trog.pickTileNum)
       })
     })
     level.terrains.zipWithIndex.collect({
       case ((nothing: Emptiness, n: Int), i: Int) => {
-        if(level.adjs(i).exists(l => level.terrains(l)._1.walkable && !level.terrains(l)._1.isInstanceOf[Emptiness])) level.terrains(i) = (Wall(), Trog.pickTileNum)
+        if (
+          level
+            .adjs(i)
+            .exists(l =>
+              level
+                .terrains(l)
+                ._1
+                .walkable && !level.terrains(l)._1.isInstanceOf[Emptiness]
+            )
+        ) level.terrains(i) = (Wall(), Trog.pickTileNum)
       }
     })
     val floorIndices = level.terrains.zipWithIndex.collect({
@@ -210,13 +244,16 @@ case class GeneratedMap(
     level.terrains.update(randomFloors(0), (LadderDown(), Trog.pickTileNum))
     level.terrains.update(randomFloors(1), (LadderUp(), Trog.pickTileNum))
 
-
-    level.upLadder = level.terrains.zipWithIndex.collect({
-      case((t: LadderUp, n: Int), i) => getVec2fromI(i, level)
-    }).head
-    level.downLadder = level.terrains.zipWithIndex.collect({
-      case((t: LadderDown, n: Int), i) => getVec2fromI(i, level)
-    }).head
+    level.upLadder = level.terrains.zipWithIndex
+      .collect({ case ((t: LadderUp, n: Int), i) =>
+        getVec2fromI(i, level)
+      })
+      .head
+    level.downLadder = level.terrains.zipWithIndex
+      .collect({ case ((t: LadderDown, n: Int), i) =>
+        getVec2fromI(i, level)
+      })
+      .head
     level
   }
 
@@ -281,12 +318,21 @@ class Level extends Serializable {
   var dimensions = 0
   var terrains: Array[(Terrain, Int)] = Array.empty
   def adjs(i: Int): List[Int] = List[Int](
-    (i-dimensions-1), (i-dimensions), (i-dimensions+1), (i-1), (i+1),
-    (i+dimensions-1), (i+dimensions), (i+dimensions+1)).filter(i => i > 0 && i < dimensions*dimensions)
+    (i - dimensions - 1),
+    (i - dimensions),
+    (i - dimensions + 1),
+    (i - 1),
+    (i + 1),
+    (i + dimensions - 1),
+    (i + dimensions),
+    (i + dimensions + 1)
+  ).filter(i => i > 0 && i < dimensions * dimensions)
   def draw(batch: PolygonSpriteBatch): Unit = {
-    terrains.zipWithIndex.foreach({case (t, i) => {
-      batch.setColor(Color.WHITE)
-      t._1.draw(batch, getVec2fromI(i, this), theme, t._2)
-    }})
+    terrains.zipWithIndex.foreach({
+      case (t, i) => {
+        batch.setColor(Color.WHITE)
+        t._1.draw(batch, getVec2fromI(i, this), theme, t._2)
+      }
+    })
   }
 }
