@@ -91,8 +91,27 @@ case class GeneratedMap(
         MapGeneration.fullyWalkableLevel(dimensions)
       )
       p.foreach(l => {
-        locPurpose.addOne((l.list.findLast(locut => !rooms.exists(r => r.getAllTiles.contains(locut))).head, Transition()))
-        locPurpose.addOne((l.list.find(locut => !rooms.exists(r => r.getAllTiles.contains(locut))).head, Transition()))
+
+        var place1 = l.list.findLast(locut => !rooms.exists(r => r.getAllTiles.contains(locut))).head
+        var place2 = l.list.find(locut => !rooms.exists(r => r.getAllTiles.contains(locut))).head
+          if(!rooms.exists(r => {
+            r.getAllTiles.contains(Vec2(place1.x, place1.y + 1)) && !rooms.exists(r2 => r2.getAllTiles.contains(Vec2(place1.x, place1.y - 1)))
+          }) ||
+          !rooms.exists(r => {
+            r.getAllTiles.contains(Vec2(place1.x + 1, place1.y)) && !rooms.exists(r2 => r2.getAllTiles.contains(Vec2(place1.x - 1, place1.y)))
+          })
+      ) {
+          locPurpose.addOne((place1, Transition()))
+        }
+        if(!rooms.exists(r => {
+          r.getAllTiles.contains(Vec2(place2.x, place2.y + 1)) && !rooms.exists(r2 => r2.getAllTiles.contains(Vec2(place2.x, place2.y - 1)))
+        }) ||
+          !rooms.exists(r => {
+            r.getAllTiles.contains(Vec2(place2.x + 1, place2.y)) && !rooms.exists(r2 => r2.getAllTiles.contains(Vec2(place2.x - 1, place2.y)))
+          })
+        ) {
+          locPurpose.addOne((place2, Transition()))
+        }
         l.list.foreach(loc => rooms = Room(loc, Vec2(1, 1)) :: rooms)
 
       })
