@@ -213,12 +213,8 @@ case class GeneratedMap(
           locPurpose.contains(Vec2(t.x, t.y)) && locPurpose(Vec2(t.x, t.y))
             .isInstanceOf[Transition]
         ) {
-          if (Math.random() > .5f) {
             level.terrains((t.y * dimensions) + t.x) =
               (OpenDoor(), Trog.pickTileNum)
-          } else
-            level.terrains((t.y * dimensions) + t.x) =
-              (Floor(), Trog.pickTileNum)
         } else
           level.terrains((t.y * dimensions) + t.x) = (Floor(), Trog.pickTileNum)
       })
