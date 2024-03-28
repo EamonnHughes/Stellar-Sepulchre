@@ -98,34 +98,34 @@ case class GeneratedMap(
           .find(locut => !rooms.exists(r => r.getAllTiles.contains(locut)))
           .head
         if (
-          !rooms.exists(r => {
-            r.getAllTiles.contains(Vec2(place1.x, place1.y + 1)) && !rooms
-              .exists(r2 =>
-                r2.getAllTiles.contains(Vec2(place1.x, place1.y - 1))
-              )
-          }) ||
-          !rooms.exists(r => {
-            r.getAllTiles.contains(Vec2(place1.x + 1, place1.y)) && !rooms
+          (!rooms.exists(r => {
+            r.getAllTiles.contains(Vec2(place1.x, place1.y + 1))
+          }) &&
+            !rooms.exists(r =>
+              r.getAllTiles.contains(Vec2(place1.x, place1.y - 1))
+            ) ) ||
+            (!rooms.exists(r => {
+            r.getAllTiles.contains(Vec2(place1.x + 1, place1.y))
+          })  && !rooms
               .exists(r2 =>
                 r2.getAllTiles.contains(Vec2(place1.x - 1, place1.y))
-              )
-          })
+              ))
         ) {
           locPurpose.addOne((place1, Door()))
         }
         if (
-          !rooms.exists(r => {
-            r.getAllTiles.contains(Vec2(place2.x, place2.y + 1)) && !rooms
-              .exists(r2 =>
-                r2.getAllTiles.contains(Vec2(place2.x, place2.y - 1))
-              )
-          }) ||
-          !rooms.exists(r => {
-            r.getAllTiles.contains(Vec2(place2.x + 1, place2.y)) && !rooms
+          (!rooms.exists(r => {
+            r.getAllTiles.contains(Vec2(place2.x, place2.y + 1))
+          })  && !rooms
+            .exists(r2 =>
+              r2.getAllTiles.contains(Vec2(place2.x, place2.y - 1))
+            ))  ||
+            (!rooms.exists(r => {
+            r.getAllTiles.contains(Vec2(place2.x + 1, place2.y))
+          }) && !rooms
               .exists(r2 =>
                 r2.getAllTiles.contains(Vec2(place2.x - 1, place2.y))
-              )
-          })
+              ))
         ) {
           locPurpose.addOne((place2, Door()))
         }
