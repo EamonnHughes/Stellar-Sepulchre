@@ -111,7 +111,7 @@ case class GeneratedMap(
               )
           })
         ) {
-          locPurpose.addOne((place1, Transition()))
+          locPurpose.addOne((place1, Door()))
         }
         if (
           !rooms.exists(r => {
@@ -127,7 +127,7 @@ case class GeneratedMap(
               )
           })
         ) {
-          locPurpose.addOne((place2, Transition()))
+          locPurpose.addOne((place2, Door()))
         }
         l.list.foreach(loc => rooms = Room(loc, Vec2(1, 1)) :: rooms)
 
@@ -211,7 +211,7 @@ case class GeneratedMap(
       r.getAllTiles.foreach(t => {
         if (
           locPurpose.contains(Vec2(t.x, t.y)) && locPurpose(Vec2(t.x, t.y))
-            .isInstanceOf[Transition]
+            .isInstanceOf[Door]
         ) {
             level.terrains((t.y * dimensions) + t.x) =
               (OpenDoor(), Trog.pickTileNum)
