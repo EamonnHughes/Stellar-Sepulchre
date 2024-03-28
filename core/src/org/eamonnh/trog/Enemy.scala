@@ -51,7 +51,7 @@ trait Enemy extends Actor {
       location.x.toFloat,
       location.y.toFloat
     )
-
+    /*
     Text.smallFont.setColor(Color.WHITE)
     Text.smallFont.draw(
       batch,
@@ -59,7 +59,7 @@ trait Enemy extends Actor {
       location.x * screenUnit,
       (location.y + 1) * screenUnit
     )
-
+    */
     if (selected) {
       batch.setColor(1f, 1f, 0, .75f)
       Animation.twoFrameAnimation(
@@ -79,9 +79,7 @@ case class Servitor() extends Enemy {
   var lev: Int = _
   var name: String = _
   var stats: Stats = _
-  var texture: String = s"Servitor${{
-    lev min 5
-  } + 1}_"
+  var texture: String = _
 
   def initialize(gm: Game, loc: Vec2): Unit = {
     game = gm
@@ -97,6 +95,9 @@ case class Servitor() extends Enemy {
         Random.nextInt(enemyNames.getServitorName(lev).length)
       )
       .substring(1)
+    texture = s"Servitor${{
+      lev min 5
+    }}_"
     stats = makeStats(
       mAc = (3 + lev) min 9,
       mExp = 5 * lev,
@@ -157,7 +158,6 @@ case class Servitor() extends Enemy {
 object enemyNames {
   val Servo: List[String] = List(
     "1Drone",
-    "1Menial",
     "2Servitor",
     "3Suppressor",
     "4Hemisynapt",
