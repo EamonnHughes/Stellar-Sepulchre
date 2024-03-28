@@ -9,7 +9,7 @@ import org.eamonnh.trog.items.MedKit
 import org.eamonnh.trog.procgen.Floor
 import org.eamonnh.trog.scenes.Game
 import org.eamonnh.trog.util.Animation
-import org.eamonnh.trog.{Actor, Pathfinding, Trog, Vec2, d, getVec2fromI, screenUnit}
+import org.eamonnh.trog.{Actor, Pathfinding, Trog, Vec2, d, getIfromVec2, getVec2fromI, screenUnit}
 
 case class Player() extends Actor {
   var inventoryItemSelected: Int = 0
@@ -177,11 +177,17 @@ case class Player() extends Actor {
                 .isInstanceOf[Floor]
             })
           ) {
+            if(game.level.terrains.zipWithIndex.exists { case (w, i) =>
+              !game.explored.contains(getVec2fromI(i, game.level)) && w._1
+                .isInstanceOf[Floor] && Pathfinding
+                .findPath(location, getVec2fromI(i, game.level), game.level).nonEmpty
+            }){
             var dest =
               game.level.terrains.zipWithIndex
                 .filter({ case (w, i) =>
                   !game.explored.contains(getVec2fromI(i, game.level)) && w._1
-                    .isInstanceOf[Floor]
+                    .isInstanceOf[Floor] && Pathfinding
+                    .findPath(location, getVec2fromI(i, game.level), game.level).nonEmpty
                 })
                 .minBy({ case (w, i) =>
                   Pathfinding
@@ -191,6 +197,7 @@ case class Player() extends Actor {
                     .length
                 })
             destination = getVec2fromI(dest._2, game.level)
+          } else exploring = false
           } else if (location != game.level.downLadder) {
             destination = game.level.downLadder.copy()
           }
@@ -250,6 +257,7 @@ case class Player() extends Actor {
       }
       if ((destination != location || resting) && yourTurn) {
         if (!resting) {
+          if(destination.getAdjacents.contains(location)) game.level.terrains(getIfromVec2(destination, game.level))._1.onWalkOnTo(destination, game.level)
           val path = Pathfinding.findPath(location, destination, game.level)
           path.foreach(p => {
             val dest = p.list.reverse(1).copy()

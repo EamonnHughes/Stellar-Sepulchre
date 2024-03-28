@@ -214,7 +214,7 @@ case class GeneratedMap(
             .isInstanceOf[Door]
         ) {
             level.terrains((t.y * dimensions) + t.x) =
-              (OpenDoor(), Trog.pickTileNum)
+              (ClosedDoor(), Trog.pickTileNum)
         } else
           level.terrains((t.y * dimensions) + t.x) = (Floor(), Trog.pickTileNum)
       })

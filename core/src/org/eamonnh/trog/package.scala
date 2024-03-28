@@ -18,6 +18,7 @@ package object trog {
 
   def getVec2fromI(i: Int, level: Level): Vec2 =
     Vec2(i % level.dimensions, (i - (i % level.dimensions)) / level.dimensions)
+  def getIfromVec2(v: Vec2, level: Level): Int = (v.y * level.dimensions) + v.x
 
   def d(nOd: Int, die: Int): Int = {
     var amt = 0

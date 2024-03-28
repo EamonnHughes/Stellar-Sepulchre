@@ -3,7 +3,7 @@ package org.eamonnh.trog.procgen
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.g2d.PolygonSpriteBatch
 import org.eamonnh.trog.Trog.mkTileImage
-import org.eamonnh.trog.{Trog, Vec2, screenUnit}
+import org.eamonnh.trog.{Trog, Vec2, getIfromVec2, screenUnit}
 
 trait Terrain {
   def draw(
@@ -13,6 +13,7 @@ trait Terrain {
       number: Number
   ): Unit
   val walkable: Boolean
+  def onWalkOnTo(location: Vec2, level: Level): Unit = {}
 }
 
 case class Floor() extends Terrain {
@@ -144,6 +145,10 @@ case class ClosedDoor() extends Terrain {
     )
   }
   val walkable = false
+
+  override def onWalkOnTo(location: Vec2, level: Level): Unit = {
+    level.terrains.update(getIfromVec2(location, level), (OpenDoor(), level.terrains(getIfromVec2(location, level))._2))
+  }
 }
 
 case class OpenDoor() extends Terrain {
