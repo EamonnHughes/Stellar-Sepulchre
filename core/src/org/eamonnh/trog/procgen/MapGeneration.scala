@@ -27,6 +27,8 @@ case class GeneratedMap(
   var mainRooms: List[Room] = List.empty
   var locPurpose: mutable.Map[Vec2, PlacePurpose] = mutable.Map.empty
 
+  var potentialDoorways: List[Vec2] = List.empty
+
   def generate(): Boolean = {
     var done = true
     //makes rooms
@@ -97,38 +99,9 @@ case class GeneratedMap(
         var place2 = l.list
           .find(locut => !rooms.exists(r => r.getAllTiles.contains(locut)))
           .head
-        if (
-          (!rooms.exists(r => {
-            r.getAllTiles.contains(Vec2(place1.x, place1.y + 1))
-          }) &&
-            !rooms.exists(r =>
-              r.getAllTiles.contains(Vec2(place1.x, place1.y - 1))
-            ) ) ||
-            (!rooms.exists(r => {
-            r.getAllTiles.contains(Vec2(place1.x + 1, place1.y))
-          })  && !rooms
-              .exists(r2 =>
-                r2.getAllTiles.contains(Vec2(place1.x - 1, place1.y))
-              ))
-        ) {
-          locPurpose.addOne((place1, Door()))
-        }
-        if (
-          (!rooms.exists(r => {
-            r.getAllTiles.contains(Vec2(place2.x, place2.y + 1))
-          })  && !rooms
-            .exists(r2 =>
-              r2.getAllTiles.contains(Vec2(place2.x, place2.y - 1))
-            ))  ||
-            (!rooms.exists(r => {
-            r.getAllTiles.contains(Vec2(place2.x + 1, place2.y))
-          }) && !rooms
-              .exists(r2 =>
-                r2.getAllTiles.contains(Vec2(place2.x - 1, place2.y))
-              ))
-        ) {
-          locPurpose.addOne((place2, Door()))
-        }
+
+        potentialDoorways = place1 :: place2 :: potentialDoorways
+
         l.list.foreach(loc => rooms = Room(loc, Vec2(1, 1)) :: rooms)
 
       })
