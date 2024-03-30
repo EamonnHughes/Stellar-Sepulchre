@@ -6,7 +6,7 @@ import com.badlogic.gdx.graphics.g2d.PolygonSpriteBatch
 import org.eamonnh.trog.Trog.Square
 import org.eamonnh.trog.inGameUserInterface.{inCharacterSheet, inInventory}
 import org.eamonnh.trog.items.MedKit
-import org.eamonnh.trog.procgen.Floor
+import org.eamonnh.trog.procgen.{ClosedDoor, Floor}
 import org.eamonnh.trog.scenes.Game
 import org.eamonnh.trog.util.Animation
 import org.eamonnh.trog.{Actor, Pathfinding, Trog, Vec2, d, getIfromVec2, getVec2fromI, screenUnit}
@@ -191,7 +191,19 @@ case class Player() extends Actor {
                     .length
                 })
             destination = getVec2fromI(dest._2, game.level)
-          } else exploring = false
+          } else if(game.level.terrains.zipWithIndex.exists { case (w, i) =>
+              w._1
+                .isInstanceOf[ClosedDoor] && getVec2fromI(i, game.level).getAdjacents.exists(a => Pathfinding
+                .findPath(location, a, game.level).nonEmpty)
+            }) {
+              var dest: Vec2 = game.level.terrains.zipWithIndex
+                  .filter({ case (w, i) =>
+                    w._1
+                      .isInstanceOf[ClosedDoor] && getVec2fromI(i, game.level).getAdjacents.exists(a => Pathfinding
+                      .findPath(location, a, game.level).nonEmpty)
+                  }).map(i => getVec2fromI(i._2, game.level)).head.getAdjacents.filter(adj => Pathfinding.findPath(location, adj, game.level).nonEmpty).head
+              destination = dest
+            } else exploring = false
           } else if (location != game.level.downLadder) {
             destination = game.level.downLadder.copy()
             game.addMessage("Floor explored, heading to exit")
