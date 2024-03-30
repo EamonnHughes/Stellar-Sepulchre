@@ -194,6 +194,7 @@ case class Player() extends Actor {
           } else exploring = false
           } else if (location != game.level.downLadder) {
             destination = game.level.downLadder.copy()
+            game.addMessage("Floor explored, heading to exit")
           }
         }
         if (

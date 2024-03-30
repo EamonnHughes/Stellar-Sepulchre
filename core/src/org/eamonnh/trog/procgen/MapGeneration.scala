@@ -186,8 +186,18 @@ case class GeneratedMap(
           locPurpose.contains(Vec2(t.x, t.y)) && locPurpose(Vec2(t.x, t.y))
             .isInstanceOf[Door]
         ) {
+          if (Math.random() > .5) {
             level.terrains((t.y * dimensions) + t.x) =
               (ClosedDoor(), Trog.pickTileNum)
+            if (Math.random() > .5) {
+              level.terrains((t.y * dimensions) + t.x) =
+                (ClosedDoor(), Trog.pickTileNum)
+            } else {
+              level.terrains((t.y * dimensions) + t.x) =
+                (OpenDoor(), Trog.pickTileNum)            }
+          } else {
+            level.terrains((t.y * dimensions) + t.x) = (Floor(), Trog.pickTileNum)
+          }
         } else
           level.terrains((t.y * dimensions) + t.x) = (Floor(), Trog.pickTileNum)
       })
