@@ -66,6 +66,6 @@ case class CaedanautArchetype() extends Archetype {
       "Cowardice was unacceptable to the Lacedaemonian Guard, and, when the Caedanaut fled\n" +
       "the field, he was given the choice: crucifixion or being sold to the Consortium.\n" +
       "Choosing the latter, he worked aboard a ship for years. At the onset of the Civil War\n" +
-      "his mastery of warfare was noticed, and he was offered a chance to redeem himself."
+      "his prowess in battle was noticed, and he was offered a chance to redeem himself."
   }
 }
