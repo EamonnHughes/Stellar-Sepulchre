@@ -97,14 +97,14 @@ jobs:
 
       # CREATE GITHUB RELEASE AND ADD ASSETS
       - id: tag
-        name: Move example-release tag
+        name: Move latest-release tag
         shell: bash
         if: false
         run: |
           # Move tag
-          git tag -d example-release
-          git push --delete origin example-release
-          git tag -a example-release -m "Example of a Release"
+          git tag -d latest-release
+          git push --delete origin latest-release
+          git tag -a latest-release -m "Latest Release"
           git push --follow-tags
       - id: create-release
         name: Create GitHub release
@@ -112,8 +112,8 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: example-release
-          release_name: example-release
+          tag_name: latest-release
+          release_name: latest-release
           draft: false
           prerelease: false
       - id: release-linux-installer
