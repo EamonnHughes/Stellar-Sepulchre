@@ -67,22 +67,22 @@ case class makeCommonWeapon(
 object gearNames {
   val commonItemNames: List[String] =
     List(
-      "14Dagger",
+      "14Epee",
       "16Glaive"
     )
   val playerItemNames: List[String] =
     List(
-      "14Dagger",
+      "14Epee",
       "16Glaive"
     )
 
   val droneItemNames: List[String] = List(
-    "11Baton",
-    "12Baton",
-    "13Baton",
-    "14Baton",
-    "15Baton",
-    "16Baton"
+    "11Dart",
+    "12Dart",
+    "13Dart",
+    "14Dart",
+    "15Dart",
+    "16Dart"
   )
 
   def getCINofD(nODie: Int, die: Int, field: String): List[String] = {

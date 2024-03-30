@@ -45,8 +45,13 @@ class CharCreation(world: World) extends Scene {
         batch,
         s" Select an Archetype:",
         -Trog.translationX * screenUnit,
-        -Trog.translationY * screenUnit + Geometry.ScreenHeight / 2
+        -Trog.translationY * screenUnit + Geometry.ScreenHeight *.75f
       )
+      Text.smallFont.setColor(Color.WHITE)
+      Text.smallFont.draw(batch, s"${arches(selectedArch).description}",-Trog.translationX * screenUnit + screenUnit,
+        (-Trog.translationY * screenUnit) + (Geometry.ScreenHeight*.75f) - (screenUnit * (arches.length + 3))
+      )
+
       arches.zipWithIndex.foreach({ case (a, i) =>
         if (selectedArch == i) Text.mediumFont.setColor(Color.WHITE)
         else Text.mediumFont.setColor(Color.LIGHT_GRAY)
@@ -54,9 +59,10 @@ class CharCreation(world: World) extends Scene {
           batch,
           s"[${i + 1}] ${a.name}",
           -Trog.translationX * screenUnit,
-          (-Trog.translationY * screenUnit) + (Geometry.ScreenHeight / 2) - (screenUnit * (i + 1))
+          (-Trog.translationY * screenUnit) + (Geometry.ScreenHeight *.75f) - (screenUnit * (i + 1))
         )
       })
+
     } else {
       Text.mediumFont.draw(
         batch,
