@@ -82,13 +82,7 @@ case class Player() extends Actor {
   def playerIcon: String = s"Player${archetype.metaArchName}"
 
   def update(delta: Float): Unit = {
-    if (
-      destination == game.level.downLadder && game.level.terrains.zipWithIndex
-        .forall({ case (w, i) =>
-          !w._1.isInstanceOf[Floor] || game.explored
-            .contains(getVec2fromI(i, game.level))
-        })
-    ) exploring = true
+
     if (!yourTurn) {
       tick += delta
       if (tick >= speed || resting || exploring) {
@@ -268,7 +262,7 @@ case class Player() extends Actor {
               attack(enemy.head)
               destination = location.copy()
             }
-            if (!exploring && destination != game.level.downLadder)
+            if (!exploring)
               Trog.Crunch.play(.5f, 1 + ((Math.random() / 4) - .125).toFloat, 0)
           })
         } else {
@@ -280,10 +274,10 @@ case class Player() extends Actor {
         yourTurn = false
         if (initLoc != location) {
           getVisible = game.level.terrains.zipWithIndex
-            .filter({ case ((w, n), i) =>
+            .filter({ case (t, i) =>
+              t._1.walkable &&
               Pathfinding
-                .findPath(location, getVec2fromI(i, game.level), game.level)
-                .forall(p => p.list.length < stats.sightRad) && w.walkable
+                .findPath(location, getVec2fromI(i, game.level), game.level).exists(p => p.list.length < stats.sightRad)
             })
             .map(t => getVec2fromI(t._2, game.level))
             .toList
