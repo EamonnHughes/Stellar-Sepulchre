@@ -74,6 +74,7 @@ object Trog {
   lazy val Jingle: Sound = Trog.loadSound("jingle.mp3")
   lazy val Crunch: Sound = Trog.loadSound("crunch.mp3")
   lazy val Square: TextureWrapper = TextureWrapper.load("Square.png")
+  lazy val Highlight: TextureWrapper = TextureWrapper.load("Highlight.png")
   lazy val homeBG: TextureWrapper = TextureWrapper.load("sepulctbg.png")
   lazy val loadBG: TextureWrapper = TextureWrapper.load("generate.png")
   lazy val asleep: TextureWrapper = TextureWrapper.load("asleep.png")

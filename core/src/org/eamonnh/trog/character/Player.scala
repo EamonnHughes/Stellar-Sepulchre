@@ -3,7 +3,7 @@ package org.eamonnh.trog.character
 import com.badlogic.gdx.Input.Keys
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.g2d.PolygonSpriteBatch
-import org.eamonnh.trog.Trog.Square
+import org.eamonnh.trog.Trog.{Highlight, Square}
 import org.eamonnh.trog.inGameUserInterface.{inCharacterSheet, inInventory}
 import org.eamonnh.trog.items.MedKit
 import org.eamonnh.trog.procgen.{ClosedDoor, Floor}
@@ -80,6 +80,10 @@ case class Player() extends Actor {
       location.x.toFloat,
       location.y.toFloat
     )
+    rangedSkillTargetables.foreach(t => {
+      batch.setColor(0f, .5f, 0f, .35f)
+      batch.draw(Highlight, t.x*screenUnit, t.y*screenUnit, screenUnit, screenUnit)
+    })
     selectedSkillLoc.foreach(loc => {
       if (
         !rangedSkillTargetables.contains(loc)
