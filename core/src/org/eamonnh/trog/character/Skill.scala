@@ -17,6 +17,8 @@ trait Skill {
 trait rangedSkill extends Skill {
   var maxRange: Int
   var minRange: Int
+  var mustTargetEnemy: Boolean
+  var canTargetEnemy: Boolean
 
   def onUse(
       user: Actor,
@@ -56,6 +58,8 @@ case class MicroMissile() extends rangedSkill {
   }
 
   override var minRange: Int = 2
+  override var mustTargetEnemy: Boolean = true
+  override var canTargetEnemy: Boolean = true
 }
 
 case class Charge() extends rangedSkill {
@@ -87,6 +91,8 @@ case class Charge() extends rangedSkill {
   }
 
   override var minRange: Int = 3
+  override var mustTargetEnemy: Boolean = true
+  override var canTargetEnemy: Boolean = true
 }
 
 case class Bash() extends rangedSkill {
@@ -111,4 +117,7 @@ case class Bash() extends rangedSkill {
     Trog.Crunch.play(.5f, 1 + ((Math.random() / 4) - .125).toFloat, 0)
   })
   }
+
+  override var mustTargetEnemy: Boolean = true
+  override var canTargetEnemy: Boolean = true
 }

@@ -80,14 +80,25 @@ case class Player() extends Actor {
       location.x.toFloat,
       location.y.toFloat
     )
-    selectedSkillLoc.foreach(location => {
+    selectedSkillLoc.foreach(loc => {
+      if (
+        !rangedSkillTargetables.contains(loc)
+      ) {
+        batch.setColor(1f, 0f, 0, .75f)
+      } else if(
+        (rangedSkillUsing.head.mustTargetEnemy && !game.enemies.exists(e => e.location == loc)) ||
+          (!rangedSkillUsing.head.canTargetEnemy && game.enemies.exists(e => e.location == loc))
+      ){
       batch.setColor(1f, 1f, 0, .75f)
+      }  else {
+        batch.setColor(0f, .5f, 0, .75f)
+      }
       Animation.twoFrameAnimation(
         game,
         batch,
         "targetReticle",
-        location.x.toFloat,
-        location.y.toFloat
+        loc.x.toFloat,
+        loc.y.toFloat
       )
     })
   }
@@ -374,46 +385,50 @@ case class Player() extends Actor {
   }
 
   def doRangedSkill(skill: rangedSkill): Unit = {
+    var areaOfUse = game.level.terrains.zipWithIndex.filter(t => Pathfinding.findPath(location, getVec2fromI(t._2, game.level), game.level).nonEmpty).map(i => getVec2fromI(i._2, game.level)).toList
     rangedSkillTargetables = game.level.terrains.zipWithIndex.filter(t => Pathfinding.findPath(location,  getVec2fromI(t._2, game.level), game.level).exists(p => p.list.length <= skill.maxRange && p.list.length >= skill.minRange)).map(i => getVec2fromI(i._2, game.level)).toList
     if (rangedSkillTargetables.isEmpty) {
       clearRangedStuff()
     } else {
       if(!skillActivated){
-      if(rangedSkillTargetables.exists(t => game.enemies.exists(e => e.location == t))) {
+      if(rangedSkillTargetables.exists(t => game.enemies.exists(e => e.location == t) && skill.canTargetEnemy)) {
         selectedSkillLoc = Some(rangedSkillTargetables.filter(t => game.enemies.exists(e => e.location == t)).head)
       } else {
-        selectedSkillLoc = Some(rangedSkillTargetables.head)
+        selectedSkillLoc = Some(rangedSkillTargetables.minBy(t => Pathfinding.findPath(location, t, game.level).head.list.length))
       }
       skillActivated = true
       }
       if (game.keysDown.contains(Keys.LEFT)) {
         if (!movedSkillTarget) {
           var newTarget = Vec2(selectedSkillLoc.head.x - 1, selectedSkillLoc.head.y)
-          if(rangedSkillTargetables.contains(newTarget)) selectedSkillLoc = Some(newTarget.copy())
+          if(areaOfUse.contains(newTarget)) selectedSkillLoc = Some(newTarget.copy())
         }
         movedSkillTarget = true
       } else if (game.keysDown.contains(Keys.RIGHT)) {
         if (!movedSkillTarget) {
           var newTarget = Vec2(selectedSkillLoc.head.x + 1, selectedSkillLoc.head.y)
-          if(rangedSkillTargetables.contains(newTarget)) selectedSkillLoc = Some(newTarget.copy())
+          if(areaOfUse.contains(newTarget)) selectedSkillLoc = Some(newTarget.copy())
         }
         movedSkillTarget = true
       } else if (game.keysDown.contains(Keys.UP)) {
         if (!movedSkillTarget) {
           var newTarget = Vec2(selectedSkillLoc.head.x, selectedSkillLoc.head.y+1)
-          if(rangedSkillTargetables.contains(newTarget)) selectedSkillLoc = Some(newTarget.copy())
+          if(areaOfUse.contains(newTarget)) selectedSkillLoc = Some(newTarget.copy())
         }
         movedSkillTarget = true
       } else if (game.keysDown.contains(Keys.DOWN)) {
         if (!movedSkillTarget) {
           var newTarget = Vec2(selectedSkillLoc.head.x, selectedSkillLoc.head.y-1)
-          if(rangedSkillTargetables.contains(newTarget)) selectedSkillLoc = Some(newTarget.copy())
+          if(areaOfUse.contains(newTarget)) selectedSkillLoc = Some(newTarget.copy())
         }
         movedSkillTarget = true
       } else {
         movedSkillTarget = false
       }
-      if (game.keysDown.contains(Keys.ENTER)) {
+      if (game.keysDown.contains(Keys.ENTER) &&
+        (!skill.mustTargetEnemy || selectedSkillLoc.forall(l => game.enemies.exists(e => e.location == l))) &&
+        (skill.canTargetEnemy || selectedSkillLoc.forall(l => !game.enemies.exists(e => e.location == l))) && rangedSkillTargetables.contains(selectedSkillLoc.head)
+      ) {
         skill.onUse(
           this,
           selectedSkillLoc.head,
