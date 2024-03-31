@@ -37,6 +37,7 @@ class Game(lvl: Level, plr: Player, wld: World)
   var enemies: List[Enemy] = List.empty
   var items: List[Item] = List.empty
   var animateTime = 0f
+  var timebetweenAnimations = 0f
   var lvlupEffect = 0f
   var lvlUping = false
 
@@ -96,8 +97,14 @@ class Game(lvl: Level, plr: Player, wld: World)
     mouseLocOnGrid.x = (fakeLoc.x / screenUnit).floor.toInt - Trog.translationX
     mouseLocOnGrid.y =
       ((Geometry.ScreenHeight - fakeLoc.y) / screenUnit).floor.toInt - Trog.translationY
+    timebetweenAnimations += delta
+    if(timebetweenAnimations > .5f){
     animateTime = animateTime + delta
-    while (animateTime >= 1) animateTime -= 1
+    }
+    if (animateTime >= .5f) {
+      animateTime = 0
+      timebetweenAnimations = 0
+    }
     enemies.foreach(e => e.selected = false)
     items.foreach(ite => {
       if (ite.number < 1) items = items.filterNot(item => item eq ite)

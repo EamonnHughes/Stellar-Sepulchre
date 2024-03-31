@@ -14,7 +14,7 @@ object Animation {
       x: Float,
       y: Float
   ): Unit = {
-    var number = if (game.animateTime >= .5f) "2" else "1"
+    var number = if (game.animateTime >= .25f) "2" else "1"
     val texture = TextureWrapper.load(s"$string$number.png")
     batch.draw(texture, x * screenUnit, y * screenUnit, screenUnit, screenUnit)
   }
@@ -27,9 +27,9 @@ object Animation {
       y: Float
   ): Unit = {
     var number =
-      if (game.animateTime >= .75f) "4"
-      else if (game.animateTime >= .5f) "3"
-      else if (game.animateTime >= .25) "2"
+      if (game.animateTime >= .375f) "4"
+      else if (game.animateTime >= .25f) "3"
+      else if (game.animateTime >= .125) "2"
       else "1"
     val texture = TextureWrapper.load(s"$string$number.png")
     batch.draw(texture, x * screenUnit, y * screenUnit, screenUnit, screenUnit)
