@@ -60,16 +60,6 @@ trait Enemy extends Actor {
       (location.y + 1) * screenUnit
     )
     */
-    if (selected) {
-      batch.setColor(1f, 1f, 0, .75f)
-      Animation.twoFrameAnimation(
-        game,
-        batch,
-        "targetReticle",
-        location.x.toFloat,
-        location.y.toFloat
-      )
-    }
   }
 }
 

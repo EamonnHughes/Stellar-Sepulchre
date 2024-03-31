@@ -3,7 +3,7 @@ package org.eamonnh.trog.character
 import org.eamonnh.trog.Trog.garbage
 import org.eamonnh.trog.scenes.Game
 import org.eamonnh.trog.util.TextureWrapper
-import org.eamonnh.trog.{Actor, Pathfinding, Trog, d}
+import org.eamonnh.trog.{Actor, Pathfinding, Trog, Vec2, d}
 
 trait Skill {
   val coolDown: Int
@@ -19,7 +19,7 @@ trait rangedSkill extends Skill {
 
   def onUse(
       user: Actor,
-      target: Actor,
+      target: Vec2,
       game: Game
   ): Unit
 }
@@ -47,12 +47,12 @@ case class MicroMissile() extends rangedSkill {
 
   override def onUse(
       user: Actor,
-      target: Actor,
+      target: Vec2,
       game: Game
   ): Unit = {
     var ended = false
     Pathfinding
-      .findPath(user.location, target.location, game.level)
+      .findPath(user.location, target, game.level)
       .filter(p => p.list.length <= range)
       .foreach(p => {
         Trog.Crunch.play(.5f, 1 + ((Math.random() / 4) - .125).toFloat, 0)
@@ -78,18 +78,18 @@ case class Charge() extends rangedSkill {
 
   override def onUse(
       user: Actor,
-      target: Actor,
+      target: Vec2,
       game: Game
   ): Unit = {
     Pathfinding
-      .findPath(user.location, target.location, game.level)
+      .findPath(user.location, target, game.level)
       .filter(p => p.list.length <= range)
       .foreach(p => {
         if (!game.enemies.exists(e => e.location == p.list(1))) {
           Trog.Crunch.play(.5f, 1 + ((Math.random() / 4) - .125).toFloat, 0)
           user.location = p.list(1).copy()
           user.destination = p.list(1).copy()
-          user.attack(target)
+          game.enemies.filter(e => e.location == target).foreach(t => user.attack(t))
         }
       })
 

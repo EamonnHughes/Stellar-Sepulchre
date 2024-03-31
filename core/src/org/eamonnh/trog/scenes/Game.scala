@@ -15,7 +15,6 @@ import scala.util.Random
 class Game(lvl: Level, plr: Player, wld: World)
     extends Scene
     with Serializable {
-  var clickedForTargeting = false
   var fakeLoc = Vec2(0, 0)
   var saveTick = 0f
   var explored: List[Vec2] = List.empty
@@ -105,7 +104,6 @@ class Game(lvl: Level, plr: Player, wld: World)
       animateTime = 0
       timebetweenAnimations = 0
     }
-    enemies.foreach(e => e.selected = false)
     items.foreach(ite => {
       if (ite.number < 1) items = items.filterNot(item => item eq ite)
     })
@@ -140,50 +138,7 @@ class Game(lvl: Level, plr: Player, wld: World)
       allSpawned = true
     }
     if (player.rangedSkillUsing.nonEmpty) {
-      player.rangedSkillUsing.foreach(sk => {
-        player.rangedSkillTargetables = enemies.filter(e => {
-          Pathfinding
-            .findPath(player.location, e.location, level)
-            .exists(p => p.list.length <= sk.range)
-        })
-        if (player.rangedSkillTargetables.isEmpty) {
-          player.clearRangedStuff()
-        } else {
-          player.rangedSkillTargetables(player.rangedSkillOption).selected =
-            true
-          if (keysDown.contains(Keys.LEFT)) {
-            if (!clickedForTargeting) {
-              player.rangedSkillOption =
-                (player.rangedSkillOption + (player.rangedSkillTargetables.length - 1)) % player.rangedSkillTargetables.length
-            }
-            clickedForTargeting = true
-          } else if (keysDown.contains(Keys.RIGHT)) {
-            if (!clickedForTargeting) {
-              player.rangedSkillOption =
-                (player.rangedSkillOption + 1) % player.rangedSkillTargetables.length
-            }
-            clickedForTargeting = true
-          } else {
-            clickedForTargeting = false
-          }
-          if (keysDown.contains(Keys.ENTER)) {
-            sk.onUse(
-              player,
-              player.rangedSkillTargetables(player.rangedSkillOption),
-              this
-            )
-            sk.ccd = sk.coolDown
-            if (sk.takesTurn) {
-              player.yourTurn = false
-              enemyTurn = true
-            }
-            player.clearRangedStuff()
-          }
-          if (keysDown.contains(Keys.ESCAPE)) {
-            player.clearRangedStuff()
-          }
-        }
-      })
+      player.rangedSkillUsing.foreach(a => player.doRangedSkill(a))
     } else {
       player.update(delta)
       enemies.foreach(e => e.update(delta))
