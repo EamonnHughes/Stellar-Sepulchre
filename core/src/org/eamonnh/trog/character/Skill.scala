@@ -15,7 +15,8 @@ trait Skill {
 }
 
 trait rangedSkill extends Skill {
-  var range: Int
+  var maxRange: Int
+  var minRange: Int
 
   def onUse(
       user: Actor,
@@ -24,24 +25,12 @@ trait rangedSkill extends Skill {
   ): Unit
 }
 
-trait meleeSkill extends Skill {
-  def onUse(
-      user: Actor,
-      target: Actor,
-      game: Game
-  ): Unit
-
-  def selectTarget(game: Game, user: Actor): Option[Actor] = {
-    game.enemies.find(e => user.location.getAdjacents.contains(e.location))
-  }
-}
-
 case class MicroMissile() extends rangedSkill {
   override val coolDown: Int = 5
   override val takesTurn: Boolean = true
   override var name: String = "Micromissile"
   override var ccd: Int = 0
-  override var range: Int = 5
+  override var maxRange: Int = 5
 
   override def icon: TextureWrapper = TextureWrapper.load("Micromissile.png")
 
@@ -53,7 +42,7 @@ case class MicroMissile() extends rangedSkill {
     var ended = false
     Pathfinding
       .findPath(user.location, target, game.level)
-      .filter(p => p.list.length <= range)
+      .filter(p => p.list.length <= maxRange)
       .foreach(p => {
         Trog.Crunch.play(.5f, 1 + ((Math.random() / 4) - .125).toFloat, 0)
         game.enemies.foreach(e => {
@@ -65,6 +54,8 @@ case class MicroMissile() extends rangedSkill {
       })
 
   }
+
+  override var minRange: Int = 2
 }
 
 case class Charge() extends rangedSkill {
@@ -72,7 +63,7 @@ case class Charge() extends rangedSkill {
   override val takesTurn: Boolean = true
   override var name: String = "Charge"
   override var ccd: Int = 0
-  override var range: Int = 4
+  override var maxRange: Int = 5
 
   override def icon: TextureWrapper = TextureWrapper.load("Charge.png")
 
@@ -83,7 +74,7 @@ case class Charge() extends rangedSkill {
   ): Unit = {
     Pathfinding
       .findPath(user.location, target, game.level)
-      .filter(p => p.list.length <= range)
+      .filter(p => p.list.length <= maxRange)
       .foreach(p => {
         if (!game.enemies.exists(e => e.location == p.list(1))) {
           Trog.Crunch.play(.5f, 1 + ((Math.random() / 4) - .125).toFloat, 0)
@@ -94,23 +85,30 @@ case class Charge() extends rangedSkill {
       })
 
   }
+
+  override var minRange: Int = 3
 }
 
-case class Bash() extends meleeSkill {
+case class Bash() extends rangedSkill {
   override val coolDown: Int = 4
   override val takesTurn: Boolean = true
   override var name: String = "Bash"
   override var ccd: Int = 0
+  override var maxRange: Int = 2
+  override var minRange: Int = 2
+
 
   override def icon: TextureWrapper = TextureWrapper.load("Bash.png")
 
   override def onUse(
       user: Actor,
-      target: Actor,
+      target: Vec2,
       game: Game
   ): Unit = {
-    user.attack(target)
-    target.statuses.stunned = 2
+    game.enemies.filter(e => e.location == target).foreach(enemy => {
+    user.attack(enemy)
+    enemy.statuses.stunned = 4
     Trog.Crunch.play(.5f, 1 + ((Math.random() / 4) - .125).toFloat, 0)
+  })
   }
 }

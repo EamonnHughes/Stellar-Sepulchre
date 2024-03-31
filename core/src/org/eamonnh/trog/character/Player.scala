@@ -157,20 +157,6 @@ case class Player() extends Actor {
                     rangedSkillUsing = Some(range)
                   }
                 }
-                case melee: meleeSkill => {
-                  if (melee.ccd == 0) {
-                    melee
-                      .selectTarget(game, this)
-                      .foreach(t => {
-                        melee.onUse(this, t, game)
-                        melee.ccd = melee.coolDown
-                        if (melee.takesTurn) {
-                          yourTurn = false
-                          game.enemyTurn = true
-                        }
-                      })
-                  }
-                }
               }
           })
         if (game.keysDown.contains(Keys.Z) && !inCombat) {
@@ -388,7 +374,7 @@ case class Player() extends Actor {
   }
 
   def doRangedSkill(skill: rangedSkill): Unit = {
-    rangedSkillTargetables = game.level.terrains.zipWithIndex.filter(t => Pathfinding.findPath(location,  getVec2fromI(t._2, game.level), game.level).exists(p => p.list.length <= skill.range)).map(i => getVec2fromI(i._2, game.level)).toList
+    rangedSkillTargetables = game.level.terrains.zipWithIndex.filter(t => Pathfinding.findPath(location,  getVec2fromI(t._2, game.level), game.level).exists(p => p.list.length <= skill.maxRange && p.list.length >= skill.minRange)).map(i => getVec2fromI(i._2, game.level)).toList
     if (rangedSkillTargetables.isEmpty) {
       clearRangedStuff()
     } else {
