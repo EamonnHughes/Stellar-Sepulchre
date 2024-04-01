@@ -31,7 +31,7 @@ case class Player() extends Actor {
   var game: Game = _
   var location: Vec2 = Vec2(0, 0)
   var destination: Vec2 = Vec2(0, 0)
-  var yourTurn = true
+  var turn = true
   var tick = 0f
   var speed = .25f
   var clickInInv = false
@@ -109,10 +109,10 @@ case class Player() extends Actor {
 
   def update(delta: Float): Unit = {
 
-    if (!yourTurn) {
+    if (!turn) {
       tick += delta
-      if (tick >= speed || resting || exploring) {
-        yourTurn = true
+      if ((tick >= speed || resting || exploring) && !game.playerTurnDone) {
+        turn = true
         tick = 0f
       }
     }
@@ -153,13 +153,14 @@ case class Player() extends Actor {
     ) {
       inCombat = true
     } else inCombat = false
-    if (yourTurn) {
-      if (statuses.stunned > 0) {
-        statuses.stunned -= 1
-        yourTurn = false
-        game.enemyTurn = true
-      } else {
-        game.keysDown
+    if (turn) {
+      statuses.foreach(s => {
+        s.onTick(this)
+        s.timeLeft -= 1
+        if(s.timeLeft == 0) statuses = statuses.filterNot( s2 => s2 eq s)
+      })}
+    if (turn) {
+      game.keysDown
           .find(key => Character.isDigit(Keys.toString(key).charAt(0)))
           .foreach(n => {
             var keyn = Keys.toString(n).toInt
@@ -284,7 +285,8 @@ case class Player() extends Actor {
         } else if (game.keysDown.contains(Keys.SPACE)) {
           resting = true
           exploring = false
-          game.enemyTurn = true
+          turn = false
+          game.playerTurnDone = true
         } else if (game.clicked) {
           destination = game.mouseLocOnGrid.copy()
         } else if (game.keysDown.contains(Keys.R)) {
@@ -307,7 +309,7 @@ case class Player() extends Actor {
           })
         }
       }
-      if ((destination != location || resting) && yourTurn) {
+      if ((destination != location || resting) && turn) {
         if (!resting) {
           if (destination.getAdjacents.contains(location))
             game.level
@@ -332,8 +334,9 @@ case class Player() extends Actor {
           if (!inCombat && stats.health < stats.maxHealth)
             (healing += healingFactor * 10)
         }
-        if (stats.health < stats.maxHealth) healing += healingFactor
-        yourTurn = false
+        if (stats.health < stats.maxHealth){ healing += healingFactor}
+        turn = false
+        game.playerTurnDone = true
         if (initLoc != location) {
           getVisible = game.level.terrains.zipWithIndex
             .filter({ case (t, i) =>
@@ -351,12 +354,10 @@ case class Player() extends Actor {
               game.explored = w :: game.explored
             }
           })
-        game.enemyTurn = true
       }
       if (resting && (stats.health == stats.maxHealth || inCombat)) {
         resting = false
       }
-    }
   }
 
   def levelUp(): Unit = {
@@ -406,7 +407,7 @@ case class Player() extends Actor {
           (inventoryItemSelected + inventory.length - 1) % inventory.length
         clicked = true
       }
-      if (yourTurn) {
+      if (turn) {
         if (
           game.keysDown
             .contains(Keys.ENTER) || game.keysDown.contains(Keys.SPACE)
@@ -415,8 +416,8 @@ case class Player() extends Actor {
             inventory(inventoryItemSelected).use(this)
           }
           clicked = true
-          yourTurn = false
-          game.enemyTurn = true
+          turn = false
+          game.playerTurnDone = true
         }
       }
     }
@@ -517,8 +518,8 @@ case class Player() extends Actor {
         )
         skill.ccd = skill.coolDown
         if (skill.takesTurn) {
-          yourTurn = false
-          game.enemyTurn = true
+          turn = false
+          game.playerTurnDone = true
         }
         clearRangedStuff()
       }

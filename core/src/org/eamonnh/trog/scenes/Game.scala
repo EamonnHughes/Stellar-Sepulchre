@@ -26,7 +26,7 @@ class Game(lvl: Level, plr: Player, wld: World)
   var level: Level = lvl
   var descending = false
   var player: Player = plr
-  var enemyTurn = false
+  var playerTurnDone = false
   var floor = 1
   var updatingCameraX = false
   var updatingCameraY = false
@@ -143,10 +143,11 @@ class Game(lvl: Level, plr: Player, wld: World)
     } else {
       player.update(delta)
       enemies.foreach(e => e.update(delta))
-      if (enemyTurn) {
+      if (playerTurnDone) {
         saveTick += 1
-        enemyTurn = false
+        enemies.foreach(_.turn = true)
         player.stats.skills.foreach(sk => if (sk.ccd > 0) sk.ccd -= 1)
+        playerTurnDone = false
       }
       if (saveTick >= 25) {
         var kd = keysDown

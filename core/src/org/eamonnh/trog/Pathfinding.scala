@@ -1,6 +1,7 @@
 package org.eamonnh.trog
 
 import org.eamonnh.trog.procgen.Level
+import org.eamonnh.trog.scenes.Game
 
 import scala.collection.mutable
 
@@ -106,6 +107,18 @@ object Pathfinding {
     }
     paths.find(path => path.list.head == end)
   }
+  def findPathWithEnemies(start: Vec2, end: Vec2, level: Level, enemies: List[Enemy]): Option[Path] = {
+    val visitedCells = mutable.Set.empty[Vec2]
+    var paths = List(Path(List(start)))
+    while (!paths.exists(lInt => lInt.list.head == end) && paths.nonEmpty) {
+      paths = for {
+        path <- paths
+        newPath <- path.extendPathWithEnemies(visitedCells, level, enemies)
+      } yield newPath
+
+    }
+    paths.find(path => path.list.head == end)
+  }
 }
 
 case class Path(var list: List[Vec2]) {
@@ -125,6 +138,16 @@ case class Path(var list: List[Vec2]) {
       if (visCells.add(loc))
       if (loc.x >= 0 && loc.y >= 0 && loc.x < level.dimensions && loc.y < level.dimensions)
       if (level.terrains(loc.x + (loc.y * level.dimensions))._1.walkable)
+    } yield add(loc)
+
+  }
+  def extendPathWithEnemies(visCells: mutable.Set[Vec2], level: Level, enemies: List[Enemy]): List[Path] = {
+    for {
+      loc <- list.head.getAdjacents
+      if (visCells.add(loc))
+      if (loc.x >= 0 && loc.y >= 0 && loc.x < level.dimensions && loc.y < level.dimensions)
+      if (level.terrains(loc.x + (loc.y * level.dimensions))._1.walkable)
+      if(!enemies.exists(e => e.location == loc))
     } yield add(loc)
 
   }

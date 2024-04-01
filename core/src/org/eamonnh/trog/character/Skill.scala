@@ -117,7 +117,9 @@ case class Bash() extends rangedSkill {
       .filter(e => e.location == target)
       .foreach(enemy => {
         user.attack(enemy)
-        enemy.statuses.stunned = 4
+        var stun = Stunned()
+        stun.timeLeft = 4
+        enemy.statuses = stun :: enemy.statuses
         Trog.Crunch.play(.5f, 1 + ((Math.random() / 4) - .125).toFloat, 0)
       })
   }

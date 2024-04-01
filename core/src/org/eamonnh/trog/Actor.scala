@@ -1,15 +1,16 @@
 package org.eamonnh.trog
 
-import org.eamonnh.trog.character.{Equipment, Stats, Statuses}
+import org.eamonnh.trog.character.{Equipment, Stats, Status}
 import org.eamonnh.trog.items.{Item, Weapon}
 
 trait Actor extends Serializable {
   var location: Vec2
   var destination: Vec2
-  var statuses: Statuses = Statuses()
+  var statuses: List[Status] = List.empty
   var stats: Stats
   var equipment: Equipment
   var name: String
+  var turn: Boolean
 
   def attack(target: Actor): Unit
 

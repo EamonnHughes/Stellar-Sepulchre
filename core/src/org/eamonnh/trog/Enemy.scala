@@ -3,7 +3,7 @@ package org.eamonnh.trog
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.g2d.PolygonSpriteBatch
 import org.eamonnh.trog.Trog.{Square, asleep}
-import org.eamonnh.trog.character.{Equipment, Stats, makeStats}
+import org.eamonnh.trog.character.{Equipment, Stats, Stunned, makeStats}
 import org.eamonnh.trog.items.{MedKit, Weapon, makeCommonWeapon}
 import org.eamonnh.trog.scenes.Game
 import org.eamonnh.trog.util.Animation
@@ -11,6 +11,7 @@ import org.eamonnh.trog.util.Animation
 import scala.util.Random
 
 trait Enemy extends Actor {
+  var turn = false
   var game: Game
   var location: Vec2 = Vec2(0, 0)
   var destination: Vec2 = Vec2(0, 0)
@@ -23,7 +24,7 @@ trait Enemy extends Actor {
   def attack(target: Actor): Unit
 
   def draw(batch: PolygonSpriteBatch): Unit = {
-    if (statuses.stunned > 0) {
+    if (statuses.exists(_.isInstanceOf[Stunned])) {
       batch.setColor(Color.YELLOW)
       batch.draw(
         asleep,
@@ -63,7 +64,44 @@ trait Enemy extends Actor {
   }
 }
 
-case class Servitor() extends Enemy {
+trait BasicMeleeEnemy extends Enemy {
+  override def update(delta: Float): Unit = {
+
+    if (turn) {
+      statuses.foreach(s => {
+        s.onTick(this)
+        s.timeLeft -= 1
+        if(s.timeLeft == 0) statuses = statuses.filterNot( s2 => s2 eq s)
+      })}
+    if(turn) {
+      destination = game.player.location.copy()
+    var path = Pathfinding
+        .findPathWithEnemies(location, destination, game.level, game.enemies.filterNot(e => e eq this))
+        .filter(p => p.list.length < stats.sightRad)
+      path.foreach(p => {
+        var next = p.list.reverse(1).copy()
+        if (!game.enemies.exists(e => e.location == next)) {
+          if (game.player.location == next) attack(game.player)
+          else location = next.copy()
+        }
+      })
+      turn = false
+    }
+
+
+    if (stats.health <= 0) {
+      var w = new MedKit()
+      w.location = Some(location.copy())
+      w.game = game
+      game.items = w :: game.items
+      game.enemies = game.enemies.filterNot(e => e eq this)
+      game.player.stats.exp += stats.exp
+      game.addMessage(name + " has been slain")
+    }
+  }
+}
+
+case class Servitor() extends BasicMeleeEnemy {
   var equipment: Equipment = new Equipment
   var game: Game = _
   var lev: Int = _
@@ -102,36 +140,6 @@ case class Servitor() extends Enemy {
       mCrm = 1.9f + (lev * .1f)
     )
     game.enemies = this :: game.enemies
-  }
-
-  override def update(delta: Float): Unit = {
-
-    if (game.enemyTurn) {
-      if (statuses.stunned > 0) statuses.stunned -= 1
-      else {
-        destination = game.player.location.copy()
-        var path = Pathfinding
-          .findPath(location, destination, game.level)
-          .filter(p => p.list.length < stats.sightRad)
-        path.foreach(p => {
-          var next = p.list.reverse(1).copy()
-          if (!game.enemies.exists(e => e.location == next)) {
-            if (game.player.location == next) attack(game.player)
-            else location = next.copy()
-          }
-        })
-      }
-    }
-
-    if (stats.health <= 0) {
-      var w = new MedKit()
-      w.location = Some(location.copy())
-      w.game = game
-      game.items = w :: game.items
-      game.enemies = game.enemies.filterNot(e => e eq this)
-      game.player.stats.exp += stats.exp
-      game.addMessage(name + " has been slain")
-    }
   }
 
   override def attack(target: Actor): Unit = {
