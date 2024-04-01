@@ -3,6 +3,7 @@ package scenes
 
 import com.badlogic.gdx.Input.Keys
 import com.badlogic.gdx.InputAdapter
+import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.g2d.PolygonSpriteBatch
 import org.eamonnh.trog.SaveLoad.{loadState, saveState}
 import org.eamonnh.trog.Scene
@@ -193,14 +194,14 @@ class Game(lvl: Level, plr: Player, wld: World)
             .toInt < player.stats.sightRad
         ) {
           var path =
-            Pathfinding.findPathUpto(player.location, Vec2(x, y), level)
+            Pathfinding.findRaycastPathUpTo(player.location, Vec2(x, y), level)
           if (path.nonEmpty) {
             path.foreach(p => {
               dist = p.list.length
             })
           }
         }
-        if (dist >= player.stats.sightRad) {
+        if (dist >= player.stats.sightRad && (Vec2(x, y) != player.location)) {
           if (
             explored.contains(Vec2(x, y)) || Vec2(x, y).getAdjacents.exists(
               adj => explored.contains(adj)
@@ -211,14 +212,19 @@ class Game(lvl: Level, plr: Player, wld: World)
           enemies
             .filter(e => e.location == Vec2(x, y))
             .foreach(e => e.draw(batch))
-          var lightLevel: Float =
+          var lightLevel: Float = {
             ((((player.stats.sightRad - dist).toFloat / player.stats.sightRad) + .25f) min 1) max 0
-          batch.setColor(
+          }
+          if(Vec2(x, y) == player.location) {
+            batch.setColor(Color.CLEAR)
+          } else {
+            batch.setColor(
             0,
             0,
             0,
             1 - lightLevel
           )
+          }
         }
         batch.draw(
           Trog.Square,
@@ -229,18 +235,6 @@ class Game(lvl: Level, plr: Player, wld: World)
         )
       }
     }
-    Pathfinding.findRaycastPath(player.location, mouseLocOnGrid, level).foreach(p => {
-      p.list.foreach(loc => {
-        batch.setColor(1f, 0f, 0f, .5f)
-        batch.draw(
-          Trog.Square,
-          loc.x * screenUnit,
-          loc.y * screenUnit,
-          screenUnit,
-          screenUnit
-        )
-      })
-    })
 
   }
 }

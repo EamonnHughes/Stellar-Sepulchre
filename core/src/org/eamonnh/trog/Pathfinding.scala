@@ -34,6 +34,34 @@ object Pathfinding {
     } else obstructed = true
     if(!obstructed) Some(listPaths) else None
   }
+  def findRaycastPathUpTo(start: Vec2, end: Vec2, level: Level): Option[Path] = {
+    var dx = end.x - start.x
+    var dy = end.y - start.y
+    var startLocX = start.x
+    var endLocX = end.x
+    var startLocY = start.y
+    var endLocY = end.y
+    var obstructed = false
+    var listPaths: Path = Path(List.empty)
+    if(start != end) {
+      if (Math.abs(dx) >= Math.abs(dy)) {
+        for (xCheck <- startLocX to endLocX by Math.signum(dx).toInt) {
+          val yCheck = (endLocY - startLocY) * (xCheck - startLocX) / (endLocX - startLocX) + startLocY
+          if (!level.terrains.zipWithIndex.exists(t => getVec2fromI(t._2, level) == Vec2(xCheck.floor.toInt, yCheck) && !t._1._1.walkable) || (Vec2(xCheck.floor.toInt, yCheck) == start) || (Vec2(xCheck.floor.toInt, yCheck) == end) ) {
+            listPaths.list = (Vec2(xCheck.floor.toInt, yCheck) :: listPaths.list.reverse).reverse
+          } else obstructed = true
+        }
+      } else {
+        for (yCheck <- startLocY to endLocY by Math.signum(dy).toInt) {
+          val xCheck = (endLocX - startLocX) * (yCheck - startLocY) / (endLocY - startLocY) + startLocX
+          if (!level.terrains.zipWithIndex.exists(t => getVec2fromI(t._2, level) == Vec2(xCheck, yCheck.floor.toInt) && !t._1._1.walkable) || (Vec2(xCheck, yCheck.floor.toInt) == start) || (Vec2(xCheck, yCheck.floor.toInt) == end)) {
+            listPaths.list = (Vec2(xCheck, yCheck.floor.toInt) :: listPaths.list.reverse).reverse
+          } else obstructed = true
+        }
+      }
+    } else obstructed = true
+    if(!obstructed) Some(listPaths) else None
+  }
   def findHalfPath(start: Vec2, end: Vec2, level: Level): Option[Path] = {
     val visitedCells = mutable.Set.empty[Vec2]
     var paths = List(Path(List(start)))
