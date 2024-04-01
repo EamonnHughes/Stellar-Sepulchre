@@ -80,17 +80,14 @@ case class Charge() extends rangedSkill {
       game: Game
   ): Unit = {
     Pathfinding
-      .findPath(user.location, target, game.level)
-      .filter(p => p.list.length <= maxRange(user))
-      .foreach(p => {
-        if (!game.enemies.exists(e => e.location == p.list(1))) {
+      .findRaycastPath(user.location, target, game.level).foreach(p => {
+          var enemyLoc = p.list.zipWithIndex.filter(loc => game.enemies.exists(e => e.location == loc._1)).head
           Trog.Crunch.play(.5f, 1 + ((Math.random() / 4) - .125).toFloat, 0)
-          user.location = p.list(1).copy()
-          user.destination = p.list(1).copy()
+          user.location = p.list(enemyLoc._2-1).copy()
+          user.destination = user.location.copy()
           game.enemies
-            .filter(e => e.location == target)
+            .filter(e => e.location == enemyLoc._1)
             .foreach(t => user.attack(t))
-        }
       })
 
   }
