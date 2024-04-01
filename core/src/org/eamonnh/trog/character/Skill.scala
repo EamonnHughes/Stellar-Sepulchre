@@ -33,6 +33,9 @@ case class MicroMissile() extends rangedSkill {
   override var name: String = "Micromissile"
   override var ccd: Int = 0
   override var maxRange: Int = 5
+  override var minRange: Int = 2
+  override var mustTargetEnemy: Boolean = true
+  override var canTargetEnemy: Boolean = true
 
   override def icon: TextureWrapper = TextureWrapper.load("Micromissile.png")
 
@@ -56,10 +59,6 @@ case class MicroMissile() extends rangedSkill {
       })
 
   }
-
-  override var minRange: Int = 2
-  override var mustTargetEnemy: Boolean = true
-  override var canTargetEnemy: Boolean = true
 }
 
 case class Charge() extends rangedSkill {
@@ -68,6 +67,9 @@ case class Charge() extends rangedSkill {
   override var name: String = "Charge"
   override var ccd: Int = 0
   override var maxRange: Int = 5
+  override var minRange: Int = 3
+  override var mustTargetEnemy: Boolean = true
+  override var canTargetEnemy: Boolean = true
 
   override def icon: TextureWrapper = TextureWrapper.load("Charge.png")
 
@@ -84,15 +86,13 @@ case class Charge() extends rangedSkill {
           Trog.Crunch.play(.5f, 1 + ((Math.random() / 4) - .125).toFloat, 0)
           user.location = p.list(1).copy()
           user.destination = p.list(1).copy()
-          game.enemies.filter(e => e.location == target).foreach(t => user.attack(t))
+          game.enemies
+            .filter(e => e.location == target)
+            .foreach(t => user.attack(t))
         }
       })
 
   }
-
-  override var minRange: Int = 3
-  override var mustTargetEnemy: Boolean = true
-  override var canTargetEnemy: Boolean = true
 }
 
 case class Bash() extends rangedSkill {
@@ -102,7 +102,8 @@ case class Bash() extends rangedSkill {
   override var ccd: Int = 0
   override var maxRange: Int = 2
   override var minRange: Int = 2
-
+  override var mustTargetEnemy: Boolean = true
+  override var canTargetEnemy: Boolean = true
 
   override def icon: TextureWrapper = TextureWrapper.load("Bash.png")
 
@@ -111,15 +112,14 @@ case class Bash() extends rangedSkill {
       target: Vec2,
       game: Game
   ): Unit = {
-    game.enemies.filter(e => e.location == target).foreach(enemy => {
-    user.attack(enemy)
-    enemy.statuses.stunned = 4
-    Trog.Crunch.play(.5f, 1 + ((Math.random() / 4) - .125).toFloat, 0)
-  })
+    game.enemies
+      .filter(e => e.location == target)
+      .foreach(enemy => {
+        user.attack(enemy)
+        enemy.statuses.stunned = 4
+        Trog.Crunch.play(.5f, 1 + ((Math.random() / 4) - .125).toFloat, 0)
+      })
   }
-
-  override var mustTargetEnemy: Boolean = true
-  override var canTargetEnemy: Boolean = true
 }
 
 case class Disengage() extends rangedSkill {
@@ -128,19 +128,18 @@ case class Disengage() extends rangedSkill {
   override var name: String = "Disengage"
   override var ccd: Int = 0
   override var maxRange: Int = 5
+  override var minRange: Int = 2
+  override var mustTargetEnemy: Boolean = false
+  override var canTargetEnemy: Boolean = false
 
   override def icon: TextureWrapper = TextureWrapper.load("Disengage.png")
 
   override def onUse(
-                      user: Actor,
-                      target: Vec2,
-                      game: Game
-                    ): Unit = {
+      user: Actor,
+      target: Vec2,
+      game: Game
+  ): Unit = {
     user.location = target.copy()
 
   }
-
-  override var minRange: Int = 2
-  override var mustTargetEnemy: Boolean = false
-  override var canTargetEnemy: Boolean = false
 }

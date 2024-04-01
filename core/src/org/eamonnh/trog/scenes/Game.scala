@@ -97,8 +97,8 @@ class Game(lvl: Level, plr: Player, wld: World)
     mouseLocOnGrid.y =
       ((Geometry.ScreenHeight - fakeLoc.y) / screenUnit).floor.toInt - Trog.translationY
     timebetweenAnimations += delta
-    if(timebetweenAnimations > .5f){
-    animateTime = animateTime + delta
+    if (timebetweenAnimations > .5f) {
+      animateTime = animateTime + delta
     }
     if (animateTime >= .5f) {
       animateTime = 0

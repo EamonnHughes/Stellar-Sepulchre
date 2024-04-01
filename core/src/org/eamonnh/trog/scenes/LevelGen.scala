@@ -8,7 +8,7 @@ import org.eamonnh.trog.Scene
 import org.eamonnh.trog.Trog.loadBG
 import org.eamonnh.trog.character.Player
 import org.eamonnh.trog.inGameUserInterface.inCharacterSheet
-import org.eamonnh.trog.procgen.{Door, Emptiness, GeneratedMap, Level, World}
+import org.eamonnh.trog.procgen._
 
 class LevelGen(
     player: Player,
@@ -28,19 +28,20 @@ class LevelGen(
     while (!doneGenerating) doneGenerating = genMap.generate()
     genMap.potentialDoorways.foreach(place1 => {
       if (
-      (!genMap.rooms.exists(r => {
-        r.getAllTiles.contains(Vec2(place1.x, place1.y + 1))
-      })  && !genMap.rooms.exists(r => {
-        r.getAllTiles.contains(Vec2(place1.x, place1.y - 1))
-      }))  ||
+        (!genMap.rooms.exists(r => {
+          r.getAllTiles.contains(Vec2(place1.x, place1.y + 1))
+        }) && !genMap.rooms.exists(r => {
+          r.getAllTiles.contains(Vec2(place1.x, place1.y - 1))
+        })) ||
         (!genMap.rooms.exists(r => {
           r.getAllTiles.contains(Vec2(place1.x + 1, place1.y))
         }) && !genMap.rooms.exists(r => {
           r.getAllTiles.contains(Vec2(place1.x - 1, place1.y))
         }))
-    ) {
-      genMap.locPurpose.addOne((place1, Door()))
-    }})
+      ) {
+        genMap.locPurpose.addOne((place1, Door()))
+      }
+    })
     if (level.terrains.forall(_._1.isInstanceOf[Emptiness])) {
       level = genMap.doExport()
       player.location = level.upLadder.copy()

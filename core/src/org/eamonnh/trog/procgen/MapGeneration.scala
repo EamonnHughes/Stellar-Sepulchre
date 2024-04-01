@@ -194,9 +194,11 @@ case class GeneratedMap(
                 (ClosedDoor(), Trog.pickTileNum)
             } else {
               level.terrains((t.y * dimensions) + t.x) =
-                (OpenDoor(), Trog.pickTileNum)            }
+                (OpenDoor(), Trog.pickTileNum)
+            }
           } else {
-            level.terrains((t.y * dimensions) + t.x) = (Floor(), Trog.pickTileNum)
+            level.terrains((t.y * dimensions) + t.x) =
+              (Floor(), Trog.pickTileNum)
           }
         } else
           level.terrains((t.y * dimensions) + t.x) = (Floor(), Trog.pickTileNum)

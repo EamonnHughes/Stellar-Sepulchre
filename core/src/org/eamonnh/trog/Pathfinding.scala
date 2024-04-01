@@ -62,8 +62,6 @@ case class Path(list: List[Vec2]) {
 
   }
 
-  def add(loc: Vec2): Path = Path(loc :: list)
-
   def extendPath(visCells: mutable.Set[Vec2], level: Level): List[Path] = {
     for {
       loc <- list.head.getAdjacents
@@ -73,5 +71,7 @@ case class Path(list: List[Vec2]) {
     } yield add(loc)
 
   }
+
+  def add(loc: Vec2): Path = Path(loc :: list)
 
 }

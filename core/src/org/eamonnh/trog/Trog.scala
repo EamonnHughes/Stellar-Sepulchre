@@ -38,11 +38,6 @@ class Trog extends ApplicationAdapter {
     setScene(home)
   }
 
-  private def setScene(newScene: Scene): Unit = {
-    scene = newScene
-    Gdx.input.setInputProcessor(scene.init())
-  }
-
   override def render(): Unit = {
 
     val delta = Gdx.graphics.getDeltaTime
@@ -58,6 +53,11 @@ class Trog extends ApplicationAdapter {
     scene.render(batch)
     scene.renderUI(batch)
     batch.end()
+  }
+
+  private def setScene(newScene: Scene): Unit = {
+    scene = newScene
+    Gdx.input.setInputProcessor(scene.init())
   }
 
   override def dispose(): Unit = {
@@ -89,8 +89,12 @@ object Trog {
     TextureWrapper.load("UIXPBarFrame.png")
   lazy val EffectSplash: TextureWrapper =
     TextureWrapper.load("EffectSplash.png")
+  var translationX = 0
+  var translationY = 0
+
   def mkTileImage(kind: String, theme: Theme, number: Number): TextureWrapper =
     TextureWrapper.load(kind + theme.stringName + number + ".png")
+
   def pickTileNum: Int = {
     if (Math.random() < .925) 1
     else if (Math.random() < .75) 2
@@ -98,8 +102,6 @@ object Trog {
     else if (Math.random() < .5) 4
     else 5
   }
-  var translationX = 0
-  var translationY = 0
 
   def mobile: Boolean = isMobile(Gdx.app.getType)
 

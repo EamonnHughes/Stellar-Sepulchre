@@ -127,9 +127,9 @@ object inGameUserInterface {
           Text.hugeFont.setColor(0f, 0f, 0f, 0.5f)
           Text.hugeFont.draw(
             batch,
-            s"${s.ccd.toString}",
-            -Trog.translationX * screenUnit + (((i * 2f) + 6) * screenUnit + (screenUnit*.25f)),
-            -Trog.translationY * screenUnit + (screenUnit * 2f) - (screenUnit*.25f)
+                s"${s.ccd.toString}",
+            -Trog.translationX * screenUnit + (((i * 2f) + 6) * screenUnit + (screenUnit * .25f)),
+            -Trog.translationY * screenUnit + (screenUnit * 2f) - (screenUnit * .25f)
           )
         }
       }

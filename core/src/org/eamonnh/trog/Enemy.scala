@@ -59,7 +59,7 @@ trait Enemy extends Actor {
       location.x * screenUnit,
       (location.y + 1) * screenUnit
     )
-    */
+     */
   }
 }
 

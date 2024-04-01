@@ -6,17 +6,21 @@ import org.eamonnh.trog.Trog.mkTileImage
 import org.eamonnh.trog.{Trog, Vec2, getIfromVec2, screenUnit}
 
 trait Terrain {
+  val walkable: Boolean
+
   def draw(
       batch: PolygonSpriteBatch,
       location: Vec2,
       theme: Theme,
       number: Number
   ): Unit
-  val walkable: Boolean
+
   def onWalkOnTo(location: Vec2, level: Level): Unit = {}
 }
 
 case class Floor() extends Terrain {
+  val walkable = true
+
   override def draw(
       batch: PolygonSpriteBatch,
       location: Vec2,
@@ -31,10 +35,11 @@ case class Floor() extends Terrain {
       screenUnit
     )
   }
-  val walkable = true
 }
 
 case class Wall() extends Terrain {
+
+  val walkable = false
 
   override def draw(
       batch: PolygonSpriteBatch,
@@ -50,10 +55,11 @@ case class Wall() extends Terrain {
       screenUnit
     )
   }
-  val walkable = false
 }
 
 case class LadderUp() extends Terrain {
+  val walkable = true
+
   override def draw(
       batch: PolygonSpriteBatch,
       location: Vec2,
@@ -75,10 +81,11 @@ case class LadderUp() extends Terrain {
       screenUnit
     )
   }
-  val walkable = true
 }
 
 case class LadderDown() extends Terrain {
+  val walkable = true
+
   override def draw(
       batch: PolygonSpriteBatch,
       location: Vec2,
@@ -100,10 +107,11 @@ case class LadderDown() extends Terrain {
       screenUnit
     )
   }
-  val walkable = true
 }
 
 case class Emptiness() extends Terrain {
+  val walkable = false
+
   override def draw(
       batch: PolygonSpriteBatch,
       location: Vec2,
@@ -119,10 +127,11 @@ case class Emptiness() extends Terrain {
       screenUnit
     )
   }
-  val walkable = false
 }
 
 case class ClosedDoor() extends Terrain {
+  val walkable = false
+
   override def draw(
       batch: PolygonSpriteBatch,
       location: Vec2,
@@ -144,14 +153,18 @@ case class ClosedDoor() extends Terrain {
       screenUnit
     )
   }
-  val walkable = false
 
   override def onWalkOnTo(location: Vec2, level: Level): Unit = {
-    level.terrains.update(getIfromVec2(location, level), (OpenDoor(), level.terrains(getIfromVec2(location, level))._2))
+    level.terrains.update(
+      getIfromVec2(location, level),
+      (OpenDoor(), level.terrains(getIfromVec2(location, level))._2)
+    )
   }
 }
 
 case class OpenDoor() extends Terrain {
+  val walkable = true
+
   override def draw(
       batch: PolygonSpriteBatch,
       location: Vec2,
@@ -173,5 +186,4 @@ case class OpenDoor() extends Terrain {
       screenUnit
     )
   }
-  val walkable = true
 }

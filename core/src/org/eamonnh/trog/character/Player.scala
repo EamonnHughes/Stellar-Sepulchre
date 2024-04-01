@@ -40,14 +40,6 @@ case class Player() extends Actor {
   var movedSkillTarget = false
   var skillActivated = false
 
-  def clearRangedStuff(): Unit = {
-    rangedSkillUsing = None
-    rangedSkillTargetables = List.empty
-    movedSkillTarget = false
-    selectedSkillLoc = None
-    skillActivated = false
-  }
-
   def initially(gme: Game): Unit = {
     game = gme
     val medKit: MedKit = MedKit()
@@ -82,19 +74,25 @@ case class Player() extends Actor {
     )
     rangedSkillTargetables.foreach(t => {
       batch.setColor(0f, .5f, 0f, .35f)
-      batch.draw(Highlight, t.x*screenUnit, t.y*screenUnit, screenUnit, screenUnit)
+      batch.draw(
+        Highlight,
+        t.x * screenUnit,
+        t.y * screenUnit,
+        screenUnit,
+        screenUnit
+      )
     })
     selectedSkillLoc.foreach(loc => {
-      if (
-        !rangedSkillTargetables.contains(loc)
-      ) {
+      if (!rangedSkillTargetables.contains(loc)) {
         batch.setColor(1f, 0f, 0, .75f)
-      } else if(
-        (rangedSkillUsing.head.mustTargetEnemy && !game.enemies.exists(e => e.location == loc)) ||
-          (!rangedSkillUsing.head.canTargetEnemy && game.enemies.exists(e => e.location == loc))
-      ){
-      batch.setColor(1f, 1f, 0, .75f)
-      }  else {
+      } else if (
+        (rangedSkillUsing.head.mustTargetEnemy && !game.enemies
+          .exists(e => e.location == loc)) ||
+        (!rangedSkillUsing.head.canTargetEnemy && game.enemies
+          .exists(e => e.location == loc))
+      ) {
+        batch.setColor(1f, 1f, 0, .75f)
+      } else {
         batch.setColor(0f, .5f, 0, .75f)
       }
       Animation.twoFrameAnimation(
@@ -185,37 +183,70 @@ case class Player() extends Actor {
                 .isInstanceOf[Floor]
             })
           ) {
-            if(game.level.terrains.zipWithIndex.exists { case (w, i) =>
-              !game.explored.contains(getVec2fromI(i, game.level)) && w._1
-                .isInstanceOf[Floor] && Pathfinding
-                .findPath(location, getVec2fromI(i, game.level), game.level).nonEmpty
-            }){
-            var dest =
-              game.level.terrains.zipWithIndex
-                .filter({ case (w, i) =>
-                  !game.explored.contains(getVec2fromI(i, game.level)) && w._1
-                    .isInstanceOf[Floor] && Pathfinding
-                    .findPath(location, getVec2fromI(i, game.level), game.level).nonEmpty
-                })
-                .minBy({ case (w, i) =>
-                  Pathfinding
-                    .findPath(location, getVec2fromI(i, game.level), game.level)
-                    .head
-                    .list
-                    .length
-                })
-            destination = getVec2fromI(dest._2, game.level)
-          } else if(game.level.terrains.zipWithIndex.exists { case (w, i) =>
-              w._1
-                .isInstanceOf[ClosedDoor] && getVec2fromI(i, game.level).getAdjacents.exists(a => Pathfinding
-                .findPath(location, a, game.level).nonEmpty)
-            }) {
-              var dest: Vec2 = game.level.terrains.zipWithIndex
+            if (
+              game.level.terrains.zipWithIndex.exists { case (w, i) =>
+                !game.explored.contains(getVec2fromI(i, game.level)) && w._1
+                  .isInstanceOf[Floor] && Pathfinding
+                  .findPath(location, getVec2fromI(i, game.level), game.level)
+                  .nonEmpty
+              }
+            ) {
+              var dest =
+                game.level.terrains.zipWithIndex
                   .filter({ case (w, i) =>
-                    w._1
-                      .isInstanceOf[ClosedDoor] && getVec2fromI(i, game.level).getAdjacents.exists(a => Pathfinding
-                      .findPath(location, a, game.level).nonEmpty)
-                  }).map(i => getVec2fromI(i._2, game.level)).head.getAdjacents.filter(adj => Pathfinding.findPath(location, adj, game.level).nonEmpty).head
+                    !game.explored.contains(getVec2fromI(i, game.level)) && w._1
+                      .isInstanceOf[Floor] && Pathfinding
+                      .findPath(
+                        location,
+                        getVec2fromI(i, game.level),
+                        game.level
+                      )
+                      .nonEmpty
+                  })
+                  .minBy({ case (w, i) =>
+                    Pathfinding
+                      .findPath(
+                        location,
+                        getVec2fromI(i, game.level),
+                        game.level
+                      )
+                      .head
+                      .list
+                      .length
+                  })
+              destination = getVec2fromI(dest._2, game.level)
+            } else if (
+              game.level.terrains.zipWithIndex.exists { case (w, i) =>
+                w._1
+                  .isInstanceOf[ClosedDoor] && getVec2fromI(
+                  i,
+                  game.level
+                ).getAdjacents.exists(a =>
+                  Pathfinding
+                    .findPath(location, a, game.level)
+                    .nonEmpty
+                )
+              }
+            ) {
+              var dest: Vec2 = game.level.terrains.zipWithIndex
+                .filter({ case (w, i) =>
+                  w._1
+                    .isInstanceOf[ClosedDoor] && getVec2fromI(
+                    i,
+                    game.level
+                  ).getAdjacents.exists(a =>
+                    Pathfinding
+                      .findPath(location, a, game.level)
+                      .nonEmpty
+                  )
+                })
+                .map(i => getVec2fromI(i._2, game.level))
+                .head
+                .getAdjacents
+                .filter(adj =>
+                  Pathfinding.findPath(location, adj, game.level).nonEmpty
+                )
+                .head
               destination = dest
             } else exploring = false
           } else if (location != game.level.downLadder) {
@@ -278,7 +309,11 @@ case class Player() extends Actor {
       }
       if ((destination != location || resting) && yourTurn) {
         if (!resting) {
-          if(destination.getAdjacents.contains(location)) game.level.terrains(getIfromVec2(destination, game.level))._1.onWalkOnTo(destination, game.level)
+          if (destination.getAdjacents.contains(location))
+            game.level
+              .terrains(getIfromVec2(destination, game.level))
+              ._1
+              .onWalkOnTo(destination, game.level)
           val path = Pathfinding.findPath(location, destination, game.level)
           path.foreach(p => {
             val dest = p.list.reverse(1).copy()
@@ -303,8 +338,9 @@ case class Player() extends Actor {
           getVisible = game.level.terrains.zipWithIndex
             .filter({ case (t, i) =>
               t._1.walkable &&
-              Pathfinding
-                .findPath(location, getVec2fromI(i, game.level), game.level).exists(p => p.list.length < stats.sightRad)
+                Pathfinding
+                  .findPath(location, getVec2fromI(i, game.level), game.level)
+                  .exists(p => p.list.length < stats.sightRad)
             })
             .map(t => getVec2fromI(t._2, game.level))
             .toList
@@ -388,50 +424,92 @@ case class Player() extends Actor {
     clicked
   }
 
+  def charSheetControl(delta: Float) = {}
+
   def doRangedSkill(skill: rangedSkill): Unit = {
-    var areaOfUse = game.level.terrains.zipWithIndex.filter(t => Pathfinding.findPath(location, getVec2fromI(t._2, game.level), game.level).nonEmpty).map(i => getVec2fromI(i._2, game.level)).toList
-    rangedSkillTargetables = game.level.terrains.zipWithIndex.filter(t => Pathfinding.findPath(location,  getVec2fromI(t._2, game.level), game.level).exists(p => p.list.length <= skill.maxRange && p.list.length >= skill.minRange)).map(i => getVec2fromI(i._2, game.level)).toList
+    var areaOfUse = game.level.terrains.zipWithIndex
+      .filter(t =>
+        Pathfinding
+          .findPath(location, getVec2fromI(t._2, game.level), game.level)
+          .nonEmpty
+      )
+      .map(i => getVec2fromI(i._2, game.level))
+      .toList
+    rangedSkillTargetables = game.level.terrains.zipWithIndex
+      .filter(t =>
+        Pathfinding
+          .findPath(location, getVec2fromI(t._2, game.level), game.level)
+          .exists(p =>
+            p.list.length <= skill.maxRange && p.list.length >= skill.minRange
+          )
+      )
+      .map(i => getVec2fromI(i._2, game.level))
+      .toList
     if (rangedSkillTargetables.isEmpty) {
       clearRangedStuff()
     } else {
-      if(!skillActivated){
-      if(rangedSkillTargetables.exists(t => game.enemies.exists(e => e.location == t) && skill.canTargetEnemy)) {
-        selectedSkillLoc = Some(rangedSkillTargetables.filter(t => game.enemies.exists(e => e.location == t)).head)
-      } else {
-        selectedSkillLoc = Some(rangedSkillTargetables.minBy(t => Pathfinding.findPath(location, t, game.level).head.list.length))
-      }
-      skillActivated = true
+      if (!skillActivated) {
+        if (
+          rangedSkillTargetables.exists(t =>
+            game.enemies.exists(e => e.location == t) && skill.canTargetEnemy
+          )
+        ) {
+          selectedSkillLoc = Some(
+            rangedSkillTargetables
+              .filter(t => game.enemies.exists(e => e.location == t))
+              .head
+          )
+        } else {
+          selectedSkillLoc = Some(
+            rangedSkillTargetables.minBy(t =>
+              Pathfinding.findPath(location, t, game.level).head.list.length
+            )
+          )
+        }
+        skillActivated = true
       }
       if (game.keysDown.contains(Keys.LEFT)) {
         if (!movedSkillTarget) {
-          var newTarget = Vec2(selectedSkillLoc.head.x - 1, selectedSkillLoc.head.y)
-          if(areaOfUse.contains(newTarget)) selectedSkillLoc = Some(newTarget.copy())
+          var newTarget =
+            Vec2(selectedSkillLoc.head.x - 1, selectedSkillLoc.head.y)
+          if (areaOfUse.contains(newTarget))
+            selectedSkillLoc = Some(newTarget.copy())
         }
         movedSkillTarget = true
       } else if (game.keysDown.contains(Keys.RIGHT)) {
         if (!movedSkillTarget) {
-          var newTarget = Vec2(selectedSkillLoc.head.x + 1, selectedSkillLoc.head.y)
-          if(areaOfUse.contains(newTarget)) selectedSkillLoc = Some(newTarget.copy())
+          var newTarget =
+            Vec2(selectedSkillLoc.head.x + 1, selectedSkillLoc.head.y)
+          if (areaOfUse.contains(newTarget))
+            selectedSkillLoc = Some(newTarget.copy())
         }
         movedSkillTarget = true
       } else if (game.keysDown.contains(Keys.UP)) {
         if (!movedSkillTarget) {
-          var newTarget = Vec2(selectedSkillLoc.head.x, selectedSkillLoc.head.y+1)
-          if(areaOfUse.contains(newTarget)) selectedSkillLoc = Some(newTarget.copy())
+          var newTarget =
+            Vec2(selectedSkillLoc.head.x, selectedSkillLoc.head.y + 1)
+          if (areaOfUse.contains(newTarget))
+            selectedSkillLoc = Some(newTarget.copy())
         }
         movedSkillTarget = true
       } else if (game.keysDown.contains(Keys.DOWN)) {
         if (!movedSkillTarget) {
-          var newTarget = Vec2(selectedSkillLoc.head.x, selectedSkillLoc.head.y-1)
-          if(areaOfUse.contains(newTarget)) selectedSkillLoc = Some(newTarget.copy())
+          var newTarget =
+            Vec2(selectedSkillLoc.head.x, selectedSkillLoc.head.y - 1)
+          if (areaOfUse.contains(newTarget))
+            selectedSkillLoc = Some(newTarget.copy())
         }
         movedSkillTarget = true
       } else {
         movedSkillTarget = false
       }
-      if (game.keysDown.contains(Keys.ENTER) &&
-        (!skill.mustTargetEnemy || selectedSkillLoc.forall(l => game.enemies.exists(e => e.location == l))) &&
-        (skill.canTargetEnemy || selectedSkillLoc.forall(l => !game.enemies.exists(e => e.location == l))) && rangedSkillTargetables.contains(selectedSkillLoc.head)
+      if (
+        game.keysDown.contains(Keys.ENTER) &&
+        (!skill.mustTargetEnemy || selectedSkillLoc
+          .forall(l => game.enemies.exists(e => e.location == l))) &&
+        (skill.canTargetEnemy || selectedSkillLoc.forall(l =>
+          !game.enemies.exists(e => e.location == l)
+        )) && rangedSkillTargetables.contains(selectedSkillLoc.head)
       ) {
         skill.onUse(
           this,
@@ -451,5 +529,11 @@ case class Player() extends Actor {
     }
   }
 
-  def charSheetControl(delta: Float) = {}
+  def clearRangedStuff(): Unit = {
+    rangedSkillUsing = None
+    rangedSkillTargetables = List.empty
+    movedSkillTarget = false
+    selectedSkillLoc = None
+    skillActivated = false
+  }
 }
