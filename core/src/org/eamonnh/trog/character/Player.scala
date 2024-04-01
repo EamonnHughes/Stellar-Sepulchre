@@ -117,14 +117,14 @@ case class Player() extends Actor {
       }
     }
     clickTick += delta
-    if (clickTick > .325f) {
+    if (clickTick > .5f || game.keysDown.isEmpty) {
       clickTick = 0f
       clickInInv = false
     }
     if (stats.health <= 0) dead = true
     if (!inInventory && !inCharacterSheet) gameControl(delta)
     else if (inInventory && !clickInInv)
-      clickInInv = inventoryControl(delta)
+      clickInInv = inventoryControl()
     else if (inCharacterSheet) charSheetControl(delta)
   }
 
@@ -388,7 +388,7 @@ case class Player() extends Actor {
     }
   }
 
-  def inventoryControl(delta: Float): Boolean = {
+  def inventoryControl(): Boolean = {
     var clicked = false
     var inventory = game.items
       .filter(i => i.possessor.contains(this))

@@ -1,6 +1,6 @@
 package org.eamonnh.trog.character
 
-import org.eamonnh.trog.items.makeCommonWeapon
+import org.eamonnh.trog.items.{PlayerGiver, makeCommonWeapon}
 import org.eamonnh.trog.scenes.Game
 
 trait Archetype {
@@ -23,7 +23,7 @@ case class CondottiereArchetype() extends Archetype {
     game.player.stats.critMod += .2f
     game.player.stats.skills =
       MicroMissile() :: Disengage() :: game.player.stats.skills
-    val weapon = makeCommonWeapon(0, game, 1, 4, "Player")
+    val weapon = makeCommonWeapon(0, game, 1, 4, PlayerGiver())
     weapon.possessor = Some(game.player)
     weapon.game = game
     game.items = weapon :: game.items
@@ -52,7 +52,7 @@ case class CaedanautArchetype() extends Archetype {
     game.player.stats.attackMod += 1
     game.player.stats.damageMod += 1
     game.player.stats.skills = Charge() :: Bash() :: game.player.stats.skills
-    val weapon = makeCommonWeapon(0, game, 1, 6, "Player")
+    val weapon = makeCommonWeapon(0, game, 1, 6, PlayerGiver())
     weapon.possessor = Some(game.player)
     weapon.game = game
     game.items = weapon :: game.items

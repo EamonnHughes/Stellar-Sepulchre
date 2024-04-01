@@ -2,6 +2,7 @@ package org.eamonnh.trog.items
 
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.g2d.PolygonSpriteBatch
+import org.eamonnh.trog.Trog.Square
 import org.eamonnh.trog.scenes.Game
 import org.eamonnh.trog.util.TextureWrapper
 import org.eamonnh.trog.{Actor, Vec2, screenUnit}
@@ -67,4 +68,19 @@ trait Gear extends Item {
 
     n
   }
+}
+
+
+case class NoItem() extends Item {
+
+  override var game: Game = _
+  override var location: Option[Vec2] = None
+
+  override def name: String = "Nothing"
+
+  override def groundTexture: TextureWrapper = Square
+
+  override def use(actor: Actor): Unit = {}
+
+  override def tNum: Int = 1
 }

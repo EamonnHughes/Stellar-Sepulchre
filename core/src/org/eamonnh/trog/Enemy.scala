@@ -4,7 +4,7 @@ import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.g2d.PolygonSpriteBatch
 import org.eamonnh.trog.Trog.{Square, asleep}
 import org.eamonnh.trog.character.{Equipment, Stats, Stunned, makeStats}
-import org.eamonnh.trog.items.{MedKit, Weapon, makeCommonWeapon}
+import org.eamonnh.trog.items.{DroneGiver, Item, MedKit, NoItem, Weapon, makeCommonWeapon}
 import org.eamonnh.trog.scenes.Game
 import org.eamonnh.trog.util.Animation
 
@@ -62,6 +62,22 @@ trait Enemy extends Actor {
     )
      */
   }
+  def Die(): Unit = {
+    var item: Item = NoItem()
+    if(Math.random() > .75){
+      item = MedKit()
+    } else if(Math.random() > .66 && equipment.weapon.nonEmpty){
+      item = makeCommonWeapon(0, game, equipment.weapon.head.numOfDice, equipment.weapon.head.diceVal, DroneGiver())
+    }
+    if(!item.isInstanceOf[NoItem]) {
+      item.location = Some(location.copy())
+      item.game = game
+      game.items = item :: game.items
+    }
+    game.enemies = game.enemies.filterNot(e => e eq this)
+    game.player.stats.exp += stats.exp
+    game.addMessage(name + " has been slain")
+  }
 }
 
 trait BasicMeleeEnemy extends Enemy {
@@ -87,17 +103,6 @@ trait BasicMeleeEnemy extends Enemy {
       })
       turn = false
     }
-
-
-    if (stats.health <= 0) {
-      var w = new MedKit()
-      w.location = Some(location.copy())
-      w.game = game
-      game.items = w :: game.items
-      game.enemies = game.enemies.filterNot(e => e eq this)
-      game.player.stats.exp += stats.exp
-      game.addMessage(name + " has been slain")
-    }
   }
 }
 
@@ -113,7 +118,7 @@ case class Servitor() extends BasicMeleeEnemy {
     game = gm
     location = loc
     lev = Random.nextInt(game.floor) + 1 + (Random.nextInt(11) / 10)
-    var weapon: Weapon = makeCommonWeapon(0, game, 1, (lev min 5) + 1, "Drone")
+    var weapon: Weapon = makeCommonWeapon(0, game, 1, (lev min 5) + 1, DroneGiver())
     weapon.possessor = Some(this)
     weapon.location = None
     game.items = weapon :: game.items

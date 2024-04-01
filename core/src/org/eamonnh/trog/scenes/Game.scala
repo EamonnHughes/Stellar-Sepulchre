@@ -142,6 +142,11 @@ class Game(lvl: Level, plr: Player, wld: World)
       player.rangedSkillUsing.foreach(a => player.doRangedSkill(a))
     } else {
       player.update(delta)
+      enemies.foreach(e => {
+        if (e.stats.health <= 0) {
+          e.Die()
+        }
+      })
       enemies.foreach(e => e.update(delta))
       if (playerTurnDone) {
         saveTick += 1
