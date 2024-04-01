@@ -229,5 +229,18 @@ class Game(lvl: Level, plr: Player, wld: World)
         )
       }
     }
+    Pathfinding.findRaycastPath(player.location, mouseLocOnGrid, level).foreach(p => {
+      p.list.foreach(loc => {
+        batch.setColor(1f, 0f, 0f, .5f)
+        batch.draw(
+          Trog.Square,
+          loc.x * screenUnit,
+          loc.y * screenUnit,
+          screenUnit,
+          screenUnit
+        )
+      })
+    })
+
   }
 }
