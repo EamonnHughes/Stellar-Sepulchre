@@ -121,3 +121,26 @@ case class Bash() extends rangedSkill {
   override var mustTargetEnemy: Boolean = true
   override var canTargetEnemy: Boolean = true
 }
+
+case class Disengage() extends rangedSkill {
+  override val coolDown: Int = 5
+  override val takesTurn: Boolean = true
+  override var name: String = "Disengage"
+  override var ccd: Int = 0
+  override var maxRange: Int = 5
+
+  override def icon: TextureWrapper = TextureWrapper.load("Disengage.png")
+
+  override def onUse(
+                      user: Actor,
+                      target: Vec2,
+                      game: Game
+                    ): Unit = {
+    user.location = target.copy()
+
+  }
+
+  override var minRange: Int = 2
+  override var mustTargetEnemy: Boolean = false
+  override var canTargetEnemy: Boolean = false
+}
