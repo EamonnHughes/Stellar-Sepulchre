@@ -338,7 +338,7 @@ case class Player() extends Actor {
           getVisible = game.level.terrains.zipWithIndex
             .filter({ case (t, i) =>
               t._1.walkable &&
-                Pathfinding.findRaycastPath(location, getVec2fromI(i, game.level), game.level)
+                Pathfinding.findRaycastPathUpTo(location, getVec2fromI(i, game.level), game.level)
                   .exists(p => p.list.length < stats.sightRad)
             })
             .map(t => getVec2fromI(t._2, game.level))
@@ -439,7 +439,7 @@ case class Player() extends Actor {
         Pathfinding
           .findRaycastPath(location, getVec2fromI(t._2, game.level), game.level)
           .exists(p =>
-            p.list.length <= skill.maxRange && p.list.length >= skill.minRange
+            p.list.length <= skill.maxRange(this) && p.list.length >= skill.minRange
           )
       )
       .map(i => getVec2fromI(i._2, game.level))

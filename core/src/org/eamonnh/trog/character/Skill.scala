@@ -15,7 +15,8 @@ trait Skill {
 }
 
 trait rangedSkill extends Skill {
-  var maxRange: Int
+  var technicalMaxRange: Int
+  def maxRange(user: Actor): Int = technicalMaxRange min user.stats.sightRad
   var minRange: Int
   var mustTargetEnemy: Boolean
   var canTargetEnemy: Boolean
@@ -32,7 +33,7 @@ case class MicroMissile() extends rangedSkill {
   override val takesTurn: Boolean = true
   override var name: String = "Micromissile"
   override var ccd: Int = 0
-  override var maxRange: Int = 5
+  override var technicalMaxRange: Int = 5
   override var minRange: Int = 2
   override var mustTargetEnemy: Boolean = true
   override var canTargetEnemy: Boolean = true
@@ -47,7 +48,7 @@ case class MicroMissile() extends rangedSkill {
     var ended = false
     Pathfinding
       .findPath(user.location, target, game.level)
-      .filter(p => p.list.length <= maxRange)
+      .filter(p => p.list.length <= maxRange(user))
       .foreach(p => {
         Trog.Crunch.play(.5f, 1 + ((Math.random() / 4) - .125).toFloat, 0)
         game.enemies.foreach(e => {
@@ -66,7 +67,7 @@ case class Charge() extends rangedSkill {
   override val takesTurn: Boolean = true
   override var name: String = "Charge"
   override var ccd: Int = 0
-  override var maxRange: Int = 5
+  override var technicalMaxRange: Int = 5
   override var minRange: Int = 3
   override var mustTargetEnemy: Boolean = true
   override var canTargetEnemy: Boolean = true
@@ -80,7 +81,7 @@ case class Charge() extends rangedSkill {
   ): Unit = {
     Pathfinding
       .findPath(user.location, target, game.level)
-      .filter(p => p.list.length <= maxRange)
+      .filter(p => p.list.length <= maxRange(user))
       .foreach(p => {
         if (!game.enemies.exists(e => e.location == p.list(1))) {
           Trog.Crunch.play(.5f, 1 + ((Math.random() / 4) - .125).toFloat, 0)
@@ -100,7 +101,7 @@ case class Bash() extends rangedSkill {
   override val takesTurn: Boolean = true
   override var name: String = "Bash"
   override var ccd: Int = 0
-  override var maxRange: Int = 2
+  override var technicalMaxRange: Int = 2
   override var minRange: Int = 2
   override var mustTargetEnemy: Boolean = true
   override var canTargetEnemy: Boolean = true
@@ -127,7 +128,7 @@ case class Disengage() extends rangedSkill {
   override val takesTurn: Boolean = true
   override var name: String = "Disengage"
   override var ccd: Int = 0
-  override var maxRange: Int = 5
+  override var technicalMaxRange: Int = 5
   override var minRange: Int = 2
   override var mustTargetEnemy: Boolean = false
   override var canTargetEnemy: Boolean = false
