@@ -143,7 +143,7 @@ case class Player() extends Actor {
     }
     if (
       game.enemies.exists(e => {
-        val path = Pathfinding.findPath(e.location, location, game.level)
+        val path = Pathfinding.findRaycastPath(e.location, location, game.level)
         var dist = Int.MaxValue
         path.foreach(p => {
           dist = p.list.length
@@ -178,82 +178,7 @@ case class Player() extends Actor {
           if (!exploring) destination = location.copy()
         }
         if (exploring && destination == location) {
-          if (
-            game.level.terrains.zipWithIndex.exists({ case (w, i) =>
-              !game.explored.contains(getVec2fromI(i, game.level)) && w._1
-                .isInstanceOf[Floor]
-            })
-          ) {
-            if (
-              game.level.terrains.zipWithIndex.exists { case (w, i) =>
-                !game.explored.contains(getVec2fromI(i, game.level)) && w._1
-                  .isInstanceOf[Floor] && Pathfinding
-                  .findPath(location, getVec2fromI(i, game.level), game.level)
-                  .nonEmpty
-              }
-            ) {
-              var dest =
-                game.level.terrains.zipWithIndex
-                  .filter({ case (w, i) =>
-                    !game.explored.contains(getVec2fromI(i, game.level)) && w._1
-                      .isInstanceOf[Floor] && Pathfinding
-                      .findPath(
-                        location,
-                        getVec2fromI(i, game.level),
-                        game.level
-                      )
-                      .nonEmpty
-                  })
-                  .minBy({ case (w, i) =>
-                    Pathfinding
-                      .findPath(
-                        location,
-                        getVec2fromI(i, game.level),
-                        game.level
-                      )
-                      .head
-                      .list
-                      .length
-                  })
-              destination = getVec2fromI(dest._2, game.level)
-            } else if (
-              game.level.terrains.zipWithIndex.exists { case (w, i) =>
-                w._1
-                  .isInstanceOf[ClosedDoor] && getVec2fromI(
-                  i,
-                  game.level
-                ).getAdjacents.exists(a =>
-                  Pathfinding
-                    .findPath(location, a, game.level)
-                    .nonEmpty
-                )
-              }
-            ) {
-              var dest: Vec2 = game.level.terrains.zipWithIndex
-                .filter({ case (w, i) =>
-                  w._1
-                    .isInstanceOf[ClosedDoor] && getVec2fromI(
-                    i,
-                    game.level
-                  ).getAdjacents.exists(a =>
-                    Pathfinding
-                      .findPath(location, a, game.level)
-                      .nonEmpty
-                  )
-                })
-                .map(i => getVec2fromI(i._2, game.level))
-                .head
-                .getAdjacents
-                .filter(adj =>
-                  Pathfinding.findPath(location, adj, game.level).nonEmpty
-                )
-                .head
-              destination = dest
-            } else exploring = false
-          } else if (location != game.level.downLadder) {
-            destination = game.level.downLadder.copy()
-            game.addMessage("Floor explored, heading to exit")
-          }
+          autoExplore()
         }
         if (
           game.level.terrains.zipWithIndex.forall({ case (w, i) =>
@@ -267,21 +192,25 @@ case class Player() extends Actor {
         ) {
           destination.y = location.y - 1
           destination.x = location.x
+          exploring = false
         } else if (
           game.keysDown.contains(Keys.W) || game.keysDown.contains(Keys.UP)
         ) {
           destination.y = location.y + 1
           destination.x = location.x
+          exploring = false
         } else if (
           game.keysDown.contains(Keys.D) || game.keysDown.contains(Keys.RIGHT)
         ) {
           destination.y = location.y
           destination.x = location.x + 1
+          exploring = false
         } else if (
           game.keysDown.contains(Keys.A) || game.keysDown.contains(Keys.LEFT)
         ) {
           destination.y = location.y
           destination.x = location.x - 1
+          exploring = false
         } else if (game.keysDown.contains(Keys.SPACE)) {
           resting = true
           exploring = false
@@ -289,6 +218,7 @@ case class Player() extends Actor {
           game.playerTurnDone = true
         } else if (game.clicked) {
           destination = game.mouseLocOnGrid.copy()
+          exploring = false
         } else if (game.keysDown.contains(Keys.R)) {
           resting = true
           exploring = false
@@ -299,6 +229,7 @@ case class Player() extends Actor {
         ) {
           tryToGoDown()
         } else if (game.keysDown.contains(Keys.G)) {
+          exploring = false
           game.items.foreach(ite => {
             ite.location.foreach(l => {
               if (l == location) {
@@ -535,5 +466,84 @@ case class Player() extends Actor {
     movedSkillTarget = false
     selectedSkillLoc = None
     skillActivated = false
+  }
+
+  def autoExplore(): Unit = {
+    if (
+      game.level.terrains.zipWithIndex.exists({ case (w, i) =>
+        !game.explored.contains(getVec2fromI(i, game.level)) && w._1
+          .isInstanceOf[Floor]
+      })
+    ) {
+      if (
+        game.level.terrains.zipWithIndex.exists { case (w, i) =>
+          !game.explored.contains(getVec2fromI(i, game.level)) && w._1
+            .isInstanceOf[Floor] && Pathfinding
+            .findPath(location, getVec2fromI(i, game.level), game.level)
+            .nonEmpty
+        }
+      ) {
+        var dest =
+          game.level.terrains.zipWithIndex
+            .filter({ case (w, i) =>
+              !game.explored.contains(getVec2fromI(i, game.level)) && w._1
+                .isInstanceOf[Floor] && Pathfinding
+                .findPath(
+                  location,
+                  getVec2fromI(i, game.level),
+                  game.level
+                )
+                .nonEmpty
+            })
+            .minBy({ case (w, i) =>
+              Pathfinding
+                .findPath(
+                  location,
+                  getVec2fromI(i, game.level),
+                  game.level
+                )
+                .head
+                .list
+                .length
+            })
+        destination = getVec2fromI(dest._2, game.level)
+      } else if (
+        game.level.terrains.zipWithIndex.exists { case (w, i) =>
+          w._1
+            .isInstanceOf[ClosedDoor] && getVec2fromI(
+            i,
+            game.level
+          ).getAdjacents.exists(a =>
+            Pathfinding
+              .findPath(location, a, game.level)
+              .nonEmpty
+          )
+        }
+      ) {
+        var dest: Vec2 = game.level.terrains.zipWithIndex
+          .filter({ case (w, i) =>
+            w._1
+              .isInstanceOf[ClosedDoor] && getVec2fromI(
+              i,
+              game.level
+            ).getAdjacents.exists(a =>
+              Pathfinding
+                .findPath(location, a, game.level)
+                .nonEmpty
+            )
+          })
+          .map(i => getVec2fromI(i._2, game.level))
+          .head
+          .getAdjacents
+          .filter(adj =>
+            Pathfinding.findPath(location, adj, game.level).nonEmpty
+          )
+          .head
+        destination = dest
+      } else exploring = false
+    } else if (location != game.level.downLadder) {
+      destination = game.level.downLadder.copy()
+      game.addMessage("Floor explored, heading to exit")
+    }
   }
 }
