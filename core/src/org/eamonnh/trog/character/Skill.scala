@@ -140,6 +140,36 @@ case class Disengage() extends rangedSkill {
       game: Game
   ): Unit = {
     user.location = target.copy()
+    user.destination = user.location.copy()
 
+  }
+}
+
+case class Lacerate() extends rangedSkill {
+  override val coolDown: Int = 4
+  override val takesTurn: Boolean = true
+  override var name: String = "Lacerate"
+  override var ccd: Int = 0
+  override var technicalMaxRange: Int = 2
+  override var minRange: Int = 2
+  override var mustTargetEnemy: Boolean = true
+  override var canTargetEnemy: Boolean = true
+
+  override def icon: TextureWrapper = TextureWrapper.load("Lacerate.png")
+
+  override def onUse(
+                      user: Actor,
+                      target: Vec2,
+                      game: Game
+                    ): Unit = {
+    game.enemies
+      .filter(e => e.location == target)
+      .foreach(enemy => {
+        user.attack(enemy)
+        var bleed = Bleeding()
+        bleed.timeLeft = 3
+        enemy.statuses = bleed :: enemy.statuses
+        Trog.Crunch.play(.5f, 1 + ((Math.random() / 4) - .125).toFloat, 0)
+      })
   }
 }

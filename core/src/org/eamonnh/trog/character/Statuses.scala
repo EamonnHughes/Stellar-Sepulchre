@@ -17,3 +17,12 @@ case class Stunned() extends Status {
   override var timeLeft: Int = _
 }
 
+
+case class Bleeding() extends Status {
+
+  override def onTick(reciever: Actor): Unit = {
+    reciever.stats.health -= 1
+  }
+
+  override var timeLeft: Int = _
+}
