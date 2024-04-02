@@ -124,7 +124,7 @@ case class Bash() extends rangedSkill {
 
 case class Disengage() extends rangedSkill {
   override val coolDown: Int = 5
-  override val takesTurn: Boolean = true
+  override val takesTurn: Boolean = false
   override var name: String = "Disengage"
   override var ccd: Int = 0
   override var technicalMaxRange: Int = 5
