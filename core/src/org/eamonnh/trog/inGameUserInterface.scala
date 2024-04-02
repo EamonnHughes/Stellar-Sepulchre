@@ -124,12 +124,12 @@ object inGameUserInterface {
           -Trog.translationY * screenUnit
         )
         if (s.ccd > 0) {
-          Text.hugeFont.setColor(0f, 0f, 0f, 0.5f)
+          Text.hugeFont.setColor(.3f, .3f, .3f, .8f)
           Text.hugeFont.draw(
             batch,
                 s"${s.ccd.toString}",
-            -Trog.translationX * screenUnit + (((i * 2f) + 6) * screenUnit + (screenUnit * .25f)),
-            -Trog.translationY * screenUnit + (screenUnit * 2f) - (screenUnit * .25f)
+            -Trog.translationX * screenUnit + (((i * 2f) + 6) * screenUnit + (screenUnit * .4f)),
+            -Trog.translationY * screenUnit + (screenUnit * 2f) - (screenUnit * .4f)
           )
         }
       }
