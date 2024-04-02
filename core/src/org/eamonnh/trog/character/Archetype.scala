@@ -22,7 +22,7 @@ case class CondottiereArchetype() extends Archetype {
     game.player.stats.critChance += 2
     game.player.stats.critMod += .2f
     game.player.stats.skills =
-      MicroMissile() :: Disengage() :: Lacerate() :: Disengage() :: game.player.stats.skills
+      MicroMissile() :: Disengage() :: Lacerate() :: game.player.stats.skills
     val weapon = makeCommonWeapon(0, game, 1, 4, PlayerGiver())
     weapon.possessor = Some(game.player)
     weapon.game = game

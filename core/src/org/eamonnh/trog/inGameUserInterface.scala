@@ -50,9 +50,9 @@ object inGameUserInterface {
     )
     batch.draw(
       Trog.UIHotbar,
-      -Trog.translationX * screenUnit + 5 * screenUnit,
+      -Trog.translationX * screenUnit + 4 * screenUnit,
       -Trog.translationY * screenUnit,
-      screenUnit * 10,
+      screenUnit * 12,
       screenUnit * 4
     )
     batch.setColor(Color.FIREBRICK)
