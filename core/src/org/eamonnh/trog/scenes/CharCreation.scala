@@ -6,8 +6,10 @@ import com.badlogic.gdx.InputAdapter
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.g2d.PolygonSpriteBatch
 import org.eamonnh.trog.Scene
+import org.eamonnh.trog.Trog.garbage
 import org.eamonnh.trog.character.{Archetype, Player}
 import org.eamonnh.trog.procgen.World
+import org.eamonnh.trog.util.TextureWrapper
 
 class CharCreation(world: World) extends Scene {
   var arches: List[Archetype] = world.archetypeList
@@ -47,11 +49,13 @@ class CharCreation(world: World) extends Scene {
         -Trog.translationX * screenUnit,
         -Trog.translationY * screenUnit + Geometry.ScreenHeight * .75f
       )
+      batch.setColor(Color.WHITE)
+      batch.draw(TextureWrapper.load( arches(selectedArch).logo),-Trog.translationX*screenUnit + screenUnit, (-Trog.translationY * screenUnit) +  (Geometry.ScreenHeight * .75f) - (screenUnit * (arches.length + 3)) - (screenUnit*3), screenUnit*3, screenUnit*3)
       Text.smallFont.setColor(Color.WHITE)
       Text.smallFont.draw(
         batch,
         s"${arches(selectedArch).description}",
-        -Trog.translationX * screenUnit + screenUnit,
+        -Trog.translationX * screenUnit + screenUnit * 5,
         (-Trog.translationY * screenUnit) + (Geometry.ScreenHeight * .75f) - (screenUnit * (arches.length + 3))
       )
 

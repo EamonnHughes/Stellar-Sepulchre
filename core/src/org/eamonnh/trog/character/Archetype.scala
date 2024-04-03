@@ -7,6 +7,7 @@ trait Archetype {
   def name: String
   def metaArchName: String
   def description: String
+  def logo: String
 
   def onSelect(game: Game): Unit
 
@@ -37,14 +38,18 @@ case class CondottiereArchetype() extends Archetype {
   }
 
   def description: String =
-    "An expert in both intrigue and violence, the Condottiere has achieved mastery\n" +
-      "of the blade and the bullet. As well as 20 billion dead, the Centaurine Civil\n" +
-      "War created many opportunities for a man with the Condottiere's talents, and,\n" +
-      "not one to refuse honest work, he signed on as a mercenary for the Consortium."
+    "An expert in both intrigue and violence, \nthe Condottiere has achieved mastery\n" +
+      "of the blade and the bullet. As well as \n20 billion dead, the Centaurine Civil\n" +
+      "War created many opportunities for a man \nwith the Condottiere's talents, and,\n" +
+      "not one to refuse honest work, he signed \non as a mercenary for the Consortium."
+
+  override def logo: String = "Condottiere-Logo.png"
 }
 
 case class CaedanautArchetype() extends Archetype {
   def name: String = "Caedanaut"
+  override def logo: String = "Caedanaut-Logo.png"
+
 
   def metaArchName: String = "Caedanaut"
 
@@ -65,9 +70,9 @@ case class CaedanautArchetype() extends Archetype {
   }
 
   def description: String = {
-    "Cowardice was unacceptable to the Lacedaemonian Guard, and, when the Caedanaut fled\n" +
-      "the field, he was given the choice: crucifixion or being sold to the Consortium.\n" +
-      "Choosing the latter, he worked aboard a ship for years. At the onset of the Civil War\n" +
-      "his prowess in battle was noticed, and he was offered a chance to redeem himself."
+    "Cowardice was unacceptable to the \nLacedaemonian Guard, and, when the Caedanaut\n" +
+      "fled the field, he was given the choice: \ncrucifixion or being sold to the Consortium.\n" +
+      "Choosing the latter, he worked aboard a \nship for years. At the onset of the Civil War\n" +
+      "his prowess in battle was noticed, and he \nwas offered a chance to redeem himself."
   }
 }
