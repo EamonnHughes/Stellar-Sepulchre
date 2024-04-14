@@ -40,6 +40,7 @@ class Game(lvl: Level, plr: Player, wld: World)
   var timebetweenAnimations = 0f
   var lvlupEffect = 0f
   var lvlUping = false
+  var inSkillChoice = false
 
   override def renderUI(batch: PolygonSpriteBatch): Unit =
     inGameUserInterface.renderUI(batch, this)
@@ -89,7 +90,10 @@ class Game(lvl: Level, plr: Player, wld: World)
   override def update(delta: Float): Option[Scene] = {
     if (lvlUping) {
       lvlupEffect += (delta * 2)
-      if (lvlupEffect > .5f) lvlUping = false
+      if (lvlupEffect > .5f) {
+        lvlUping = false
+        inSkillChoice = true
+      }
     } else {
       if (lvlupEffect > 0) lvlupEffect -= (delta / 4)
       if (lvlupEffect < 0) lvlupEffect = 0

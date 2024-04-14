@@ -39,6 +39,9 @@ case class Player() extends Actor {
   var getVisible: List[Vec2] = List.empty
   var movedSkillTarget = false
   var skillActivated = false
+  var perks: List[Perk] = List.empty
+  var perkPool: List[Perk] = List.empty
+  var perkChoices: List[Perk] = List.empty
 
   def initially(gme: Game): Unit = {
     game = gme

@@ -24,6 +24,7 @@ case class CondottiereArchetype() extends Archetype {
     game.player.stats.critMod += .2f
     game.player.stats.skills =
       MicroMissile() :: Disengage() :: Lacerate() :: game.player.stats.skills
+    game.player.perkPool = Ironman1() :: Ironman2() :: Ironman3() :: Scout() :: Surgeon() :: game.player.perkPool
     val weapon = makeCommonWeapon(0, game, 1, 4, PlayerGiver())
     weapon.possessor = Some(game.player)
     weapon.game = game
@@ -57,6 +58,7 @@ case class CaedanautArchetype() extends Archetype {
     game.player.stats.attackMod += 1
     game.player.stats.damageMod += 1
     game.player.stats.skills = Charge() :: Bash() :: game.player.stats.skills
+    game.player.perkPool = Ironman1() :: Ironman2() :: Ironman3() :: Scout() :: Surgeon() :: game.player.perkPool
     val weapon = makeCommonWeapon(0, game, 1, 6, PlayerGiver())
     weapon.possessor = Some(game.player)
     weapon.game = game
