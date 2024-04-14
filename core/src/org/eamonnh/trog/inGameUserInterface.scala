@@ -139,6 +139,8 @@ object inGameUserInterface {
       drawCharacterSheet(batch, game)
     } else if (inInventory) {
       drawInventory(batch, game)
+    } else if (player.inPerkChoice) {
+      drawPerkChoice(batch, game)
     }
 
   }
@@ -224,9 +226,7 @@ object inGameUserInterface {
     Text.mediumFont.draw(
       batch,
       s" " +
-        s"Name: ${game.player.name}\n " +
-        s"Archetype: ${game.player.archetype.name}\n " +
-        s"Level: ${game.player.stats.level}\n " +
+        s"${game.player.name}, the level ${game.player.stats.level} ${game.player.archetype.name}\n " +
         s"Experience: ${game.player.stats.exp}/${game.player.stats.nextExp}\n " +
         s"Floor: ${game.floor}\n " +
         s"Health: ${game.player.stats.health}/${game.player.stats.maxHealth}\n " +
@@ -238,7 +238,8 @@ object inGameUserInterface {
         s"Crit Chance: %${game.player.stats.critChance}\n\n " +
         s"Helm: ${uiHelmName}\n " +
         s"Body Armor: ${uiArmorName}\n " +
-        s"Weapon: ${uiWeaponName}",
+        s"Weapon: ${uiWeaponName}\n " +
+        s"Perks:\n ${game.player.perks.map(_.title).sorted.mkString("\n ")}",
       -Trog.translationX * screenUnit + (2 * screenUnit),
       (-Trog.translationY * screenUnit) + Geometry.ScreenHeight - (2 * screenUnit)
     )
@@ -259,7 +260,7 @@ object inGameUserInterface {
       .zipWithIndex
       .foreach({
         case (item, index) => {
-          if (index == game.player.inventoryItemSelected) {
+          if (index == game.player.menuItemSelected) {
             inv = s"$inv \n - x${item.tNum} ${item.name}"
           } else {
             inv = s"$inv \n x${item.tNum} ${item.name}"
@@ -269,6 +270,35 @@ object inGameUserInterface {
     Text.mediumFont.draw(
       batch,
       s"INVENTORY:\n$inv",
+      -Trog.translationX * screenUnit + (2 * screenUnit),
+      (-Trog.translationY * screenUnit) + Geometry.ScreenHeight - (2 * screenUnit)
+    )
+  }
+
+  def drawPerkChoice(batch: PolygonSpriteBatch, game: Game): Unit = {
+    batch.setColor(0f, 0f, 0f, .5f)
+    batch.draw(
+      Trog.Square,
+      -Trog.translationX * screenUnit + (2 * screenUnit),
+      -Trog.translationY * screenUnit + (2 * screenUnit),
+      (Geometry.ScreenWidth - (4 * screenUnit)),
+      (Geometry.ScreenHeight - (4 * screenUnit))
+    )
+    var perks: String = ""
+    game.player.perkChoices
+      .zipWithIndex
+      .foreach({
+        case (perk, index) => {
+          if (index == game.player.menuItemSelected) {
+            perks = s"$perks \n - ${perk.title}"
+          } else {
+            perks = s"$perks \n ${perk.title}"
+          }
+        }
+      })
+    Text.mediumFont.draw(
+      batch,
+      s"Select a perk:\n$perks\nA${game.player.perkChoices(game.player.menuItemSelected).description}",
       -Trog.translationX * screenUnit + (2 * screenUnit),
       (-Trog.translationY * screenUnit) + Geometry.ScreenHeight - (2 * screenUnit)
     )

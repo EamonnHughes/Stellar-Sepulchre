@@ -40,7 +40,6 @@ class Game(lvl: Level, plr: Player, wld: World)
   var timebetweenAnimations = 0f
   var lvlupEffect = 0f
   var lvlUping = false
-  var inSkillChoice = false
 
   override def renderUI(batch: PolygonSpriteBatch): Unit =
     inGameUserInterface.renderUI(batch, this)
@@ -88,11 +87,13 @@ class Game(lvl: Level, plr: Player, wld: World)
   }
 
   override def update(delta: Float): Option[Scene] = {
+    if(keysDown.contains(Keys.X)) player.stats.exp += 10
     if (lvlUping) {
       lvlupEffect += (delta * 2)
       if (lvlupEffect > .5f) {
         lvlUping = false
-        inSkillChoice = true
+        lvlupEffect = 0
+        if(player.perkPool.exists(p => p.isAllowed(player))) player.inPerkChoice = true
       }
     } else {
       if (lvlupEffect > 0) lvlupEffect -= (delta / 4)

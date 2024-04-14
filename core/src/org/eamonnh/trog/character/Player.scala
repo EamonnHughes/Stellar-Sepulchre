@@ -11,8 +11,10 @@ import org.eamonnh.trog.scenes.Game
 import org.eamonnh.trog.util.Animation
 import org.eamonnh.trog.{Actor, Pathfinding, Trog, Vec2, d, getIfromVec2, getVec2fromI, screenUnit}
 
+import scala.util.Random
+
 case class Player() extends Actor {
-  var inventoryItemSelected: Int = 0
+  var menuItemSelected: Int = 0
   var archetype: Archetype = _
   var initialized = false
   var healing = 0f
@@ -42,6 +44,8 @@ case class Player() extends Actor {
   var perks: List[Perk] = List.empty
   var perkPool: List[Perk] = List.empty
   var perkChoices: List[Perk] = List.empty
+  var inPerkChoice = false
+  var perkClicked = false
 
   def initially(gme: Game): Unit = {
     game = gme
@@ -123,12 +127,44 @@ case class Player() extends Actor {
     if (clickTick > .5f || game.keysDown.isEmpty) {
       clickTick = 0f
       clickInInv = false
+      perkClicked = false
     }
     if (stats.health <= 0) dead = true
-    if (!inInventory && !inCharacterSheet) gameControl(delta)
+    if (!inInventory && !inCharacterSheet && !inPerkChoice) gameControl(delta)
     else if (inInventory && !clickInInv)
       clickInInv = inventoryControl()
-    else if (inCharacterSheet) charSheetControl(delta)
+    else if (inCharacterSheet) charSheetControl(delta) else if (inPerkChoice && !perkClicked) perkClicked = perkSelectControl()
+  }
+  def perkSelectControl(): Boolean = {
+    var clicked = false
+    if(perkChoices.isEmpty)     perkChoices = Random.shuffle(perkPool.filter(i => i.isAllowed(this))).take(5)
+    if (perkChoices.nonEmpty) {
+      while (perkChoices.length < menuItemSelected) {
+        menuItemSelected -= 1
+      }
+
+      if (game.keysDown.contains(Keys.DOWN) || game.keysDown.contains(Keys.S)) {
+        menuItemSelected = (menuItemSelected + 1) % perkChoices.length
+        clicked = true
+      }
+      if (game.keysDown.contains(Keys.UP) || game.keysDown.contains(Keys.W)) {
+        menuItemSelected =
+          (menuItemSelected + perkChoices.length - 1) % perkChoices.length
+        clicked = true
+      }
+        if (
+          game.keysDown
+            .contains(Keys.ENTER) || game.keysDown.contains(Keys.SPACE)
+        ) {
+            perkChoices(menuItemSelected).onApply(this)
+            perks = perkChoices(menuItemSelected):: perks
+            perkPool = perkPool.filterNot(_ eq perkChoices(menuItemSelected))
+            perkChoices = List.empty
+            inPerkChoice = false
+             clicked = true
+        }
+    }
+    clicked
   }
 
   def gameControl(delta: Float) = {
@@ -328,17 +364,17 @@ case class Player() extends Actor {
       .filter(i => i.possessor.contains(this))
       .filter(n => n.tNum >= 1)
     if (inventory.nonEmpty) {
-      if (inventory.length < inventoryItemSelected) {
-        inventoryItemSelected -= 1
+      if (inventory.length < menuItemSelected) {
+        menuItemSelected -= 1
       }
 
       if (game.keysDown.contains(Keys.DOWN) || game.keysDown.contains(Keys.S)) {
-        inventoryItemSelected = (inventoryItemSelected + 1) % inventory.length
+        menuItemSelected = (menuItemSelected + 1) % inventory.length
         clicked = true
       }
       if (game.keysDown.contains(Keys.UP) || game.keysDown.contains(Keys.W)) {
-        inventoryItemSelected =
-          (inventoryItemSelected + inventory.length - 1) % inventory.length
+        menuItemSelected =
+          (menuItemSelected + inventory.length - 1) % inventory.length
         clicked = true
       }
       if (turn) {
@@ -346,8 +382,8 @@ case class Player() extends Actor {
           game.keysDown
             .contains(Keys.ENTER) || game.keysDown.contains(Keys.SPACE)
         ) {
-          if (inventory.length >= inventoryItemSelected) {
-            inventory(inventoryItemSelected).use(this)
+          if (inventory.length >= menuItemSelected) {
+            inventory(menuItemSelected).use(this)
           }
           clicked = true
           turn = false
