@@ -12,10 +12,10 @@ class GameControl(game: Game) extends InputAdapter {
 
   override def keyUp(keycode: Int): Boolean = {
     game.keysDown = game.keysDown.filterNot(f => f == keycode)
-    if (keycode == Keys.C) {
+    if (keycode == Keys.C && !game.player.inPerkChoice) {
       inCharacterSheet = !inCharacterSheet
       inInventory = false
-    } else if (keycode == Keys.I) {
+    } else if (keycode == Keys.I && !game.player.inPerkChoice) {
       inInventory = !inInventory
       inCharacterSheet = false
 
