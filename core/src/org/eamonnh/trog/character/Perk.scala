@@ -25,7 +25,7 @@ case class Ironman1() extends Perk {
 case class Ironman2() extends Perk {
 
   override def isAllowed(player: Player): Boolean = {
-    if(player.stats.perks.contains(Ironman1)) true else false
+    if(player.perks.contains(Ironman1)) true else false
   }
 
   override def onApply(player: Player): Unit = {
@@ -40,7 +40,7 @@ case class Ironman2() extends Perk {
 case class Ironman3() extends Perk {
 
   override def isAllowed(player: Player): Boolean = {
-    if(player.stats.perks.contains(Ironman2)) true else false
+    if(player.perks.contains(Ironman2)) true else false
   }
 
   override def onApply(player: Player): Unit = {
