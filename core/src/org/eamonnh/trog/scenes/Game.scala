@@ -87,7 +87,6 @@ class Game(lvl: Level, plr: Player, wld: World)
   }
 
   override def update(delta: Float): Option[Scene] = {
-    if(keysDown.contains(Keys.X)) player.stats.exp += 10
     if (lvlUping) {
       lvlupEffect += (delta * 2)
       if (lvlupEffect > .5f) {

@@ -298,7 +298,7 @@ object inGameUserInterface {
       })
     Text.mediumFont.draw(
       batch,
-      s"Select a perk:\n$perks\nA${game.player.perkChoices(game.player.menuItemSelected).description}",
+      s"Select a perk:\n$perks\n\n${game.player.perkChoices(game.player.menuItemSelected).description}",
       -Trog.translationX * screenUnit + (2 * screenUnit),
       (-Trog.translationY * screenUnit) + Geometry.ScreenHeight - (2 * screenUnit)
     )
