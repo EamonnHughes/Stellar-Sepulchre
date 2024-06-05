@@ -97,6 +97,9 @@ class LevelGen(
   }
 
   override def updateCamera(): Unit = {}
+
+  override var realMouseLoc: Vec2 = Vec2(0, 0)
+  override var mouseDownLoc: Option[Vec2] = None
 }
 
 class LevelGenControl(gen: LevelGen) extends InputAdapter {}

@@ -13,4 +13,8 @@ abstract class Scene {
   def renderUI(batch: PolygonSpriteBatch): Unit
 
   def updateCamera(): Unit
+
+  var realMouseLoc: Vec2
+  var mouseDownLoc: Option[Vec2]
+
 }

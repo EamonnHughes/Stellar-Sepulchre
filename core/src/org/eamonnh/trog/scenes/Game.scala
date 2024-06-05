@@ -2,8 +2,9 @@ package org.eamonnh.trog
 package scenes
 
 import com.badlogic.gdx.Input.Keys
-import com.badlogic.gdx.InputAdapter
+import com.badlogic.gdx.{Gdx, InputAdapter}
 import com.badlogic.gdx.graphics.Color
+import com.badlogic.gdx.graphics.Cursor.SystemCursor
 import com.badlogic.gdx.graphics.g2d.PolygonSpriteBatch
 import org.eamonnh.trog.SaveLoad.{loadState, saveState}
 import org.eamonnh.trog.Scene
@@ -33,6 +34,8 @@ class Game(lvl: Level, plr: Player, wld: World)
   var mainMenuing = false
   var allSpawned = false
   var clicked = false
+  override var realMouseLoc: Vec2 = Vec2(0,0)
+  override var mouseDownLoc: Option[Vec2] = None
   var mouseLocOnGrid: Vec2 = Vec2(0, 0)
   var enemies: List[Enemy] = List.empty
   var items: List[Item] = List.empty
@@ -49,6 +52,7 @@ class Game(lvl: Level, plr: Player, wld: World)
   }
 
   override def init(): InputAdapter = {
+    Gdx.graphics.setSystemCursor(SystemCursor.None)
     Trog.inGameOST.loop(.4f)
     player.game = this
     if (!player.initialized) {
@@ -247,4 +251,5 @@ class Game(lvl: Level, plr: Player, wld: World)
     }
 
   }
+
 }

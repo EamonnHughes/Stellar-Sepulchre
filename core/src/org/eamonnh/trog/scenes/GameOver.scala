@@ -37,6 +37,9 @@ class GameOver(world: World, enemy: String) extends Scene {
       -Trog.translationY * screenUnit + Geometry.ScreenHeight / 2
     )
   }
+
+  override var realMouseLoc: Vec2 = Vec2(0, 0)
+  override var mouseDownLoc: Option[Vec2] = None
 }
 
 class GameOverInput(over: GameOver) extends InputAdapter {

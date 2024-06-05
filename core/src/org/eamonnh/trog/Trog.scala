@@ -3,6 +3,7 @@ package org.eamonnh.trog
 import com.badlogic.gdx.Application.ApplicationType
 import com.badlogic.gdx.audio.Sound
 import com.badlogic.gdx.graphics.Cursor.SystemCursor
+import com.badlogic.gdx.graphics.Pixmap
 import com.badlogic.gdx.graphics.g2d.PolygonSpriteBatch
 import com.badlogic.gdx.math.Matrix4
 import com.badlogic.gdx.utils.ScreenUtils
@@ -23,7 +24,9 @@ class Trog extends ApplicationAdapter {
   override def create(): Unit = {
 
     Gdx.input.setCatchKey(Input.Keys.BACK, true)
-    Gdx.graphics.setSystemCursor(SystemCursor.None)
+
+    var pm = new Pixmap(Gdx.files.internal("Mouse.png"));
+    Gdx.graphics.setCursor(Gdx.graphics.newCursor(pm, 0, 0))
 
     batch = garbage.add(new PolygonSpriteBatch())
 

@@ -82,6 +82,9 @@ class CharCreation(world: World) extends Scene {
   }
 
   override def updateCamera(): Unit = {}
+
+  override var realMouseLoc: Vec2 = Vec2(0, 0)
+  override var mouseDownLoc: Option[Vec2] = None
 }
 
 class CharCreationControl(creation: CharCreation) extends InputAdapter {
