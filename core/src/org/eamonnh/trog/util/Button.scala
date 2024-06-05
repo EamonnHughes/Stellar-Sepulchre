@@ -70,12 +70,24 @@ trait Button {
       Text.smallFont.draw(batch, tooltip, scene.realMouseLoc.x, scene.realMouseLoc.y, screenUnit * 5, 0, true)
     }
   }
+
+  def drawUnavailable(batch: PolygonSpriteBatch, scene: Scene): Unit = {
+    batch.setColor(.5f, .5f, .5f, 1f)
+      batch.draw(
+        upIcon,
+        location.x * screenUnit,
+        location.y * screenUnit,
+        size.x * screenUnit,
+        size.y * screenUnit)
+  }
 }
+
+
 
 case class playButton(home: Home) extends Button {
   override def location: Vec2 = Vec2(
     (Geometry.ScreenWidth / screenUnit).toInt / 2 - 2,
-    (Geometry.ScreenHeight / screenUnit).toInt / 2 + 1
+    6
   )
 
   override def size: Vec2 = Vec2(4, 2)
@@ -95,7 +107,7 @@ case class playButton(home: Home) extends Button {
 case class loadButton(home: Home) extends Button {
   override def location: Vec2 = Vec2(
     (Geometry.ScreenWidth / screenUnit).toInt / 2 - 2,
-    (Geometry.ScreenHeight / screenUnit).toInt / 2 - 2
+    4
   )
 
   override def size: Vec2 = Vec2(4, 2)
@@ -106,6 +118,26 @@ case class loadButton(home: Home) extends Button {
 
   override def onClick(): Unit = {
     home.gameLoaded = true
+  }
+
+  override var tooltip: String = ""
+}
+
+
+case class quitButton(home: Home) extends Button {
+  override def location: Vec2 = Vec2(
+    (Geometry.ScreenWidth / screenUnit).toInt / 2 - 2,
+    2
+  )
+
+  override def size: Vec2 = Vec2(4, 2)
+
+  override def downIcon: TextureWrapper = TextureWrapper.load("QuitButtonDown.png")
+  override def upIcon: TextureWrapper = TextureWrapper.load("QuitButton.png")
+
+
+  override def onClick(): Unit = {
+    System.exit(0)
   }
 
   override var tooltip: String = ""

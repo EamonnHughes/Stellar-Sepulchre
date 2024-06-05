@@ -6,7 +6,7 @@ import com.badlogic.gdx.graphics.{Color, Pixmap}
 import com.badlogic.gdx.graphics.g2d.PolygonSpriteBatch
 import org.eamonnh.trog.Scene
 import org.eamonnh.trog.procgen.World
-import org.eamonnh.trog.util.{Button, loadButton, playButton}
+import org.eamonnh.trog.util.{Button, loadButton, playButton, quitButton}
 
 class Home(wld: World) extends Scene {
   var world: World = wld
@@ -20,7 +20,9 @@ class Home(wld: World) extends Scene {
 
   var mainColor = new Color(.48f, .69f, .37f, 1)
   var darkColor = new Color(.28f, .49f, .17f, 1)
-  var buttons: List[Button] = List(playButton(this), loadButton(this))
+  def buttons: List[Button] = if(game.loadable) List(playButton(this), loadButton(this), quitButton(this)) else List(playButton(this), quitButton(this))
+  def unavailableButtons: List[Button] = if(!game.loadable) List(loadButton(this)) else List.empty
+
 
   override def updateCamera(): Unit = {}
 
@@ -33,7 +35,6 @@ class Home(wld: World) extends Scene {
   }
 
   override def update(delta: Float): Option[Scene] = {
-
     if (gameLoaded && game.loadable) Some(game)
     else if (next) Some(new CharCreation(world))
     else None
@@ -50,7 +51,6 @@ class Home(wld: World) extends Scene {
     )
     batch.setColor(mainColor)
     Text.hugeFont.setColor(mainColor)
-
     Text.hugeFont.draw(
       batch,
       " Stellar Sepulchre",
@@ -60,6 +60,7 @@ class Home(wld: World) extends Scene {
     if (mouseDownLoc.isEmpty) buttons.foreach(_.brightness = 1f)
     batch.setColor(Color.WHITE)
     buttons.foreach(button => button.draw(batch, this))
+    unavailableButtons.foreach(button => button.drawUnavailable(batch ,this))
   }
 
   override def renderUI(batch: PolygonSpriteBatch): Unit = {

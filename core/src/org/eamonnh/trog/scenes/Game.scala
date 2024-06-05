@@ -3,7 +3,7 @@ package scenes
 
 import com.badlogic.gdx.Input.Keys
 import com.badlogic.gdx.{Gdx, InputAdapter}
-import com.badlogic.gdx.graphics.Color
+import com.badlogic.gdx.graphics.{Color, Pixmap}
 import com.badlogic.gdx.graphics.Cursor.SystemCursor
 import com.badlogic.gdx.graphics.g2d.PolygonSpriteBatch
 import org.eamonnh.trog.SaveLoad.{loadState, saveState}
@@ -52,7 +52,8 @@ class Game(lvl: Level, plr: Player, wld: World)
   }
 
   override def init(): InputAdapter = {
-    Gdx.graphics.setSystemCursor(SystemCursor.None)
+    var pm = new Pixmap(Gdx.files.internal("Nothing.png"))
+    Gdx.graphics.setCursor(Gdx.graphics.newCursor(pm, 0, 0))
     Trog.inGameOST.loop(.4f)
     player.game = this
     if (!player.initialized) {
@@ -91,12 +92,16 @@ class Game(lvl: Level, plr: Player, wld: World)
   }
 
   override def update(delta: Float): Option[Scene] = {
+
     if (lvlUping) {
       lvlupEffect += (delta * 2)
       if (lvlupEffect > .5f) {
         lvlUping = false
         lvlupEffect = 0
-        if(player.perkPool.exists(p => p.isAllowed(player))) player.inPerkChoice = true
+        if(player.perkPool.exists(p => p.isAllowed(player))) {
+          player.menuItemSelected = 0
+          player.inPerkChoice = true
+        }
       }
     } else {
       if (lvlupEffect > 0) lvlupEffect -= (delta / 4)
