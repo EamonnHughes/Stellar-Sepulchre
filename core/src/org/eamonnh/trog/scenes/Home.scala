@@ -1,12 +1,12 @@
 package org.eamonnh.trog
 package scenes
 
-import com.badlogic.gdx.InputAdapter
-import com.badlogic.gdx.graphics.Color
+import com.badlogic.gdx.{Gdx, InputAdapter}
+import com.badlogic.gdx.graphics.{Color, Pixmap}
 import com.badlogic.gdx.graphics.g2d.PolygonSpriteBatch
 import org.eamonnh.trog.Scene
 import org.eamonnh.trog.procgen.World
-import org.eamonnh.trog.util.{Button, playButton}
+import org.eamonnh.trog.util.{Button, loadButton, playButton}
 
 class Home(wld: World) extends Scene {
   var world: World = wld
@@ -20,11 +20,13 @@ class Home(wld: World) extends Scene {
 
   var mainColor = new Color(.48f, .69f, .37f, 1)
   var darkColor = new Color(.28f, .49f, .17f, 1)
-  var buttons: List[Button] = List(playButton(this))
+  var buttons: List[Button] = List(playButton(this), loadButton(this))
 
   override def updateCamera(): Unit = {}
 
   override def init(): InputAdapter = {
+    var pm = new Pixmap(Gdx.files.internal("Mouse.png"));
+    Gdx.graphics.setCursor(Gdx.graphics.newCursor(pm, 0, 0))
     Trog.translationX = 0
     Trog.translationY = 0
     new HomeControl(this)

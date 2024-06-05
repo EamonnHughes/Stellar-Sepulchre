@@ -80,12 +80,32 @@ case class playButton(home: Home) extends Button {
 
   override def size: Vec2 = Vec2(4, 2)
 
-  override def downIcon: TextureWrapper = TextureWrapper.load("DownPlayButton.png")
+  override def downIcon: TextureWrapper = TextureWrapper.load("PlayButtonDown.png")
   override def upIcon: TextureWrapper = TextureWrapper.load("PlayButton.png")
 
 
   override def onClick(): Unit = {
     home.next = true
+  }
+
+  override var tooltip: String = ""
+}
+
+
+case class loadButton(home: Home) extends Button {
+  override def location: Vec2 = Vec2(
+    (Geometry.ScreenWidth / screenUnit).toInt / 2 - 2,
+    (Geometry.ScreenHeight / screenUnit).toInt / 2 - 2
+  )
+
+  override def size: Vec2 = Vec2(4, 2)
+
+  override def downIcon: TextureWrapper = TextureWrapper.load("LoadButtonDown.png")
+  override def upIcon: TextureWrapper = TextureWrapper.load("LoadButton.png")
+
+
+  override def onClick(): Unit = {
+    home.gameLoaded = true
   }
 
   override var tooltip: String = ""

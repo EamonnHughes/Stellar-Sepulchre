@@ -25,9 +25,6 @@ class Trog extends ApplicationAdapter {
 
     Gdx.input.setCatchKey(Input.Keys.BACK, true)
 
-    var pm = new Pixmap(Gdx.files.internal("Mouse.png"));
-    Gdx.graphics.setCursor(Gdx.graphics.newCursor(pm, 0, 0))
-
     batch = garbage.add(new PolygonSpriteBatch())
 
     Text.loadFonts()
