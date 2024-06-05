@@ -13,13 +13,10 @@ class Home(wld: World) extends Scene {
   var next = false
   var game: Game = _
   var gameLoaded = false
-  var selected = 0
-  var itemNums = 3
   override var realMouseLoc: Vec2 = Vec2(0, 0)
   override var mouseDownLoc: Option[Vec2] = None
 
   var mainColor = new Color(.48f, .69f, .37f, 1)
-  var darkColor = new Color(.28f, .49f, .17f, 1)
   def buttons: List[Button] = if(game.loadable) List(playButton(this), loadButton(this), quitButton(this)) else List(playButton(this), quitButton(this))
   def unavailableButtons: List[Button] = if(!game.loadable) List(loadButton(this)) else List.empty
 
@@ -49,6 +46,9 @@ class Home(wld: World) extends Scene {
       Geometry.ScreenWidth,
       Geometry.ScreenHeight
     )
+  }
+
+  override def renderUI(batch: PolygonSpriteBatch): Unit = {
     batch.setColor(mainColor)
     Text.hugeFont.setColor(mainColor)
     Text.hugeFont.draw(
@@ -62,33 +62,4 @@ class Home(wld: World) extends Scene {
     buttons.foreach(button => button.draw(batch, this))
     unavailableButtons.foreach(button => button.drawUnavailable(batch ,this))
   }
-
-  override def renderUI(batch: PolygonSpriteBatch): Unit = {
-    if (selected == 0) Text.largeFont.setColor(mainColor)
-    else Text.largeFont.setColor(darkColor)
-    Text.largeFont.draw(
-      batch,
-      "  Descend",
-      -Trog.translationX * screenUnit,
-      -Trog.translationY * screenUnit + Geometry.ScreenHeight * 4 / 5
-    )
-    if (selected == 1) Text.largeFont.setColor(mainColor)
-    else if (game.loadable) Text.largeFont.setColor(darkColor)
-    else Text.largeFont.setColor(Color.GRAY)
-    Text.largeFont.draw(
-      batch,
-      "\n  Load Last Save",
-      -Trog.translationX * screenUnit,
-      -Trog.translationY * screenUnit + Geometry.ScreenHeight * 4 / 5
-    )
-    if (selected == 2) Text.largeFont.setColor(mainColor)
-    else Text.largeFont.setColor(darkColor)
-    Text.largeFont.draw(
-      batch,
-      "\n\n  Quit",
-      -Trog.translationX * screenUnit,
-      -Trog.translationY * screenUnit + Geometry.ScreenHeight * 4 / 5
-    )
-  }
-
 }

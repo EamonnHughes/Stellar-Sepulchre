@@ -87,7 +87,7 @@ trait Button {
 case class playButton(home: Home) extends Button {
   override def location: Vec2 = Vec2(
     (Geometry.ScreenWidth / screenUnit).toInt / 2 - 2,
-    6
+    5
   )
 
   override def size: Vec2 = Vec2(4, 2)
@@ -107,7 +107,7 @@ case class playButton(home: Home) extends Button {
 case class loadButton(home: Home) extends Button {
   override def location: Vec2 = Vec2(
     (Geometry.ScreenWidth / screenUnit).toInt / 2 - 2,
-    4
+    3
   )
 
   override def size: Vec2 = Vec2(4, 2)
@@ -127,7 +127,7 @@ case class loadButton(home: Home) extends Button {
 case class quitButton(home: Home) extends Button {
   override def location: Vec2 = Vec2(
     (Geometry.ScreenWidth / screenUnit).toInt / 2 - 2,
-    2
+    1
   )
 
   override def size: Vec2 = Vec2(4, 2)
